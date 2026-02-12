@@ -33,7 +33,7 @@ export default function LoginPage({ onSwitch }) {
             <div className="w-10 h-10 bg-primary rounded-sm flex items-center justify-center">
               <Zap className="w-5 h-5 text-white" />
             </div>
-            <span className="font-heading font-bold text-xl tracking-tight">AEO Copilot</span>
+            <span className="font-heading font-bold text-xl tracking-tight">Pinnacle.AI</span>
           </div>
 
           <div>
