@@ -67,6 +67,10 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 # Routes
 app.include_router(auth_router, prefix="/api")
+app.include_router(audit_router, prefix="/api")
+app.include_router(ai_test_router, prefix="/api")
+app.include_router(monitor_router, prefix="/api")
+app.include_router(reports_router, prefix="/api")
 
 
 # Health endpoint
