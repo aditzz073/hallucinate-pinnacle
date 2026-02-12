@@ -1,4 +1,4 @@
-"""AI Testing Engine Service - Phase 2 Orchestrator"""
+"""AI Testing Engine Service - Phase 2 Orchestrator with GEO Integration"""
 from datetime import datetime, timezone
 
 from database.connection import ai_tests_collection
@@ -17,6 +17,7 @@ from modules.aiTestingEngine.citation_calculator import (
     generate_why_not_cited,
     generate_improvement_suggestions,
 )
+from modules.aiTestingEngine.geo_service import run_geo_analysis
 
 
 async def run_ai_test(url: str, query: str, user_id: str) -> dict:
@@ -55,7 +56,10 @@ async def run_ai_test(url: str, query: str, user_id: str) -> dict:
     )
     improvement_suggestions = generate_improvement_suggestions(why_not_cited, intent)
 
-    # Step 8: Save result
+    # NEW: Step 8 - GEO Analysis
+    geo_result = run_geo_analysis(parsed)
+
+    # Step 9: Compile scores
     engine_scores = {
         "intent_match": intent_match,
         "extractability": extractability,
@@ -63,7 +67,14 @@ async def run_ai_test(url: str, query: str, user_id: str) -> dict:
         "schema_support": schema_support,
         "content_depth": content_depth,
     }
+    
+    geo_scores = {
+        "generative_readiness": geo_result["generative_readiness"],
+        "summarization_resilience": geo_result["summarization_resilience"],
+        "brand_retention_probability": geo_result["brand_retention_probability"],
+    }
 
+    # Step 10: Save result
     test_doc = {
         "user_id": user_id,
         "url": url,
@@ -74,6 +85,12 @@ async def run_ai_test(url: str, query: str, user_id: str) -> dict:
         "likely_position": likely_position,
         "why_not_cited": why_not_cited,
         "improvement_suggestions": improvement_suggestions,
+        # GEO fields
+        "geo_score": geo_result["geo_score"],
+        "geo_scores_json": geo_scores,
+        "detected_brand": geo_result.get("detected_brand"),
+        "geo_breakdown_json": geo_result.get("geo_breakdown"),
+        "geo_insights_json": geo_result.get("geo_insights"),
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
     result = await ai_tests_collection.insert_one(test_doc)
@@ -83,11 +100,19 @@ async def run_ai_test(url: str, query: str, user_id: str) -> dict:
         "url": url,
         "query": query,
         "intent": intent,
+        # Citation metrics
         "citation_probability": citation_prob,
         "breakdown": engine_scores,
         "likely_position": likely_position,
         "why_not_cited": why_not_cited,
         "improvement_suggestions": improvement_suggestions,
+        # GEO metrics
+        "geo_score": geo_result["geo_score"],
+        "generative_readiness": geo_result["generative_readiness"],
+        "summarization_resilience": geo_result["summarization_resilience"],
+        "brand_retention_probability": geo_result["brand_retention_probability"],
+        "detected_brand": geo_result.get("detected_brand"),
+        "geo_insights": geo_result.get("geo_insights"),
         "created_at": test_doc["created_at"],
     }
 
@@ -95,7 +120,14 @@ async def run_ai_test(url: str, query: str, user_id: str) -> dict:
 async def get_user_ai_tests(user_id: str, limit: int = 50) -> list:
     cursor = ai_tests_collection.find(
         {"user_id": user_id},
-        {"_id": 0, "user_id": 0, "why_not_cited": 0, "improvement_suggestions": 0},
+        {
+            "_id": 0, 
+            "user_id": 0, 
+            "why_not_cited": 0, 
+            "improvement_suggestions": 0,
+            "geo_breakdown_json": 0,
+            "geo_insights_json": 0,
+        },
     ).sort("created_at", -1).limit(limit)
     return await cursor.to_list(length=limit)
 
@@ -118,5 +150,12 @@ async def get_ai_test_detail(test_id: str, user_id: str) -> dict:
         "likely_position": doc.get("likely_position", ""),
         "why_not_cited": doc.get("why_not_cited", []),
         "improvement_suggestions": doc.get("improvement_suggestions", []),
+        # GEO fields
+        "geo_score": doc.get("geo_score", 0),
+        "generative_readiness": doc.get("geo_scores_json", {}).get("generative_readiness", 0),
+        "summarization_resilience": doc.get("geo_scores_json", {}).get("summarization_resilience", 0),
+        "brand_retention_probability": doc.get("geo_scores_json", {}).get("brand_retention_probability", 0),
+        "detected_brand": doc.get("detected_brand"),
+        "geo_insights": doc.get("geo_insights_json"),
         "created_at": doc["created_at"],
     }
