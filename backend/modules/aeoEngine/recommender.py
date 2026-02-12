@@ -8,7 +8,6 @@ def generate_recommendations(signals: dict, scores: dict) -> list:
     m = signals.get("media", {})
     sc = signals.get("schema", {})
     tech = signals.get("technical", {})
-    breakdown = scores.get("breakdown", {})
 
     # Structure recommendations
     if not s.get("has_title"):
