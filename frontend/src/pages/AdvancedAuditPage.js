@@ -67,20 +67,20 @@ function AdvancedResult({ result }) {
   return (
     <div className="space-y-6" data-testid="advanced-result">
       {/* Score + Integrity */}
-      <div className="flex items-start justify-between bg-card border border-border rounded-lg p-6">
+      <div className="flex items-start justify-between glass-card p-6">
         <div>
-          <span className="font-heading font-bold text-5xl" style={{ color: getScoreColor(result.overall_score) }}>{result.overall_score}</span>
-          <span className="text-muted-foreground text-sm ml-2">/100 AEO Score</span>
-          <a href={result.url} target="_blank" rel="noopener noreferrer" className="block text-sm text-primary mt-2 hover:underline flex items-center gap-1">
+          <span className="text-5xl font-thin" style={{ color: getScoreColor(result.overall_score) }}>{result.overall_score}</span>
+          <span className="text-gray-400 text-sm ml-2">/100 AEO Score</span>
+          <a href={result.url} target="_blank" rel="noopener noreferrer" className="block text-sm text-brand-blue mt-2 hover:underline flex items-center gap-1">
             {result.url} <ExternalLink className="w-3 h-3" />
           </a>
         </div>
-        <div className="bg-muted rounded-lg px-4 py-3 text-right" data-testid="audit-integrity">
+        <div className="rounded-xl bg-white/[0.03] border border-white/5 px-4 py-3 text-right" data-testid="audit-integrity">
           <div className="flex items-center gap-2 mb-1">
-            <Shield className="w-4 h-4 text-emerald-500" />
-            <span className="text-xs font-mono text-emerald-400">Deterministic</span>
+            <Shield className="w-4 h-4 text-green-400" />
+            <span className="text-xs font-medium text-green-400">Deterministic</span>
           </div>
-          <p className="text-[10px] text-muted-foreground font-mono">v{integrity.scoring_version} | {integrity.total_signals_evaluated} signals</p>
+          <p className="text-[10px] text-gray-500">v{integrity.scoring_version} | {integrity.total_signals_evaluated} signals</p>
         </div>
       </div>
 
