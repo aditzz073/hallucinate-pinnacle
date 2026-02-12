@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import Sidebar from "./Sidebar";
 import Dashboard from "../../pages/Dashboard";
+import AuditsPage from "../../pages/AuditsPage";
+import AITestsPage from "../../pages/AITestsPage";
+import MonitoringPage from "../../pages/MonitoringPage";
+import ReportsPage from "../../pages/ReportsPage";
 
 export default function Layout() {
   const [activePage, setActivePage] = useState("dashboard");
@@ -8,19 +12,21 @@ export default function Layout() {
   const renderPage = () => {
     switch (activePage) {
       case "dashboard":
-        return <Dashboard />;
+        return <Dashboard onNavigate={setActivePage} />;
       case "audits":
-        return <PlaceholderPage title="Page Audits" desc="Analyze how AI engines interpret your pages." />;
+        return <AuditsPage />;
       case "ai-tests":
-        return <PlaceholderPage title="AI Citation Tests" desc="Test whether AI engines cite your content." />;
+        return <AITestsPage />;
       case "monitor":
-        return <PlaceholderPage title="Monitoring" desc="Track changes to your monitored pages over time." />;
+        return <MonitoringPage />;
       case "changes":
-        return <PlaceholderPage title="Change Log" desc="View detected signal changes and their impact." />;
+        return <MonitoringPage />;
+      case "reports":
+        return <ReportsPage />;
       case "settings":
-        return <PlaceholderPage title="Settings" desc="Manage your account preferences." />;
+        return <PlaceholderPage title="Settings" desc="Account preferences coming soon." />;
       default:
-        return <Dashboard />;
+        return <Dashboard onNavigate={setActivePage} />;
     }
   };
 
@@ -38,19 +44,8 @@ function PlaceholderPage({ title, desc }) {
   return (
     <div className="max-w-4xl" data-testid={`page-${title.toLowerCase().replace(/\s+/g, "-")}`}>
       <div className="mb-12">
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground mb-2">Coming Soon</p>
         <h1 className="font-heading font-bold text-3xl tracking-tight mb-3">{title}</h1>
         <p className="text-muted-foreground text-sm max-w-lg">{desc}</p>
-      </div>
-      <div className="border border-dashed border-border rounded-lg p-16 flex flex-col items-center justify-center text-center">
-        <div className="w-48 h-48 rounded-lg overflow-hidden mb-8 opacity-60">
-          <img
-            src="https://images.unsplash.com/photo-1737505599162-d9932323a889?crop=entropy&cs=srgb&fm=jpg&q=85&w=400"
-            alt="Coming Soon"
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <p className="text-muted-foreground text-sm">This feature will be available in an upcoming phase.</p>
       </div>
     </div>
   );
