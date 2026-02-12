@@ -25,28 +25,27 @@ export default function AdvancedAuditPage() {
   };
 
   return (
-    <div className="max-w-6xl" data-testid="advanced-audit-page">
-      <div className="mb-10">
-        <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground mb-2">Phase 5</p>
-        <h1 className="font-heading font-bold text-3xl tracking-tight mb-2">Advanced Audit</h1>
-        <p className="text-muted-foreground text-sm">Deep audit with explainability, historical intelligence, and integrity metadata.</p>
+    <div className="space-y-10" data-testid="advanced-audit-page">
+      <div>
+        <h1 className="text-3xl lg:text-4xl font-thin text-white mb-2">Advanced Audit</h1>
+        <p className="text-gray-400 font-light">Deep audit with explainability, historical intelligence, and integrity metadata.</p>
       </div>
 
-      <form onSubmit={handleAudit} className="flex gap-3 mb-8" data-testid="advanced-audit-form">
+      <form onSubmit={handleAudit} className="flex gap-3" data-testid="advanced-audit-form">
         <input
           data-testid="advanced-audit-url-input"
           type="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="https://example.com/page"
-          className="flex-1 h-12 rounded-md border border-input bg-background px-4 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
+          className="glass-input flex-1 h-12 px-4 text-sm"
           required
         />
         <button
           data-testid="advanced-audit-submit"
           type="submit"
           disabled={loading}
-          className="h-12 px-6 bg-primary text-primary-foreground font-medium rounded-sm flex items-center gap-2 hover:bg-primary/90 active:scale-[0.98] transition-all duration-200 shadow-[0_0_15px_rgba(79,70,229,0.2)] disabled:opacity-50"
+          className="h-12 px-6 rounded-xl bg-white text-black font-medium flex items-center gap-2 hover:scale-[1.02] hover:shadow-[0_0_24px_rgba(255,255,255,0.15)] transition-all duration-300 disabled:opacity-50 shrink-0"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
           {loading ? "Analyzing..." : "Deep Audit"}
