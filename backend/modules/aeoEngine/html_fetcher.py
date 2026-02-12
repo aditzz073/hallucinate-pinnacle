@@ -4,9 +4,10 @@ import ipaddress
 import socket
 import random
 from urllib.parse import urlparse
+import cloudscraper
 
 MAX_HTML_SIZE = 5 * 1024 * 1024  # 5MB
-FETCH_TIMEOUT = 15
+FETCH_TIMEOUT = 20
 
 BLOCKED_HOSTNAMES = {"localhost", "127.0.0.1", "::1", "0.0.0.0", ""}
 
@@ -50,6 +51,20 @@ def _get_browser_headers() -> dict:
     }
 
 
+def _fetch_with_cloudscraper(url: str) -> str:
+    """Fallback fetcher using cloudscraper for Cloudflare-protected sites"""
+    scraper = cloudscraper.create_scraper(
+        browser={
+            'browser': 'chrome',
+            'platform': 'windows',
+            'mobile': False
+        }
+    )
+    response = scraper.get(url, timeout=FETCH_TIMEOUT)
+    response.raise_for_status()
+    return response.text
+
+
 async def fetch_html(url: str) -> str:
     if not url.startswith(("http://", "https://")):
         raise ValueError("URL must start with http:// or https://")
@@ -57,48 +72,62 @@ async def fetch_html(url: str) -> str:
     if _is_private_url(url):
         raise ValueError("Private/localhost URLs are not allowed")
 
-    # Strip tracking parameters that may cause issues
-    clean_url = url.split("?utm_")[0] if "?utm_" in url else url
-    if "&utm_" in clean_url:
-        clean_url = clean_url.split("&utm_")[0]
+    hostname = urlparse(url).netloc
 
-    async with httpx.AsyncClient(
-        timeout=httpx.Timeout(FETCH_TIMEOUT),
-        follow_redirects=True,
-        max_redirects=10,
-        http2=True,
-    ) as client:
-        try:
+    # First try with httpx (faster, async)
+    try:
+        async with httpx.AsyncClient(
+            timeout=httpx.Timeout(FETCH_TIMEOUT),
+            follow_redirects=True,
+            max_redirects=10,
+            http2=True,
+        ) as client:
             response = await client.get(
-                url,  # Use original URL to preserve any needed params
+                url,
                 headers=_get_browser_headers(),
             )
             response.raise_for_status()
-        except httpx.HTTPStatusError as e:
-            if e.response.status_code == 403:
+            html = response.text
+            
+    except httpx.HTTPStatusError as e:
+        if e.response.status_code == 403:
+            # Try cloudscraper as fallback for Cloudflare-protected sites
+            try:
+                html = _fetch_with_cloudscraper(url)
+            except Exception as cf_error:
                 raise ValueError(
-                    f"Access denied (403 Forbidden). The website '{urlparse(url).netloc}' "
-                    "is blocking automated requests. This commonly happens with e-commerce sites. "
-                    "Try a different URL or the site's main page instead."
+                    f"Access denied (403 Forbidden). The website '{hostname}' "
+                    "has strong anti-bot protection that we couldn't bypass. "
+                    "This commonly happens with e-commerce sites using Cloudflare. "
+                    "Try the site's main homepage or a different page."
                 )
-            elif e.response.status_code == 404:
-                raise ValueError(f"Page not found (404). The URL may be incorrect or the page has been moved.")
-            elif e.response.status_code >= 500:
-                raise ValueError(f"Server error ({e.response.status_code}). The website may be experiencing issues.")
-            raise
-        except httpx.TimeoutException:
+        elif e.response.status_code == 404:
+            raise ValueError(f"Page not found (404). The URL may be incorrect or the page has been moved.")
+        elif e.response.status_code >= 500:
+            raise ValueError(f"Server error ({e.response.status_code}). The website may be experiencing issues.")
+        else:
+            raise ValueError(f"HTTP error {e.response.status_code} when fetching the page.")
+            
+    except httpx.TimeoutException:
+        # Also try cloudscraper on timeout (sometimes sites detect httpx)
+        try:
+            html = _fetch_with_cloudscraper(url)
+        except Exception:
             raise ValueError(f"Request timed out. The website took too long to respond.")
-        except httpx.ConnectError:
-            raise ValueError(f"Could not connect to the website. Please check the URL.")
+            
+    except httpx.ConnectError:
+        raise ValueError(f"Could not connect to the website. Please check the URL.")
 
-        content_type = response.headers.get("content-type", "")
-        if "text/html" not in content_type and "xhtml" not in content_type:
-            # Be more lenient - some sites don't set proper content-type
-            if not response.text.strip().startswith(("<", "<!DOCTYPE")):
-                raise ValueError(f"Not an HTML page: {content_type}")
+    # Validate content type loosely
+    if not html.strip():
+        raise ValueError("Empty response received from the website.")
+        
+    # Check if it looks like HTML
+    html_lower = html[:500].lower()
+    if not any(tag in html_lower for tag in ['<html', '<!doctype', '<head', '<body', '<div']):
+        raise ValueError("The response doesn't appear to be an HTML page.")
 
-        html = response.text
-        if len(html.encode("utf-8")) > MAX_HTML_SIZE:
-            raise ValueError("HTML exceeds 5MB limit")
+    if len(html.encode("utf-8")) > MAX_HTML_SIZE:
+        raise ValueError("HTML exceeds 5MB limit")
 
-        return html
+    return html
