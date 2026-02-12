@@ -20,7 +20,7 @@ Build a production-grade SaaS platform ("Pinnacle.AI") for AI Engine Optimizatio
 
 ### UI/UX Redesign (2026-02-12)
 - **Landing Page**: Hero with animated gradient blobs, thin typography, dual CTAs
-- **Floating Pill Navbar**: Glassmorphism navbar with all nav items + auth state
+- **Floating Pill Navbar**: Compact glassmorphism navbar with dropdown menus for Tools & Enterprise sections
 - **Glass Card Design**: All cards use frosted glass effect with hover animations
 - **Auth Pages**: Centered glass card with blob backgrounds
 - **Dashboard**: 4-column metric grid, health badges, recent activity
