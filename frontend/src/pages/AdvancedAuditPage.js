@@ -99,8 +99,8 @@ function AdvancedResult({ result }) {
 
       {/* Historical Intelligence */}
       {result.historical_intelligence?.length > 0 && (
-        <div className="bg-card border border-border rounded-lg p-6">
-          <h3 className="font-heading font-semibold text-sm mb-4 flex items-center gap-2"><Info className="w-4 h-4 text-primary" /> Historical Intelligence</h3>
+        <div className="glass-card p-6">
+          <h3 className="font-semibold text-sm mb-4 flex items-center gap-2"><Info className="w-4 h-4 text-brand-blue" /> Historical Intelligence</h3>
           <div className="space-y-2">
             {result.historical_intelligence.slice(0, 5).map((rec, i) => (
               <div key={i} className="flex items-start gap-3 bg-muted/50 rounded-md px-4 py-3 text-xs" data-testid={`hist-rec-${i}`}>
@@ -108,7 +108,7 @@ function AdvancedResult({ result }) {
                 <div className="flex-1">
                   <p className="font-medium text-sm">{rec.issue}</p>
                   {rec.historical && (
-                    <p className="text-muted-foreground mt-1">
+                    <p className="text-gray-400 mt-1">
                       {rec.historical.is_new_issue ? "New issue" : "Known issue"} - {rec.historical.change_explanation}
                     </p>
                   )}
@@ -124,24 +124,24 @@ function AdvancedResult({ result }) {
 
 function ExplainCard({ category, data, expanded, onToggle }) {
   return (
-    <div className="bg-card border border-border rounded-lg overflow-hidden">
-      <button onClick={onToggle} className="w-full flex items-center justify-between px-5 py-4 hover:bg-muted/30 transition-colors duration-200" data-testid={`explain-${category}`}>
+    <div className="glass-card overflow-hidden">
+      <button onClick={onToggle} className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/[0.02] transition-colors duration-200" data-testid={`explain-${category}`}>
         <div className="flex items-center gap-3">
-          <span className="font-heading font-bold text-xl" style={{ color: getScoreColor(data.score) }}>{data.score}</span>
+          <span className="font-semibold text-xl" style={{ color: getScoreColor(data.score) }}>{data.score}</span>
           <span className="text-sm font-medium capitalize">{category}</span>
-          <span className="text-[10px] font-mono text-muted-foreground">{data.contributing_factors?.length || 0} factors, {data.penalties?.length || 0} penalties</span>
+          <span className="text-[10px] font-mono text-gray-400">{data.contributing_factors?.length || 0} factors, {data.penalties?.length || 0} penalties</span>
         </div>
         {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
       </button>
       {expanded && (
-        <div className="border-t border-border px-5 py-4 space-y-4">
+        <div className="border-t border-white/5 px-5 py-4 space-y-4">
           {data.contributing_factors?.length > 0 && (
             <div>
               <p className="text-xs font-mono text-emerald-400 uppercase tracking-wider mb-2">Contributing Factors</p>
               {data.contributing_factors.map((f, i) => (
                 <div key={i} className="flex items-center gap-2 text-xs py-1">
                   <span className="text-emerald-400 font-mono">+{f.contribution}</span>
-                  <span className="text-muted-foreground">{f.reason}</span>
+                  <span className="text-gray-400">{f.reason}</span>
                 </div>
               ))}
             </div>
@@ -152,16 +152,16 @@ function ExplainCard({ category, data, expanded, onToggle }) {
               {data.penalties.map((p, i) => (
                 <div key={i} className="flex items-center gap-2 text-xs py-1">
                   <span className="text-red-400 font-mono">-{p.penalty}</span>
-                  <span className="text-muted-foreground">{p.reason}</span>
+                  <span className="text-gray-400">{p.reason}</span>
                 </div>
               ))}
             </div>
           )}
           {data.evidence?.length > 0 && (
             <div>
-              <p className="text-xs font-mono text-muted-foreground/60 uppercase tracking-wider mb-2">Evidence</p>
+              <p className="text-xs font-mono text-gray-400/60 uppercase tracking-wider mb-2">Evidence</p>
               {data.evidence.map((e, i) => (
-                <p key={i} className="text-xs text-muted-foreground py-0.5 font-mono">{e}</p>
+                <p key={i} className="text-xs text-gray-400 py-0.5 font-mono">{e}</p>
               ))}
             </div>
           )}
