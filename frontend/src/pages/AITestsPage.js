@@ -43,7 +43,22 @@ export default function AITestsPage() {
         </div>
       </form>
 
-      {error && <div className="rounded-xl bg-red-400/10 border border-red-400/20 px-4 py-3 text-sm text-red-400" data-testid="ai-test-error">{error}</div>}
+      {error && (
+        <div className="rounded-xl bg-red-400/10 border border-red-400/20 px-4 py-4" data-testid="ai-test-error">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+            <div className="space-y-2">
+              <p className="text-sm text-red-400 whitespace-pre-line">{error}</p>
+              {(error.toLowerCase().includes('cloudflare') || error.toLowerCase().includes('403') || error.toLowerCase().includes('access denied')) && (
+                <div className="text-xs text-gray-500 border-t border-white/5 pt-2 mt-2">
+                  <p className="font-medium text-gray-400 mb-1">Why does this happen?</p>
+                  <p>Some websites use aggressive bot protection (like Cloudflare) that blocks automated analysis. E-commerce sites are especially strict about this.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {activeResult && (
         <div className="glass-card p-6 space-y-6" data-testid="ai-test-result">
