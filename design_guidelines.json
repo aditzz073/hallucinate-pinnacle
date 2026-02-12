@@ -1,0 +1,128 @@
+{
+  "identity": {
+    "name": "E1",
+    "philosophy": "Anti-AI Design: Fusion over Imitation. Emotion First. Content is King. Zoom in. Negative Space. Contrast.",
+    "anti_patterns": [
+      "Purple/Teal gradients everywhere",
+      "Center-aligned everything",
+      "Generic Inter font for headings",
+      "Low contrast text"
+    ]
+  },
+  "theme": {
+    "mode": "dark",
+    "archetype": "Performance Pro",
+    "vibe": "Elite, Tactical, High-Precision",
+    "colors": {
+      "background": "#050505",
+      "foreground": "#FFFFFF",
+      "card": "#0A0A0A",
+      "card_foreground": "#FFFFFF",
+      "popover": "#0A0A0A",
+      "popover_foreground": "#FFFFFF",
+      "primary": "#4F46E5",
+      "primary_foreground": "#FFFFFF",
+      "secondary": "#27272A",
+      "secondary_foreground": "#FFFFFF",
+      "muted": "#18181B",
+      "muted_foreground": "#A1A1AA",
+      "accent": "#27272A",
+      "accent_foreground": "#FFFFFF",
+      "destructive": "#EF4444",
+      "destructive_foreground": "#FFFFFF",
+      "border": "#27272A",
+      "input": "#27272A",
+      "ring": "#4F46E5",
+      "chart_1": "#4F46E5",
+      "chart_2": "#10B981",
+      "chart_3": "#F59E0B",
+      "chart_4": "#EF4444",
+      "chart_5": "#8B5CF6"
+    }
+  },
+  "typography": {
+    "font_family": {
+      "sans": ["Manrope", "sans-serif"],
+      "heading": ["Chivo", "sans-serif"],
+      "mono": ["JetBrains Mono", "monospace"]
+    },
+    "rules": {
+      "headings": "tracking-tight font-heading font-bold",
+      "body": "tracking-normal font-sans text-base leading-relaxed",
+      "overline": "uppercase tracking-[0.2em] text-xs font-mono text-muted-foreground",
+      "links": "font-medium hover:text-primary transition-colors duration-200"
+    }
+  },
+  "layout_strategy": {
+    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "spacing": "Relaxed. Use p-6, p-8, p-12 for containers.",
+    "grid_system": "Bento Grid Mode B (High Density for Dashboard)",
+    "sidebar": {
+      "width": "w-64",
+      "collapsed_width": "w-16",
+      "style": "Fixed, border-r border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+    }
+  },
+  "components": {
+    "buttons": {
+      "default": "rounded-sm font-medium transition-all active:scale-95",
+      "primary": "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_10px_rgba(79,70,229,0.3)]",
+      "outline": "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+      "ghost": "hover:bg-accent hover:text-accent-foreground"
+    },
+    "cards": {
+      "style": "bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200",
+      "header": "p-6 pb-0",
+      "content": "p-6",
+      "footer": "p-6 pt-0"
+    },
+    "inputs": {
+      "style": "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+    }
+  },
+  "visual_enhancers": {
+    "borders": "1px solid #27272A (Zinc 800)",
+    "glassmorphism": "backdrop-blur-xl bg-black/60 border-white/10",
+    "gradients": "No full-screen gradients. Use subtle radial gradients for spotlights.",
+    "shadows": "shadow-sm for cards, shadow-lg for dropdowns/modals",
+    "animations": {
+      "hover": "transition-all duration-200 ease-out",
+      "enter": "animate-in fade-in zoom-in-95 duration-200"
+    }
+  },
+  "image_urls": {
+    "auth_background": {
+      "url": "https://images.unsplash.com/photo-1762278804941-27ff5cba5a2e?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "description": "Abstract flowing lines of purple and white on black. Use for Auth page side panel."
+    },
+    "dashboard_placeholder": {
+      "url": "https://images.unsplash.com/photo-1737505599162-d9932323a889?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "description": "Abstract network balls. Use for empty states or feature highlights."
+    }
+  },
+  "instructions_to_main_agent": [
+    "1. Setup Tailwind with the specific colors defined in 'theme.colors'.",
+    "2. Install fonts: Chivo (Headings), Manrope (Body), JetBrains Mono (Code).",
+    "3. Create the 'Sidebar' component first - it is the anchor of the app.",
+    "4. For Auth pages (Login/Register), use a split layout: 50% form (left), 50% image (right). Use 'auth_background' image.",
+    "5. Ensure all interactive elements have 'data-testid' attributes.",
+    "6. Use 'lucide-react' for icons.",
+    "7. Implement a 'HealthStatus' indicator in the sidebar or header (Green dot + 'System Operational').",
+    "8. Use 'sonner' for toast notifications.",
+    "9. DO NOT use generic gradients. Stick to the 'Performance Pro' aesthetic: Black, Dark Grey, Sharp White, Electric Indigo.",
+    "10. Ensure the layout is responsive (Mobile: Sidebar becomes a drawer or bottom nav)."
+  ],
+  "universal_guidelines": [
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur).",
+    "You MUST NOT apply universal transition. Eg: transition: all.",
+    "You MUST NOT center align the app container.",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations.",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠 etc.",
+    "Every interaction needs micro-animations.",
+    "Use 2-3x more spacing than feels comfortable.",
+    "Main agent relies on provided image URLs. Missing categories = main agent will use placeholder text which is FORBIDDEN."
+  ]
+}
