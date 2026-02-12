@@ -551,6 +551,252 @@ class AIDiscoverabilityAPITester:
             print(f"✅ Found comparison data for {total_urls} URLs")
         return success
 
+    # Phase 5-9: Pinnacle.AI Features Tests
+    def test_advanced_audit_valid_url(self):
+        """Test POST /api/audit/advanced with explainability"""
+        success, response = self.run_test(
+            "Advanced Audit with Explainability",
+            "POST",
+            "api/audit/advanced",
+            200,
+            data={"url": "https://example.com"},
+            expected_response_keys=["id", "url", "overall_score", "breakdown", "explainability", "audit_integrity", "historical_intelligence"]
+        )
+        if success:
+            # Check explainability structure
+            explainability = response.get("explainability", {})
+            expected_explainability = ["structure", "trust", "media", "schema", "technical"]
+            for key in expected_explainability:
+                if key not in explainability:
+                    print(f"⚠️ Missing explainability key: {key}")
+                    continue
+                category = explainability[key]
+                expected_cat_keys = ["score", "contributing_factors", "penalties", "detected_signals", "evidence"]
+                for cat_key in expected_cat_keys:
+                    if cat_key not in category:
+                        print(f"⚠️ Missing explainability.{key}.{cat_key}")
+            
+            # Check audit integrity 
+            integrity = response.get("audit_integrity", {})
+            expected_integrity = ["deterministic", "scoring_version", "total_signals_evaluated"]
+            for key in expected_integrity:
+                if key not in integrity:
+                    print(f"⚠️ Missing audit_integrity key: {key}")
+            
+            if integrity.get("deterministic") == True:
+                print("✅ Audit integrity shows deterministic=true")
+            
+            print(f"✅ Advanced audit completed with {integrity.get('total_signals_evaluated', 0)} signals evaluated")
+        return success
+
+    def test_ai_content_compiler(self):
+        """Test POST /api/compile returns compilation analysis"""
+        success, response = self.run_test(
+            "AI Content Compiler",
+            "POST",
+            "api/compile", 
+            200,
+            data={"url": "https://example.com"},
+            expected_response_keys=["compilation_readiness", "semantic_breakdown", "total_blocks"]
+        )
+        if success:
+            readiness = response.get("compilation_readiness", -1)
+            if 0 <= readiness <= 100:
+                print(f"✅ Compilation readiness score {readiness}% is in valid range")
+            else:
+                print(f"⚠️ Compilation readiness {readiness}% outside valid range 0-100")
+            
+            total_blocks = response.get("total_blocks", 0)
+            print(f"✅ Found {total_blocks} content blocks for compilation")
+        return success
+
+    def test_strategy_simulator_add_faq(self):
+        """Test POST /api/simulate-strategy with addFAQ strategy"""
+        success, response = self.run_test(
+            "Strategy Simulator - Add FAQ",
+            "POST",
+            "api/simulate-strategy",
+            200,
+            data={
+                "url": "https://example.com", 
+                "query": "what is example.com",
+                "strategy": "addFAQ"
+            },
+            expected_response_keys=["original_probability", "simulated_probability", "improvement_delta", "adjustments_applied"]
+        )
+        if success:
+            delta = response.get("improvement_delta", 0)
+            orig = response.get("original_probability", 0)
+            sim = response.get("simulated_probability", 0)
+            
+            if delta > 0:
+                print(f"✅ addFAQ strategy shows positive improvement: +{delta} points ({orig}% -> {sim}%)")
+            else:
+                print(f"⚠️ addFAQ strategy shows no improvement: {delta} points")
+                
+            adjustments = response.get("adjustments_applied", [])
+            print(f"✅ Applied {len(adjustments)} strategy adjustments")
+        return success
+
+    def test_strategy_simulator_add_schema(self):
+        """Test POST /api/simulate-strategy with addSchema strategy"""
+        success, response = self.run_test(
+            "Strategy Simulator - Add Schema",
+            "POST", 
+            "api/simulate-strategy",
+            200,
+            data={
+                "url": "https://example.com",
+                "query": "what is example.com", 
+                "strategy": "addSchema"
+            },
+            expected_response_keys=["original_probability", "simulated_probability", "improvement_delta"]
+        )
+        if success:
+            delta = response.get("improvement_delta", 0)
+            print(f"✅ addSchema strategy delta: {delta} points")
+        return success
+
+    def test_strategy_simulator_invalid(self):
+        """Test POST /api/simulate-strategy with invalid strategy returns 400"""
+        success, response = self.run_test(
+            "Strategy Simulator - Invalid Strategy",
+            "POST",
+            "api/simulate-strategy", 
+            400,
+            data={
+                "url": "https://example.com",
+                "query": "test query",
+                "strategy": "invalidStrategy" 
+            }
+        )
+        return success
+
+    def test_security_headers(self):
+        """Test that security headers are present in responses"""
+        # Make a request and check headers
+        url = f"{self.base_url}/api/health"
+        try:
+            response = requests.get(url, timeout=10)
+            headers = response.headers
+            
+            expected_headers = [
+                "X-Content-Type-Options",
+                "X-Frame-Options", 
+                "X-XSS-Protection",
+                "Referrer-Policy",
+                "Permissions-Policy"
+            ]
+            
+            missing_headers = []
+            for header in expected_headers:
+                if header not in headers:
+                    missing_headers.append(header)
+            
+            if not missing_headers:
+                print("✅ All required security headers present")
+                self.tests_passed += 1
+                self.test_results.append({"test": "Security Headers", "status": "PASSED", "details": "All headers present"})
+                self.tests_run += 1
+                return True
+            else:
+                print(f"⚠️ Missing security headers: {missing_headers}")
+                self.test_results.append({"test": "Security Headers", "status": "FAILED", "details": f"Missing: {missing_headers}"})
+                self.tests_run += 1
+                return False
+                
+        except Exception as e:
+            print(f"❌ Security headers test failed: {e}")
+            self.test_results.append({"test": "Security Headers", "status": "FAILED", "details": str(e)})
+            self.tests_run += 1
+            return False
+
+    def test_sensitivity_test_authority(self):
+        """Test POST /api/enterprise/sensitivity-test with authorityFocused mode"""
+        success, response = self.run_test(
+            "Sensitivity Test - Authority Focused",
+            "POST",
+            "api/enterprise/sensitivity-test",
+            200,
+            data={
+                "url": "https://example.com",
+                "query": "what is example.com", 
+                "mode": "authorityFocused"
+            },
+            expected_response_keys=["default_probability", "mode_probability", "weights_used", "mode"]
+        )
+        if success:
+            default_prob = response.get("default_probability", 0)
+            mode_prob = response.get("mode_probability", 0) 
+            weights = response.get("weights_used", {})
+            
+            # Check that authority weight is higher (should be 0.40 for authorityFocused)
+            authority_weight = weights.get("authority", 0)
+            if authority_weight >= 0.35:  # Allow some flexibility
+                print(f"✅ Authority-focused mode has high authority weight: {authority_weight}")
+            else:
+                print(f"⚠️ Authority weight {authority_weight} seems low for authorityFocused mode")
+                
+            print(f"✅ Sensitivity test: default {default_prob}% vs authority-focused {mode_prob}%")
+        return success
+
+    def test_sensitivity_test_invalid(self):
+        """Test POST /api/enterprise/sensitivity-test with invalid mode returns 400"""
+        success, response = self.run_test(
+            "Sensitivity Test - Invalid Mode",
+            "POST",
+            "api/enterprise/sensitivity-test",
+            400,
+            data={
+                "url": "https://example.com", 
+                "query": "test query",
+                "mode": "invalidMode"
+            }
+        )
+        return success
+
+    def test_competitor_comparison(self):
+        """Test POST /api/enterprise/compare with primary and competitor URLs"""
+        success, response = self.run_test(
+            "Competitor Comparison",
+            "POST",
+            "api/enterprise/compare", 
+            200,
+            data={
+                "query": "what is example.com",
+                "primary_url": "https://example.com",
+                "competitor_urls": ["https://httpbin.org", "https://google.com"]
+            },
+            expected_response_keys=["ranking_order", "score_comparison", "gap_analysis", "total_compared"]
+        )
+        if success:
+            ranking_order = response.get("ranking_order", [])
+            gap_analysis = response.get("gap_analysis", [])
+            total_compared = response.get("total_compared", 0)
+            
+            print(f"✅ Compared {total_compared} URLs with {len(gap_analysis)} gap analyses")
+            print(f"✅ Ranking order: {ranking_order[:2]}...")  # Show first 2 URLs
+        return success
+
+    def test_executive_summary(self):
+        """Test GET /api/enterprise/executive-summary returns health data""" 
+        success, response = self.run_test(
+            "Executive Summary",
+            "GET",
+            "api/enterprise/executive-summary",
+            200, 
+            expected_response_keys=["overall_health", "key_weaknesses", "highest_impact_improvement", "competitive_standing"]
+        )
+        if success:
+            health = response.get("overall_health", {})
+            weaknesses = response.get("key_weaknesses", [])
+            impact = response.get("highest_impact_improvement", {})
+            
+            health_status = health.get("status", "unknown")
+            health_score = health.get("score", 0)
+            print(f"✅ Executive summary - Health: {health_status} ({health_score}), Weaknesses: {len(weaknesses)}")
+        return success
+
 def main():
     tester = AIDiscoverabilityAPITester()
     success = tester.run_all_tests()
