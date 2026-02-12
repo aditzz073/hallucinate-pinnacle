@@ -10,11 +10,17 @@ from starlette.responses import JSONResponse
 
 from database.connection import setup_indexes, db
 from middlewares.logging_middleware import LoggingMiddleware
+from middlewares.rate_limiter import RateLimitMiddleware
+from middlewares.security_headers import SecurityHeadersMiddleware
 from modules.auth.routes import router as auth_router
 from modules.aeoEngine.routes import router as audit_router
+from modules.advancedAudit.routes import router as advanced_audit_router
 from modules.aiTestingEngine.routes import router as ai_test_router
+from modules.aiContentCompiler.routes import router as compile_router
 from modules.monitoring.routes import router as monitor_router
 from modules.reports.routes import router as reports_router
+from modules.strategySimulator.routes import router as simulate_router
+from modules.enterprise.routes import router as enterprise_router
 
 load_dotenv()
 
@@ -23,22 +29,22 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
 )
-logger = logging.getLogger("aeo_copilot")
+logger = logging.getLogger("pinnacle_ai")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("Starting AI Discoverability Copilot...")
+    logger.info("Starting Pinnacle.AI...")
     await setup_indexes()
     logger.info("Database indexes created.")
     yield
-    logger.info("Shutting down AI Discoverability Copilot.")
+    logger.info("Shutting down Pinnacle.AI.")
 
 
 app = FastAPI(
-    title="AI Discoverability Copilot",
-    description="AEO/GEO platform - Analyze webpage performance in AI-generated answers",
-    version="0.1.0",
+    title="Pinnacle.AI",
+    description="AI Engine Optimization platform - Analyze webpage performance in AI-generated answers",
+    version="1.0.0",
     lifespan=lifespan,
 )
 
@@ -51,26 +57,40 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Phase 8: Security headers
+app.add_middleware(SecurityHeadersMiddleware)
+
+# Phase 8: Rate limiting
+app.add_middleware(RateLimitMiddleware)
+
 # Logging middleware
 app.add_middleware(LoggingMiddleware)
 
 
-# Centralized error handling
+# Centralized error handling with standardized format
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     logger.error(f"Unhandled error: {exc}", exc_info=True)
     return JSONResponse(
         status_code=500,
-        content={"detail": "Internal server error"},
+        content={
+            "detail": "Internal server error",
+            "error_code": "INTERNAL_ERROR",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        },
     )
 
 
 # Routes
 app.include_router(auth_router, prefix="/api")
 app.include_router(audit_router, prefix="/api")
+app.include_router(advanced_audit_router, prefix="/api")
 app.include_router(ai_test_router, prefix="/api")
+app.include_router(compile_router, prefix="/api")
 app.include_router(monitor_router, prefix="/api")
 app.include_router(reports_router, prefix="/api")
+app.include_router(simulate_router, prefix="/api")
+app.include_router(enterprise_router, prefix="/api")
 
 
 # Health endpoint
@@ -84,8 +104,8 @@ async def health():
 
     return {
         "status": "healthy",
-        "service": "AI Discoverability Copilot",
-        "version": "0.1.0",
+        "service": "Pinnacle.AI",
+        "version": "1.0.0",
         "database": db_status,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
