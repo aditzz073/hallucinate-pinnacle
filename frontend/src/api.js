@@ -80,3 +80,37 @@ export async function getCompetitors() {
   const res = await axios.get(`${API_URL}/api/reports/competitors`, { headers: authHeaders() });
   return res.data;
 }
+
+// Phase 5 - Advanced Audit
+export async function runAdvancedAudit(url) {
+  const res = await axios.post(`${API_URL}/api/audit/advanced`, { url }, { headers: authHeaders() });
+  return res.data;
+}
+
+// Phase 6 - Content Compiler
+export async function compileContent(url) {
+  const res = await axios.post(`${API_URL}/api/compile`, { url }, { headers: authHeaders() });
+  return res.data;
+}
+
+// Phase 7 - Strategy Simulator
+export async function simulateStrategy(url, query, strategy) {
+  const res = await axios.post(`${API_URL}/api/simulate-strategy`, { url, query, strategy }, { headers: authHeaders() });
+  return res.data;
+}
+
+// Phase 9 - Enterprise
+export async function compareCompetitors(query, primaryUrl, competitorUrls) {
+  const res = await axios.post(`${API_URL}/api/enterprise/compare`, { query, primary_url: primaryUrl, competitor_urls: competitorUrls }, { headers: authHeaders() });
+  return res.data;
+}
+
+export async function sensitivityTest(url, query, mode) {
+  const res = await axios.post(`${API_URL}/api/enterprise/sensitivity-test`, { url, query, mode }, { headers: authHeaders() });
+  return res.data;
+}
+
+export async function getExecutiveSummary() {
+  const res = await axios.get(`${API_URL}/api/enterprise/executive-summary`, { headers: authHeaders() });
+  return res.data;
+}
