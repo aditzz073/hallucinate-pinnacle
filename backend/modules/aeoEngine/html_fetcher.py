@@ -49,26 +49,45 @@ def _get_browser_headers() -> dict:
     }
 
 
+def _is_cloudflare_challenge(html: str) -> bool:
+    """Check if the response is a Cloudflare challenge page"""
+    indicators = [
+        "just a moment",
+        "checking your browser",
+        "cloudflare",
+        "cf-browser-verification",
+        "cf_chl_opt",
+        "challenge-platform",
+        "ray id:",
+    ]
+    html_lower = html.lower()
+    return any(ind in html_lower for ind in indicators)
+
+
 def _fetch_with_curl_cffi(url: str) -> str:
     """
     Fetch using curl_cffi which has proper TLS fingerprinting
-    to bypass Cloudflare and similar anti-bot systems
+    to bypass some anti-bot systems
     """
     from curl_cffi import requests as curl_requests
     
-    # Impersonate Chrome browser for proper TLS fingerprint
     response = curl_requests.get(
         url,
         impersonate="chrome120",
         timeout=FETCH_TIMEOUT,
         allow_redirects=True,
     )
+    
+    # Check for Cloudflare challenge even on 200 status
+    if _is_cloudflare_challenge(response.text):
+        raise ValueError("Cloudflare challenge detected")
+    
     response.raise_for_status()
     return response.text
 
 
 def _fetch_with_cloudscraper(url: str) -> str:
-    """Fallback fetcher using cloudscraper for Cloudflare-protected sites"""
+    """Fallback fetcher using cloudscraper"""
     import cloudscraper
     scraper = cloudscraper.create_scraper(
         browser={
@@ -78,6 +97,10 @@ def _fetch_with_cloudscraper(url: str) -> str:
         }
     )
     response = scraper.get(url, timeout=FETCH_TIMEOUT)
+    
+    if _is_cloudflare_challenge(response.text):
+        raise ValueError("Cloudflare challenge detected")
+    
     response.raise_for_status()
     return response.text
 
@@ -91,20 +114,20 @@ async def fetch_html(url: str) -> str:
 
     hostname = urlparse(url).netloc
     html = None
-    last_error = None
+    errors = []
 
     # Method 1: Try curl_cffi first (best TLS fingerprinting)
     try:
         html = _fetch_with_curl_cffi(url)
     except Exception as e:
-        last_error = e
+        errors.append(f"curl_cffi: {str(e)[:100]}")
 
     # Method 2: Try cloudscraper if curl_cffi fails
     if html is None:
         try:
             html = _fetch_with_cloudscraper(url)
         except Exception as e:
-            last_error = e
+            errors.append(f"cloudscraper: {str(e)[:100]}")
 
     # Method 3: Try httpx as last resort
     if html is None:
@@ -116,36 +139,40 @@ async def fetch_html(url: str) -> str:
                 http2=True,
             ) as client:
                 response = await client.get(url, headers=_get_browser_headers())
+                
+                if _is_cloudflare_challenge(response.text):
+                    raise ValueError("Cloudflare challenge detected")
+                    
                 response.raise_for_status()
                 html = response.text
         except httpx.HTTPStatusError as e:
-            if e.response.status_code == 403:
-                raise ValueError(
-                    f"Access denied (403 Forbidden). The website '{hostname}' "
-                    "has strong anti-bot protection. This commonly happens with "
-                    "e-commerce sites using Cloudflare or similar services. "
-                    "Try the site's main homepage or a different page."
-                )
-            elif e.response.status_code == 404:
-                raise ValueError("Page not found (404). The URL may be incorrect.")
-            elif e.response.status_code >= 500:
-                raise ValueError(f"Server error ({e.response.status_code}).")
-            raise ValueError(f"HTTP error {e.response.status_code}.")
-        except httpx.TimeoutException:
-            raise ValueError("Request timed out.")
-        except httpx.ConnectError:
-            raise ValueError("Could not connect to the website.")
+            errors.append(f"httpx: HTTP {e.response.status_code}")
         except Exception as e:
-            # All methods failed
-            if "403" in str(last_error) or "forbidden" in str(last_error).lower():
-                raise ValueError(
-                    f"Access denied. The website '{hostname}' has anti-bot protection "
-                    "that we couldn't bypass. Try the site's homepage instead."
-                )
-            raise ValueError(f"Failed to fetch page: {str(last_error)[:200]}")
+            errors.append(f"httpx: {str(e)[:100]}")
 
+    # All methods failed
     if html is None:
-        raise ValueError(f"Failed to fetch the page after multiple attempts.")
+        # Determine the type of failure
+        if any("cloudflare" in err.lower() or "challenge" in err.lower() for err in errors):
+            raise ValueError(
+                f"This website ({hostname}) uses Cloudflare protection that requires "
+                "JavaScript execution. Unfortunately, we can't analyze pages with "
+                "active Cloudflare challenges. Try one of these alternatives:\n"
+                "• Use the site's main homepage instead of a product page\n"
+                "• Try a different page on the same site\n"
+                "• Use a site without aggressive bot protection"
+            )
+        elif any("403" in err or "forbidden" in err.lower() for err in errors):
+            raise ValueError(
+                f"Access denied (403). The website '{hostname}' is blocking our requests. "
+                "This is common with e-commerce sites. Try the main homepage instead."
+            )
+        elif any("404" in err for err in errors):
+            raise ValueError("Page not found (404). Please check the URL.")
+        elif any("timeout" in err.lower() for err in errors):
+            raise ValueError("Request timed out. The website is too slow to respond.")
+        else:
+            raise ValueError(f"Failed to fetch page. Errors: {'; '.join(errors)}")
 
     # Validate content
     if not html.strip():
