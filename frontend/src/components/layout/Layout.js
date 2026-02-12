@@ -5,6 +5,10 @@ import AuditsPage from "../../pages/AuditsPage";
 import AITestsPage from "../../pages/AITestsPage";
 import MonitoringPage from "../../pages/MonitoringPage";
 import ReportsPage from "../../pages/ReportsPage";
+import AdvancedAuditPage from "../../pages/AdvancedAuditPage";
+import SimulatorPage from "../../pages/SimulatorPage";
+import CompetitorPage from "../../pages/CompetitorPage";
+import ExecutiveSummaryPage from "../../pages/ExecutiveSummaryPage";
 
 export default function Layout() {
   const [activePage, setActivePage] = useState("dashboard");
@@ -23,6 +27,14 @@ export default function Layout() {
         return <MonitoringPage />;
       case "reports":
         return <ReportsPage />;
+      case "advanced":
+        return <AdvancedAuditPage />;
+      case "simulator":
+        return <SimulatorPage />;
+      case "compare":
+        return <CompetitorPage />;
+      case "executive":
+        return <ExecutiveSummaryPage />;
       case "settings":
         return <PlaceholderPage title="Settings" desc="Account preferences coming soon." />;
       default:
