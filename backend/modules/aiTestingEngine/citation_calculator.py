@@ -164,67 +164,93 @@ def generate_why_not_cited(
     intent_match: int, extractability: int, authority: int,
     schema_support: int, content_depth: int,
 ) -> list:
-    """Generate gaps explaining why page might not be cited."""
+    """
+    Generate gaps explaining why page might not be cited.
+    Uses balanced thresholds and specific explanations.
+    """
     gaps = []
 
-    if intent_match < 50:
+    # Intent alignment - only flag if significantly misaligned
+    if intent_match < 40:
         gaps.append({
             "gap": "Weak intent alignment",
-            "detail": f"Query intent '{intent}' poorly matched by page content. Only {intent_match}% intent match.",
+            "detail": f"Query intent '{intent}' not well matched by content structure. Consider restructuring opening to match '{intent}' queries.",
         })
 
-    if not content_match.get("has_faq") and "faqpage" not in [t.lower() for t in parsed.get("schema_types", [])]:
+    # FAQ - only suggest for list/informational intents, not required for all content
+    if intent in ("list", "informational") and not content_match.get("has_faq"):
+        faq_count = len(parsed.get("faq_items", []))
+        if faq_count == 0:
+            gaps.append({
+                "gap": "Consider adding FAQ section",
+                "detail": "For this query type, FAQ sections are highly extractable. Consider adding common Q&As.",
+            })
+
+    # Summary - suggest but don't require
+    if not content_match.get("has_summary") and content_depth >= 40:
         gaps.append({
-            "gap": "Missing FAQ schema",
-            "detail": "No FAQ content or FAQPage schema detected. FAQ sections are highly extractable by AI engines.",
+            "gap": "No summary section",
+            "detail": "Adding a 'Key Takeaways' or summary section helps AI engines extract concise answers.",
         })
 
-    if not content_match.get("has_summary"):
-        gaps.append({
-            "gap": "No summary block",
-            "detail": "No summary, TL;DR, or key takeaways section found. These help AI engines extract concise answers.",
-        })
-
-    if authority < 40:
+    # Authority - lower threshold, more specific feedback
+    if authority < 30:
         gaps.append({
             "gap": "Low authority signals",
-            "detail": f"Authority score is only {authority}/100. Missing author, organization, or citation signals.",
+            "detail": f"Authority indicators are limited ({authority}/100). Consider adding author info or organization schema.",
         })
 
-    if not parsed.get("author"):
+    # Author - only flag if no author AND low authority
+    if not parsed.get("author") and authority < 50:
         gaps.append({
-            "gap": "No author attribution",
-            "detail": "Content lacks author information, which is a key trust signal for AI citations.",
+            "gap": "Missing author attribution",
+            "detail": "Adding author information increases content credibility for AI citations.",
         })
 
-    if schema_support < 30:
+    # Schema - lower threshold, specific suggestion
+    if schema_support < 20:
         gaps.append({
-            "gap": "Insufficient structured data",
-            "detail": f"Schema support is only {schema_support}/100. Add relevant JSON-LD markup.",
+            "gap": "Limited structured data",
+            "detail": "Adding JSON-LD schema (Article, HowTo, or FAQ) helps AI understand content context.",
         })
 
-    if content_depth < 40:
+    # Content depth - only flag if very low
+    if content_depth < 30:
         gaps.append({
-            "gap": "Content lacks depth",
-            "detail": f"Content depth score is {content_depth}/100. Consider expanding with more detail and sections.",
+            "gap": "Content could be expanded",
+            "detail": f"Content depth is {content_depth}/100. Consider adding more sections or examples.",
         })
 
-    if extractability < 40:
-        gaps.append({
-            "gap": "Low extractability",
-            "detail": f"Extractability score is {extractability}/100. Content isn't structured for easy AI extraction.",
-        })
+    # Extractability - use specific factors from new scoring
+    if extractability < 30:
+        # Get specific factors if available
+        extract_factors = content_match.get("_extractability_factors", [])
+        missing_factors = [f for f in extract_factors if f.get("type") == "missing"]
+        
+        if missing_factors:
+            main_issue = missing_factors[0]["reason"]
+            gaps.append({
+                "gap": "Extractability needs improvement",
+                "detail": f"{main_issue}. Structure content with clear definitions and headings.",
+            })
+        else:
+            gaps.append({
+                "gap": "Content structure could be clearer",
+                "detail": "Consider adding definition paragraphs, clearer headings, or structured sections.",
+            })
 
+    # Definition block - only for definition intent
     if not content_match.get("has_definition") and intent == "definition":
         gaps.append({
-            "gap": "No clear definition block",
-            "detail": "For definition queries, a clear 'X is...' statement in the first paragraph is crucial.",
+            "gap": "Definition paragraph needed",
+            "detail": "For 'what is' queries, add a clear '[Topic] is a...' statement in the first paragraph.",
         })
 
-    if content_match.get("heading_relevance", 0) < 30:
+    # Heading relevance - only flag if very low
+    if content_match.get("heading_relevance", 0) < 20:
         gaps.append({
-            "gap": "Low heading relevance",
-            "detail": "Query terms are not reflected in page headings. Headings should include target keywords.",
+            "gap": "Headings don't match query",
+            "detail": "Include query-related terms in H1/H2 headings for better AI alignment.",
         })
 
     return gaps
