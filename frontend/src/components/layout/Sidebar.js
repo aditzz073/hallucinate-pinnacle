@@ -41,7 +41,7 @@ export default function Sidebar({ activePage, onNavigate }) {
         </div>
         {!collapsed && (
           <span className="font-heading font-bold text-sm tracking-tight whitespace-nowrap" data-testid="sidebar-title">
-            AEO Copilot
+            Pinnacle.AI
           </span>
         )}
       </div>
