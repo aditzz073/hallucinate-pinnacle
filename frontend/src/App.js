@@ -1,34 +1,86 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
-import Layout from "./components/layout/Layout";
+import Navbar from "./components/layout/Navbar";
+import Footer from "./components/layout/Footer";
+import Blobs from "./components/ui/Blobs";
 import LoginPage from "./components/auth/LoginPage";
 import RegisterPage from "./components/auth/RegisterPage";
+import LandingPage from "./pages/LandingPage";
+import Dashboard from "./pages/Dashboard";
+import AuditsPage from "./pages/AuditsPage";
+import AITestsPage from "./pages/AITestsPage";
+import MonitoringPage from "./pages/MonitoringPage";
+import ReportsPage from "./pages/ReportsPage";
+import AdvancedAuditPage from "./pages/AdvancedAuditPage";
+import SimulatorPage from "./pages/SimulatorPage";
+import CompetitorPage from "./pages/CompetitorPage";
+import ExecutiveSummaryPage from "./pages/ExecutiveSummaryPage";
 
 function AppContent() {
   const { user, loading } = useAuth();
-  const [authMode, setAuthMode] = useState("login");
+  const [view, setView] = useState("landing"); // landing | login | register
+  const [activePage, setActivePage] = useState("dashboard");
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center" data-testid="loading-screen">
+      <div className="min-h-screen bg-black flex items-center justify-center" data-testid="loading-screen">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-          <p className="font-mono text-xs text-muted-foreground uppercase tracking-[0.2em]">Loading</p>
+          <div className="w-8 h-8 border-2 border-brand-blue/30 border-t-brand-blue rounded-full animate-spin" />
+          <p className="text-xs text-gray-500 font-medium">Loading</p>
         </div>
       </div>
     );
   }
 
-  if (!user) {
-    return authMode === "login" ? (
-      <LoginPage onSwitch={() => setAuthMode("register")} />
-    ) : (
-      <RegisterPage onSwitch={() => setAuthMode("login")} />
+  // Authenticated: show dashboard
+  if (user) {
+    const renderPage = () => {
+      switch (activePage) {
+        case "dashboard": return <Dashboard onNavigate={setActivePage} />;
+        case "audits": return <AuditsPage />;
+        case "ai-tests": return <AITestsPage />;
+        case "monitor": return <MonitoringPage />;
+        case "changes": return <MonitoringPage />;
+        case "reports": return <ReportsPage />;
+        case "advanced": return <AdvancedAuditPage />;
+        case "simulator": return <SimulatorPage />;
+        case "compare": return <CompetitorPage />;
+        case "executive": return <ExecutiveSummaryPage />;
+        default: return <Dashboard onNavigate={setActivePage} />;
+      }
+    };
+
+    return (
+      <div className="min-h-screen bg-black text-white antialiased">
+        <Blobs />
+        <Navbar activePage={activePage} onNavigate={setActivePage} />
+        <main className="relative z-10 pt-24 pb-12 px-4 lg:px-0">
+          <div className="max-w-content mx-auto">
+            {renderPage()}
+          </div>
+        </main>
+        <Footer />
+      </div>
     );
   }
 
-  return <Layout />;
+  // Unauthenticated
+  if (view === "login") {
+    return <LoginPage onSwitch={() => setView("register")} />;
+  }
+  if (view === "register") {
+    return <RegisterPage onSwitch={() => setView("login")} />;
+  }
+
+  // Landing
+  return (
+    <div className="min-h-screen bg-black text-white antialiased">
+      <Navbar isLanding onGetStarted={() => setView("login")} />
+      <LandingPage onGetStarted={() => setView("register")} />
+      <Footer />
+    </div>
+  );
 }
 
 function App() {
