@@ -7,6 +7,10 @@ import {
   Eye,
   Activity,
   BarChart3,
+  Sparkles,
+  FlaskConical,
+  Swords,
+  Crown,
   Settings,
   LogOut,
   ChevronLeft,
@@ -21,6 +25,10 @@ const NAV_ITEMS = [
   { id: "monitor", label: "Monitoring", icon: Eye },
   { id: "changes", label: "Change Log", icon: Activity },
   { id: "reports", label: "Reports", icon: BarChart3 },
+  { id: "advanced", label: "Advanced Audit", icon: Sparkles },
+  { id: "simulator", label: "Strategy Sim", icon: FlaskConical },
+  { id: "compare", label: "Competitor Intel", icon: Swords },
+  { id: "executive", label: "Executive Summary", icon: Crown },
 ];
 
 export default function Sidebar({ activePage, onNavigate }) {
