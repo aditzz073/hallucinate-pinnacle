@@ -228,6 +228,41 @@ class AIDiscoverabilityAPITester:
         # Test 8: Protected route without token
         self.test_protected_route_without_token()
 
+        if not self.token:
+            print("❌ No authentication token available for Phase 1-4 testing. Stopping here.")
+            print("📊 Test Results: {self.tests_passed}/{self.tests_run} tests passed")
+            return False
+
+        print("\n" + "=" * 40)
+        print("🔬 Testing AI Discoverability Copilot - Phases 1-4")
+        print("=" * 40)
+
+        # Phase 1: AEO Engine Tests
+        print("\n📊 Phase 1: AEO Engine Testing")
+        self.test_audit_valid_url()
+        self.test_audit_determinism()
+        self.test_list_audits()
+
+        # Phase 2: AI Testing Engine Tests  
+        print("\n🤖 Phase 2: AI Citation Testing")
+        self.test_ai_test_valid()
+        self.test_list_ai_tests()
+
+        # Phase 3: Monitoring Tests
+        print("\n👁️ Phase 3: Page Monitoring")
+        monitor_id = self.test_add_monitor()
+        if monitor_id:
+            self.test_list_monitors()
+            self.test_refresh_monitor(monitor_id)
+            self.test_get_changes(monitor_id)
+            self.test_delete_monitor(monitor_id)
+        
+        # Phase 4: Reports Tests
+        print("\n📈 Phase 4: Reports & Analytics")
+        self.test_reports_overview()
+        self.test_reports_trends()
+        self.test_reports_competitors()
+
         # Print final results
         print("\n" + "=" * 60)
         print(f"📊 Test Results: {self.tests_passed}/{self.tests_run} tests passed")
@@ -242,6 +277,249 @@ class AIDiscoverabilityAPITester:
                 if result["status"] == "FAILED":
                     print(f"  - {result['test']}: {result['details']}")
             return False
+
+    # Phase 1: AEO Engine Tests
+    def test_audit_valid_url(self):
+        """Test POST /api/audit with valid URL"""
+        success, response = self.run_test(
+            "Audit Valid URL",
+            "POST", 
+            "api/audit",
+            200,
+            data={"url": "https://example.com"},
+            expected_response_keys=["id", "url", "overall_score", "breakdown", "signals", "recommendations"]
+        )
+        if success:
+            self.test_audit_id = response.get("id")
+            # Check score is between 0-100
+            score = response.get("overall_score", -1)
+            if 0 <= score <= 100:
+                print(f"✅ Overall score {score} is in valid range")
+            else:
+                print(f"⚠️ Overall score {score} is outside valid range 0-100")
+            
+            # Check breakdown has expected keys
+            breakdown = response.get("breakdown", {})
+            expected_breakdown = ["structure", "trust", "media", "schema", "technical"]
+            for key in expected_breakdown:
+                if key not in breakdown:
+                    print(f"⚠️ Missing breakdown key: {key}")
+        return success
+
+    def test_audit_determinism(self):
+        """Test auditing same URL twice gives same scores"""
+        # First audit
+        success1, response1 = self.run_test(
+            "Audit Determinism Test 1",
+            "POST",
+            "api/audit", 
+            200,
+            data={"url": "https://httpbin.org/html"}
+        )
+        
+        if not success1:
+            return False
+            
+        # Second audit of same URL
+        success2, response2 = self.run_test(
+            "Audit Determinism Test 2", 
+            "POST",
+            "api/audit",
+            200,
+            data={"url": "https://httpbin.org/html"}
+        )
+        
+        if not success2:
+            return False
+            
+        # Compare scores
+        score1 = response1.get("overall_score")
+        score2 = response2.get("overall_score")
+        
+        if score1 == score2:
+            print(f"✅ Determinism check passed - both audits returned score {score1}")
+            return True
+        else:
+            print(f"⚠️ Determinism check failed - scores differ: {score1} vs {score2}")
+            return False
+
+    def test_list_audits(self):
+        """Test GET /api/audit returns list of audits"""
+        success, response = self.run_test(
+            "List User Audits",
+            "GET",
+            "api/audit", 
+            200,
+            expected_response_keys=["audits"]
+        )
+        if success:
+            audits = response.get("audits", [])
+            print(f"✅ Found {len(audits)} audits for user")
+        return success
+
+    # Phase 2: AI Testing Engine Tests
+    def test_ai_test_valid(self):
+        """Test POST /api/ai-test with valid URL and query"""
+        success, response = self.run_test(
+            "AI Test Valid Query",
+            "POST",
+            "api/ai-test",
+            200, 
+            data={"url": "https://example.com", "query": "what is example.com"},
+            expected_response_keys=["id", "url", "query", "citation_probability", "breakdown", "likely_position"]
+        )
+        if success:
+            self.test_ai_test_id = response.get("id")
+            # Check citation probability is between 0-100
+            prob = response.get("citation_probability", -1)
+            if 0 <= prob <= 100:
+                print(f"✅ Citation probability {prob}% is in valid range")
+            else:
+                print(f"⚠️ Citation probability {prob}% is outside valid range 0-100")
+        return success
+
+    def test_list_ai_tests(self):
+        """Test GET /api/ai-test returns list of tests"""
+        success, response = self.run_test(
+            "List User AI Tests",
+            "GET", 
+            "api/ai-test",
+            200,
+            expected_response_keys=["tests"]
+        )
+        if success:
+            tests = response.get("tests", [])
+            print(f"✅ Found {len(tests)} AI tests for user")
+        return success
+
+    # Phase 3: Monitoring Tests
+    def test_add_monitor(self):
+        """Test POST /api/monitor adds a monitored page"""
+        success, response = self.run_test(
+            "Add Monitored Page",
+            "POST",
+            "api/monitor",
+            200,
+            data={"url": "https://httpbin.org/html"},
+            expected_response_keys=["id", "url", "created_at", "initial_snapshot"]
+        )
+        if success:
+            monitor_id = response.get("id")
+            print(f"✅ Created monitored page with ID: {monitor_id}")
+            return monitor_id
+        return None
+
+    def test_add_monitor_duplicate(self):
+        """Test POST /api/monitor with duplicate URL returns 400"""
+        success, response = self.run_test(
+            "Add Duplicate Monitor",
+            "POST", 
+            "api/monitor",
+            400,
+            data={"url": "https://httpbin.org/html"}
+        )
+        return success
+
+    def test_list_monitors(self):
+        """Test GET /api/monitor returns monitored pages"""
+        success, response = self.run_test(
+            "List Monitored Pages",
+            "GET",
+            "api/monitor",
+            200,
+            expected_response_keys=["pages"]
+        )
+        if success:
+            pages = response.get("pages", [])
+            print(f"✅ Found {len(pages)} monitored pages")
+        return success
+
+    def test_refresh_monitor(self, monitor_id):
+        """Test POST /api/monitor/{id}/refresh takes new snapshot"""
+        success, response = self.run_test(
+            "Refresh Monitor Snapshot",
+            "POST",
+            f"api/monitor/{monitor_id}/refresh",
+            200,
+            expected_response_keys=["snapshot", "changes", "changes_count"]
+        )
+        if success:
+            changes_count = response.get("changes_count", 0)
+            print(f"✅ Refresh detected {changes_count} changes")
+        return success
+
+    def test_get_changes(self, monitor_id):
+        """Test GET /api/monitor/{id}/changes returns change log"""
+        success, response = self.run_test(
+            "Get Page Changes",
+            "GET",
+            f"api/monitor/{monitor_id}/changes",
+            200,
+            expected_response_keys=["changes"]
+        )
+        if success:
+            changes = response.get("changes", [])
+            print(f"✅ Found {len(changes)} logged changes")
+        return success
+
+    def test_delete_monitor(self, monitor_id):
+        """Test DELETE /api/monitor/{id} removes monitored page"""
+        success, response = self.run_test(
+            "Delete Monitored Page",
+            "DELETE",
+            f"api/monitor/{monitor_id}",
+            200
+        )
+        return success
+
+    # Phase 4: Reports Tests
+    def test_reports_overview(self):
+        """Test GET /api/reports/overview returns dashboard stats"""
+        success, response = self.run_test(
+            "Reports Overview",
+            "GET",
+            "api/reports/overview",
+            200,
+            expected_response_keys=["summary", "recent_audits", "recent_ai_tests"]
+        )
+        if success:
+            summary = response.get("summary", {})
+            expected_summary_keys = ["total_audits", "total_ai_tests", "total_monitored_pages", 
+                                   "total_changes_detected", "average_aeo_score", "average_citation_probability"]
+            for key in expected_summary_keys:
+                if key not in summary:
+                    print(f"⚠️ Missing summary key: {key}")
+        return success
+
+    def test_reports_trends(self):
+        """Test GET /api/reports/trends returns trend data"""
+        success, response = self.run_test(
+            "Reports Trends",
+            "GET", 
+            "api/reports/trends",
+            200,
+            expected_response_keys=["audit_trends", "test_trends", "weekly_averages", "breakdown_averages", "deltas"]
+        )
+        if success:
+            audit_trends = response.get("audit_trends", [])
+            test_trends = response.get("test_trends", [])
+            print(f"✅ Found {len(audit_trends)} audit trends, {len(test_trends)} test trends")
+        return success
+
+    def test_reports_competitors(self):
+        """Test GET /api/reports/competitors returns URL comparison"""
+        success, response = self.run_test(
+            "Reports Competitors",
+            "GET",
+            "api/reports/competitors", 
+            200,
+            expected_response_keys=["comparison", "total_urls"]
+        )
+        if success:
+            comparison = response.get("comparison", [])
+            total_urls = response.get("total_urls", 0)
+            print(f"✅ Found comparison data for {total_urls} URLs")
+        return success
 
 def main():
     tester = AIDiscoverabilityAPITester()
