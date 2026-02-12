@@ -263,6 +263,36 @@ class AIDiscoverabilityAPITester:
         self.test_reports_trends()
         self.test_reports_competitors()
 
+        # Phase 5-9: New Pinnacle.AI Features Testing
+        print("\n" + "=" * 40)
+        print("🔬 Testing Pinnacle.AI - Phases 5-9") 
+        print("=" * 40)
+
+        # Phase 5: Advanced Audit Tests
+        print("\n🧠 Phase 5: Advanced Audit with Explainability")
+        self.test_advanced_audit_valid_url()
+        
+        # Phase 6: AI Content Compiler Tests
+        print("\n📝 Phase 6: AI Content Compiler") 
+        self.test_ai_content_compiler()
+        
+        # Phase 7: Strategy Simulator Tests
+        print("\n🎯 Phase 7: Strategy Simulator")
+        self.test_strategy_simulator_add_faq()
+        self.test_strategy_simulator_add_schema()
+        self.test_strategy_simulator_invalid()
+        
+        # Phase 8: Security Tests 
+        print("\n🔒 Phase 8: Security & Rate Limiting")
+        self.test_security_headers()
+        
+        # Phase 9: Enterprise Features Tests
+        print("\n🏢 Phase 9: Enterprise Features")
+        self.test_sensitivity_test_authority()
+        self.test_sensitivity_test_invalid()
+        self.test_competitor_comparison()
+        self.test_executive_summary()
+
         # Print final results
         print("\n" + "=" * 60)
         print(f"📊 Test Results: {self.tests_passed}/{self.tests_run} tests passed")
