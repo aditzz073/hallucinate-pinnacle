@@ -6,6 +6,7 @@ import {
   FileSearch,
   Eye,
   Activity,
+  BarChart3,
   Settings,
   LogOut,
   ChevronLeft,
@@ -19,6 +20,7 @@ const NAV_ITEMS = [
   { id: "ai-tests", label: "AI Citation Tests", icon: Search },
   { id: "monitor", label: "Monitoring", icon: Eye },
   { id: "changes", label: "Change Log", icon: Activity },
+  { id: "reports", label: "Reports", icon: BarChart3 },
 ];
 
 export default function Sidebar({ activePage, onNavigate }) {
