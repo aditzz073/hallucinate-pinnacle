@@ -305,7 +305,7 @@ class TestExistingAITestFunctionality:
         data = response.json()
         
         assert "likely_position" in data
-        assert data["likely_position"] in ["Top 3", "Top 5", "Top 10", "Below 10"]
+        assert data["likely_position"] in ["Top 3", "Top 5", "Top 10", "Low likelihood"]
         print(f"✓ Likely Position: {data['likely_position']}")
     
     def test_citation_gaps_still_work(self, auth_token):
