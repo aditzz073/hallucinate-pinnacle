@@ -36,5 +36,9 @@ Build a production-grade SaaS platform ("Pinnacle.AI") for AI Engine Optimizatio
 - Frontend: 100% (auth flow, dashboard, all navigation, all feature pages)
 - Test credentials: test@pinnacle.ai / Test123!
 
+## Known Limitations
+- Some websites with aggressive Cloudflare/bot protection cannot be analyzed (e.g., kickscrew.com)
+- The HTML fetcher uses curl_cffi + cloudscraper + httpx fallback chain, but JS-challenge protected sites remain inaccessible
+
 ## Next Tasks
 - Awaiting further requirements from user
