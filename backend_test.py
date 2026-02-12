@@ -84,12 +84,22 @@ class AIDiscoverabilityAPITester:
             expected_response_keys=["status", "database", "service", "version"]
         )
         
-        if success and response.get("status") == "healthy" and response.get("database") == "connected":
-            print("✅ Health endpoint shows system is healthy with DB connected")
-            return True
-        elif success:
-            print(f"⚠️ Health endpoint returned success but status: {response.get('status')}, database: {response.get('database')}")
-            return False
+        if success:
+            service_name = response.get("service", "")
+            version = response.get("version", "")
+            
+            # Check for Pinnacle.AI branding
+            if service_name == "Pinnacle.AI" and version == "1.0.0":
+                print("✅ Health endpoint shows correct Pinnacle.AI branding and version")
+            else:
+                print(f"⚠️ Expected service='Pinnacle.AI' version='1.0.0', got service='{service_name}' version='{version}'")
+            
+            if response.get("status") == "healthy" and response.get("database") == "connected":
+                print("✅ Health endpoint shows system is healthy with DB connected")
+                return True
+            else:
+                print(f"⚠️ Health endpoint - status: {response.get('status')}, database: {response.get('database')}")
+                return False
         return False
 
     def test_register_success(self):
