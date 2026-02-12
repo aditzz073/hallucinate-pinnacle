@@ -11,6 +11,10 @@ from starlette.responses import JSONResponse
 from database.connection import setup_indexes, db
 from middlewares.logging_middleware import LoggingMiddleware
 from modules.auth.routes import router as auth_router
+from modules.aeoEngine.routes import router as audit_router
+from modules.aiTestingEngine.routes import router as ai_test_router
+from modules.monitoring.routes import router as monitor_router
+from modules.reports.routes import router as reports_router
 
 load_dotenv()
 
