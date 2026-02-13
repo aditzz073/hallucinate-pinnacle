@@ -18,6 +18,11 @@ from modules.aiTestingEngine.citation_calculator import (
     generate_improvement_suggestions,
 )
 from modules.aiTestingEngine.geo_service import run_geo_analysis
+from modules.aiTestingEngine.recommendation_formatter import (
+    format_citation_gap,
+    format_citation_suggestion,
+    format_geo_recommendations,
+)
 
 
 async def run_ai_test(url: str, query: str, user_id: str) -> dict:
