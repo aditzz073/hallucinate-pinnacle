@@ -15,6 +15,14 @@ SEMANTIC_EQUIVALENTS = {
     "ux": ["user experience", "u.x."],
     "b2b": ["business to business", "b-to-b", "business-to-business"],
     "b2c": ["business to consumer", "b-to-c", "business-to-consumer"],
+    # Product-related expansions
+    "shoes": ["footwear", "sneakers", "boots", "sandals"],
+    "women": ["womens", "woman", "female", "ladies", "lady"],
+    "men": ["mens", "man", "male", "gentleman"],
+    "kids": ["children", "child", "youth", "junior"],
+    "clothing": ["apparel", "clothes", "wear", "garments"],
+    "laptop": ["notebook", "computer", "pc"],
+    "phone": ["smartphone", "mobile", "cellphone"],
 }
 
 
