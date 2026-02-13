@@ -159,7 +159,33 @@ export default function AITestsPage() {
             </div>
           </div>
 
-          {/* Breakdown Cards */}
+          {/* Citation Parameters Breakdown */}
+          {activeResult.breakdown && (
+            <div className="glass-card p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <Target className="w-4 h-4 text-blue-400" />
+                <span className="text-sm font-medium text-white">Citation Parameters</span>
+              </div>
+              <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+                {[
+                  { label: "Intent Match", value: activeResult.breakdown.intent_match || 0, tooltip: "How well content matches search intent" },
+                  { label: "Extractability", value: activeResult.breakdown.extractability || 0, tooltip: "How easily AI can extract key info" },
+                  { label: "Authority", value: activeResult.breakdown.authority || 0, tooltip: "Technical authority signals" },
+                  { label: "Schema Support", value: activeResult.breakdown.schema_support || 0, tooltip: "Structured data presence" },
+                  { label: "Content Depth", value: activeResult.breakdown.content_depth || 0, tooltip: "Content comprehensiveness" },
+                ].map((metric, i) => (
+                  <div key={i} className="text-center">
+                    <div className="text-2xl font-bold mb-1" style={{ color: getScoreColor(metric.value) }}>
+                      {metric.value}%
+                    </div>
+                    <div className="text-xs text-gray-500">{metric.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* GEO Breakdown Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {[
               { label: "Generative Readiness", value: activeResult.generative_readiness || 0, icon: Brain, color: "purple" },
