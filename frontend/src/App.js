@@ -3,7 +3,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
-import Blobs from "./components/ui/Blobs";
+import AppBackground from "./components/ui/AppBackground";
 import LoginPage from "./components/auth/LoginPage";
 import RegisterPage from "./components/auth/RegisterPage";
 import LandingPage from "./pages/LandingPage";
@@ -25,9 +25,9 @@ function AppContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" data-testid="loading-screen">
+      <div className="min-h-screen bg-[#050508] flex items-center justify-center" data-testid="loading-screen">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-2 border-brand-blue/30 border-t-brand-blue rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
           <p className="text-xs text-gray-500 font-medium">Loading</p>
         </div>
       </div>
@@ -55,10 +55,10 @@ function AppContent() {
 
     return (
       <div className="min-h-screen text-white antialiased">
-        <Blobs />
+        <AppBackground />
         <Navbar activePage={activePage} onNavigate={setActivePage} />
         <main className="relative z-10 pt-24 pb-12 px-4 lg:px-0">
-          <div className="max-w-content mx-auto">
+          <div className="max-w-6xl mx-auto">
             {renderPage()}
           </div>
         </main>
