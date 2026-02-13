@@ -157,7 +157,11 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4" data-testid="navbar">
       <nav className="floating-navbar flex items-center gap-1">
         {/* Logo */}
-        <div className="flex items-center gap-2 pr-4 border-r border-white/10 mr-3">
+        <div 
+          className="flex items-center gap-2 pr-4 border-r border-white/10 mr-3 cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => onNavigate("landing")}
+          data-testid="nav-logo"
+        >
           <Logo size="sm" />
           <span className="hidden sm:flex items-baseline text-base font-black tracking-tight">
             <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-cyan-400 bg-clip-text text-transparent">Pinnacle</span>
