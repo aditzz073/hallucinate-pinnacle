@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { compareCompetitors, sensitivityTest } from "../api";
+import { compareCompetitors } from "../api";
 import { ScoreBadge, getScoreColor } from "../components/ui/ScoreRing";
 import { Swords, Loader2, Plus, X, ArrowRight, AlertTriangle } from "lucide-react";
 
@@ -31,52 +31,97 @@ export default function CompetitorPage() {
   };
 
   return (
-    <div className="space-y-10" data-testid="competitor-page">
-      <div className="mb-0">
-        <p className="text-xs uppercase tracking-[0.2em] text-gray-400 mb-2">Phase 9</p>
-        <h1 className="font-semibold text-3xl mb-2">Competitor Intelligence</h1>
-        <p className="text-gray-400 text-sm">Compare your page against competitors for a specific query.</p>
+    <div className="space-y-8" data-testid="competitor-page">
+      {/* Page Header */}
+      <div className="page-header">
+        <h1>Competitor Intelligence</h1>
+        <p>Compare your page against competitors for a specific query.</p>
       </div>
 
-      <form onSubmit={handleCompare} className="space-y-4 mb-8" data-testid="compare-form">
-        <input data-testid="compare-query" type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search query (e.g., best CRM software)" className="w-full h-12 rounded-md border border-input bg-background px-4 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-ring" required />
+      {/* Form */}
+      <form onSubmit={handleCompare} className="space-y-4" data-testid="compare-form">
+        <input 
+          data-testid="compare-query" 
+          type="text" 
+          value={query} 
+          onChange={(e) => setQuery(e.target.value)} 
+          placeholder="Search query (e.g., best CRM software)" 
+          className="glass-input w-full h-12 px-4 text-sm" 
+          required 
+        />
+        
         <div>
-          <label className="text-xs font-mono text-gray-400 uppercase tracking-wider">Your URL</label>
-          <input data-testid="compare-primary-url" type="url" value={primaryUrl} onChange={(e) => setPrimaryUrl(e.target.value)} placeholder="https://yoursite.com/page" className="w-full h-12 rounded-md border border-primary/30 bg-background px-4 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-ring mt-1" required />
+          <label className="text-xs text-gray-500 uppercase tracking-wider mb-2 block">Your URL</label>
+          <input 
+            data-testid="compare-primary-url" 
+            type="url" 
+            value={primaryUrl} 
+            onChange={(e) => setPrimaryUrl(e.target.value)} 
+            placeholder="https://yoursite.com/page" 
+            className="glass-input w-full h-12 px-4 text-sm border-brand-blue/30" 
+            required 
+          />
         </div>
+        
         <div>
-          <label className="text-xs font-mono text-gray-400 uppercase tracking-wider">Competitor URLs</label>
+          <label className="text-xs text-gray-500 uppercase tracking-wider mb-2 block">Competitor URLs</label>
           {compUrls.map((u, i) => (
             <div key={i} className="flex gap-2 mt-2">
-              <input data-testid={`compare-comp-url-${i}`} type="url" value={u} onChange={(e) => updateCompUrl(i, e.target.value)} placeholder={`Competitor ${i + 1} URL`} className="flex-1 h-10 rounded-md border border-input bg-background px-4 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-ring" />
-              {compUrls.length > 1 && <button type="button" onClick={() => removeCompUrl(i)} className="p-2 hover:bg-destructive/10 rounded-md"><X className="w-4 h-4" /></button>}
+              <input 
+                data-testid={`compare-comp-url-${i}`} 
+                type="url" 
+                value={u} 
+                onChange={(e) => updateCompUrl(i, e.target.value)} 
+                placeholder={`Competitor ${i + 1} URL`} 
+                className="glass-input flex-1 h-11 px-4 text-sm" 
+              />
+              {compUrls.length > 1 && (
+                <button type="button" onClick={() => removeCompUrl(i)} className="p-2 hover:bg-red-400/10 rounded-lg transition-colors">
+                  <X className="w-4 h-4 text-gray-400 hover:text-red-400" />
+                </button>
+              )}
             </div>
           ))}
-          {compUrls.length < 5 && <button type="button" onClick={addCompUrl} className="mt-2 text-xs text-brand-blue hover:text-brand-blue/80 flex items-center gap-1"><Plus className="w-3 h-3" /> Add competitor</button>}
+          {compUrls.length < 5 && (
+            <button type="button" onClick={addCompUrl} className="mt-3 text-xs text-brand-blue hover:text-brand-blue/80 flex items-center gap-1 transition-colors">
+              <Plus className="w-3 h-3" /> Add competitor
+            </button>
+          )}
         </div>
-        <button data-testid="compare-submit" type="submit" disabled={loading} className="h-12 px-6 bg-primary text-brand-blue-foreground font-medium rounded-sm flex items-center gap-2 hover:bg-primary/90 transition-all duration-200 disabled:opacity-50">
+        
+        <button data-testid="compare-submit" type="submit" disabled={loading} className="btn-primary">
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Swords className="w-4 h-4" />}
           {loading ? "Comparing..." : "Compare"}
         </button>
       </form>
 
-      {error && <div className="bg-destructive/10 border border-destructive/30 text-destructive text-sm px-4 py-3 rounded-md mb-6">{error}</div>}
+      {error && (
+        <div className="rounded-xl bg-red-400/10 border border-red-400/20 px-4 py-3 text-sm text-red-400">
+          {error}
+        </div>
+      )}
 
       {result && (
         <div className="space-y-6" data-testid="compare-result">
           <div className="glass-card p-6">
-            <h3 className="font-semibold text-sm mb-1">Ranking Order</h3>
-            <p className="text-xs text-gray-400 mb-4">Query: "{result.query}" | Intent: {result.intent}</p>
+            <h3 className="text-lg font-semibold text-white mb-1">Ranking Order</h3>
+            <p className="text-xs text-gray-500 mb-4">Query: "{result.query}" | Intent: {result.intent}</p>
             <div className="space-y-2">
               {result.ranking_order?.map((url, i) => {
                 const sc = result.score_comparison?.find((s) => s.url === url);
                 const isPrimary = sc?.is_primary;
                 return (
-                  <div key={i} className={`flex items-center gap-4 px-4 py-3 rounded-md ${isPrimary ? "rounded-xl bg-brand-blue/10 border border-brand-blue/20" : "bg-muted/50"}`} data-testid={`rank-${i}`}>
-                    <span className="font-semibold text-lg text-gray-400 w-8">#{i + 1}</span>
+                  <div 
+                    key={i} 
+                    className={`flex items-center gap-4 px-4 py-3 rounded-xl ${isPrimary ? "bg-brand-blue/10 border border-brand-blue/20" : "bg-white/[0.02] border border-white/5"}`} 
+                    data-testid={`rank-${i}`}
+                  >
+                    <span className="text-lg font-semibold text-gray-500 w-8">#{i + 1}</span>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{url} {isPrimary && <span className="text-brand-blue text-xs">(You)</span>}</p>
-                      <p className="text-xs text-gray-400">{sc?.page_type} | AEO: {sc?.aeo_score} | Position: {sc?.likely_position}</p>
+                      <p className="text-sm font-medium text-white truncate">
+                        {url} {isPrimary && <span className="text-brand-blue text-xs ml-1">(You)</span>}
+                      </p>
+                      <p className="text-xs text-gray-500">{sc?.page_type} | AEO: {sc?.aeo_score} | Position: {sc?.likely_position}</p>
                     </div>
                     <ScoreBadge score={sc?.citation_probability || 0} />
                   </div>
@@ -87,21 +132,23 @@ export default function CompetitorPage() {
 
           {result.gap_analysis?.length > 0 && (
             <div className="glass-card p-6">
-              <h3 className="font-semibold text-sm mb-4 flex items-center gap-2"><AlertTriangle className="w-4 h-4 text-amber-400" /> Gap Analysis</h3>
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-amber-400" /> Gap Analysis
+              </h3>
               {result.gap_analysis.map((ga, i) => (
                 <div key={i} className="mb-4">
-                  <p className="text-xs font-mono text-gray-400 mb-2 truncate">vs {ga.competitor_url}</p>
+                  <p className="text-xs text-gray-500 mb-2 truncate">vs {ga.competitor_url}</p>
                   {ga.gaps.length === 0 ? (
                     <p className="text-xs text-emerald-400">No significant gaps found - you're outperforming!</p>
                   ) : (
                     <div className="space-y-2">
                       {ga.gaps.map((g, j) => (
-                        <div key={j} className="flex items-center gap-3 rounded-xl bg-white/[0.02] px-4 py-2 text-xs">
-                          <span className="font-medium w-32">{g.dimension}</span>
+                        <div key={j} className="flex items-center gap-3 rounded-xl bg-white/[0.02] border border-white/5 px-4 py-2.5 text-xs">
+                          <span className="font-medium text-gray-300 w-32">{g.dimension}</span>
                           <span style={{ color: getScoreColor(g.your_score) }}>{g.your_score}</span>
-                          <ArrowRight className="w-3 h-3 text-gray-400" />
+                          <ArrowRight className="w-3 h-3 text-gray-600" />
                           <span style={{ color: getScoreColor(g.competitor_score) }}>{g.competitor_score}</span>
-                          <span className="text-red-400 font-mono ml-2">-{g.gap}</span>
+                          <span className="text-red-400 font-medium ml-2">-{g.gap}</span>
                         </div>
                       ))}
                     </div>
