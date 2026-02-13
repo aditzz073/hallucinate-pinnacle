@@ -87,6 +87,35 @@ export default function Dashboard({ onNavigate }) {
 
   const userName = user?.email?.split("@")[0] || "there";
 
+  // Dynamic welcome messages that rotate
+  const getWelcomeMessage = () => {
+    const hour = new Date().getHours();
+    const messages = {
+      morning: [
+        { greeting: "Rise and optimize", subtitle: "Your AI visibility command center awaits" },
+        { greeting: "Morning, strategist", subtitle: "Let's dominate AI-generated results today" },
+        { greeting: "Fresh start", subtitle: "Ready to boost your AI discoverability?" },
+      ],
+      afternoon: [
+        { greeting: "Back to conquer", subtitle: "Your content's AI performance at a glance" },
+        { greeting: "Afternoon sync", subtitle: "See how AI engines are discovering you" },
+        { greeting: "Keep the momentum", subtitle: "Your AI optimization intel center" },
+      ],
+      evening: [
+        { greeting: "Evening check-in", subtitle: "Track your AI visibility metrics" },
+        { greeting: "Late-night optimization", subtitle: "Because great content never sleeps" },
+        { greeting: "Wrapping up strong", subtitle: "Your AI performance snapshot" },
+      ],
+    };
+
+    const timeOfDay = hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening';
+    const pool = messages[timeOfDay];
+    const index = Math.floor(Date.now() / (1000 * 60 * 60 * 8)) % pool.length; // Rotates every 8 hours
+    return pool[index];
+  };
+
+  const { greeting, subtitle } = getWelcomeMessage();
+
   return (
     <div className="space-y-8" data-testid="dashboard-page">
       {/* Hero Section - Clean & Minimal */}
@@ -95,9 +124,9 @@ export default function Dashboard({ onNavigate }) {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-semibold text-white mb-1">
-              Welcome back, <span className="capitalize">{userName}</span>
+              {greeting}, <span className="capitalize bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">{userName}</span>
             </h1>
-            <p className="text-gray-500 text-sm">Here's your AI discoverability overview</p>
+            <p className="text-gray-400 text-sm">{subtitle}</p>
           </div>
           <div className="flex items-center gap-2">
             <span className={`w-2 h-2 rounded-full ${healthStatus.dotColor}`}></span>
