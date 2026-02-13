@@ -145,7 +145,7 @@ export default function LandingPage({ onGetStarted }) {
       </section>
 
       {/* Features */}
-      <section className="relative py-24 px-4">
+      <section className="relative py-24 px-4" data-section="features" id="features">
         {/* Subtle background */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#050508] via-[#0a0a12] to-[#050508]" />
         
@@ -176,6 +176,129 @@ export default function LandingPage({ onGetStarted }) {
                 </div>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section className="relative py-24 px-4" data-section="pricing" id="pricing">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#050508] to-[#0a0a12]" />
+        
+        <div className="relative max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              Simple, <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">transparent</span> pricing
+            </h2>
+            <p className="text-gray-400 text-lg font-light max-w-xl mx-auto">
+              Start free, scale as you grow. No hidden fees.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {/* Free Tier */}
+            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-8 backdrop-blur-sm">
+              <h3 className="text-xl font-bold text-white mb-2">Starter</h3>
+              <div className="mb-6">
+                <span className="text-4xl font-bold text-white">$0</span>
+                <span className="text-gray-500 ml-2">/month</span>
+              </div>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center gap-2 text-gray-400 text-sm">
+                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                  5 audits/month
+                </li>
+                <li className="flex items-center gap-2 text-gray-400 text-sm">
+                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                  10 AI tests/month
+                </li>
+                <li className="flex items-center gap-2 text-gray-400 text-sm">
+                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                  Basic analytics
+                </li>
+              </ul>
+              <button 
+                onClick={onGetStarted}
+                className="w-full rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-medium text-white hover:bg-white/10 transition-all duration-300"
+              >
+                Get Started
+              </button>
+            </div>
+
+            {/* Pro Tier - Featured */}
+            <div className="rounded-2xl border-2 border-cyan-500/50 bg-gradient-to-b from-cyan-500/10 to-blue-500/10 p-8 backdrop-blur-sm relative">
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 text-xs font-bold text-white">
+                MOST POPULAR
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Professional</h3>
+              <div className="mb-6">
+                <span className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">$49</span>
+                <span className="text-gray-400 ml-2">/month</span>
+              </div>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center gap-2 text-gray-300 text-sm">
+                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                  Unlimited audits
+                </li>
+                <li className="flex items-center gap-2 text-gray-300 text-sm">
+                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                  Unlimited AI tests
+                </li>
+                <li className="flex items-center gap-2 text-gray-300 text-sm">
+                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                  Page monitoring
+                </li>
+                <li className="flex items-center gap-2 text-gray-300 text-sm">
+                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                  Strategy simulator
+                </li>
+                <li className="flex items-center gap-2 text-gray-300 text-sm">
+                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                  Priority support
+                </li>
+              </ul>
+              <button 
+                onClick={onGetStarted}
+                className="w-full rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-6 py-3 text-sm font-bold text-white hover:shadow-[0_0_30px_rgba(34,211,238,0.4)] transition-all duration-300"
+              >
+                Start Free Trial
+              </button>
+            </div>
+
+            {/* Enterprise Tier */}
+            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-8 backdrop-blur-sm">
+              <h3 className="text-xl font-bold text-white mb-2">Enterprise</h3>
+              <div className="mb-6">
+                <span className="text-4xl font-bold text-white">Custom</span>
+              </div>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center gap-2 text-gray-400 text-sm">
+                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                  Everything in Pro
+                </li>
+                <li className="flex items-center gap-2 text-gray-400 text-sm">
+                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                  Competitor intel
+                </li>
+                <li className="flex items-center gap-2 text-gray-400 text-sm">
+                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                  Executive reports
+                </li>
+                <li className="flex items-center gap-2 text-gray-400 text-sm">
+                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                  Dedicated support
+                </li>
+                <li className="flex items-center gap-2 text-gray-400 text-sm">
+                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+                  Custom integrations
+                </li>
+              </ul>
+              <button 
+                onClick={onGetStarted}
+                className="w-full rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-medium text-white hover:bg-white/10 transition-all duration-300"
+              >
+                Contact Sales
+              </button>
+            </div>
           </div>
         </div>
       </section>
