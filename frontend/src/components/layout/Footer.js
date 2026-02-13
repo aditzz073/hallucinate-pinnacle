@@ -20,7 +20,10 @@ export default function Footer({ onNavigate }) {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Logo size="sm" />
-              <span className="text-base font-bold text-white">Pinnacle.ai</span>
+              <span className="flex items-baseline text-base font-black tracking-tight">
+                <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-cyan-400 bg-clip-text text-transparent">Pinnacle</span>
+                <span className="text-cyan-400 font-light">.ai</span>
+              </span>
             </div>
             <p className="text-sm text-gray-500">AI Engine Optimization Platform</p>
           </div>

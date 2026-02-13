@@ -91,9 +91,12 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
     return (
       <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-5 px-4" data-testid="navbar">
         <nav className="floating-navbar flex items-center gap-8">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <Logo size="sm" />
-            <span className="text-base font-bold text-white">Pinnacle.ai</span>
+            <span className="text-lg font-black tracking-tight">
+              <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-cyan-400 bg-clip-text text-transparent">Pinnacle</span>
+              <span className="text-cyan-400 font-light">.ai</span>
+            </span>
           </div>
           <div className="hidden lg:flex items-center gap-1">
             {["Features", "Dashboard", "Pricing"].map((item) => (
@@ -129,7 +132,10 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
         {/* Logo */}
         <div className="flex items-center gap-2 pr-4 border-r border-white/10 mr-3">
           <Logo size="sm" />
-          <span className="text-sm font-bold text-white hidden sm:inline">Pinnacle.ai</span>
+          <span className="hidden sm:flex items-baseline text-base font-black tracking-tight">
+            <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-cyan-400 bg-clip-text text-transparent">Pinnacle</span>
+            <span className="text-cyan-400 font-light">.ai</span>
+          </span>
         </div>
 
         {/* Core Navigation */}
