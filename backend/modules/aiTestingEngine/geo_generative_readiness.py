@@ -76,6 +76,138 @@ def calculate_generative_readiness(parsed: dict) -> dict:
     }
 
 
+def _detect_product_page(parsed: dict, body_text: str) -> tuple:
+    """Detect if this is a product/e-commerce page."""
+    signals = []
+    text_lower = body_text.lower()
+    
+    # Check for product-specific keywords
+    product_keywords = ['buy', 'price', 'add to cart', 'add to bag', 'shop', 'purchase', 
+                        'color', 'size', 'quantity', 'in stock', 'out of stock', 'delivery',
+                        'shipping', 'return policy', 'product details', 'specifications',
+                        'reviews', 'rating', 'sku', 'model', 'brand']
+    
+    keyword_matches = sum(1 for kw in product_keywords if kw in text_lower)
+    
+    if keyword_matches >= 5:
+        signals.append("product keywords")
+    
+    # Check for price patterns
+    price_patterns = [r'\$\d+', r'€\d+', r'£\d+', r'\d+\.\d{2}', r'price:', r'was:.*now:']
+    if any(re.search(p, text_lower) for p in price_patterns):
+        signals.append("pricing")
+    
+    # Check for product schema
+    if parsed.get("json_ld"):
+        json_ld = parsed["json_ld"]
+        if any(schema.get("@type") in ["Product", "Offer", "ProductCollection"] 
+               for schema in (json_ld if isinstance(json_ld, list) else [json_ld])):
+            signals.append("product schema")
+    
+    # Check URL patterns
+    url = parsed.get("canonical_url", "")
+    product_url_patterns = ['/product/', '/p/', '/item/', '/shop/', '/buy/', '/store/']
+    if any(pattern in url.lower() for pattern in product_url_patterns):
+        signals.append("product URL")
+    
+    is_product = len(signals) >= 2
+    return is_product, signals
+
+
+def _score_product_page(parsed: dict, body_text: str, headings: dict, faq_items: list, word_count: int) -> tuple:
+    """Score product pages with e-commerce-appropriate criteria."""
+    score = 0.0
+    factors = []
+    text_lower = body_text.lower()
+    
+    # 1. Product Title & Brand (0-20 points)
+    title = parsed.get("title", "")
+    h1_headings = headings.get("h1", [])
+    
+    if title and len(title) > 10:
+        score += 10
+        factors.append({"factor": "Product title present", "impact": "positive", "detail": f"Title: {title[:50]}..."})
+    
+    # Check for brand mentions
+    brand_indicators = ['nike', 'adidas', 'apple', 'samsung', 'brand:', 'by ']
+    has_brand = any(indicator in text_lower for indicator in brand_indicators)
+    if has_brand or len(h1_headings) > 0:
+        score += 10
+        factors.append({"factor": "Brand/product name clear", "impact": "positive", "detail": "Product identity well-defined"})
+    
+    # 2. Product Description (0-20 points)
+    description = parsed.get("meta_description", "")
+    # Look for descriptive content blocks
+    has_description = len(description) > 50 or word_count > 100
+    
+    if word_count > 300:
+        score += 20
+        factors.append({"factor": "Comprehensive product description", "impact": "positive", "detail": f"{word_count} words of content"})
+    elif word_count > 150:
+        score += 15
+        factors.append({"factor": "Good product description", "impact": "positive", "detail": f"{word_count} words"})
+    elif word_count > 50:
+        score += 8
+        factors.append({"factor": "Basic description present", "impact": "neutral", "detail": "Limited content"})
+    else:
+        factors.append({"factor": "Thin product description", "impact": "negative", "detail": "Very limited text content"})
+    
+    # 3. Product Features/Specs (0-15 points)
+    spec_keywords = ['features', 'specifications', 'specs', 'details', 'includes', 'dimensions', 
+                     'material', 'weight', 'color options', 'size']
+    spec_mentions = sum(1 for kw in spec_keywords if kw in text_lower)
+    
+    # Check for lists (features are often in lists)
+    list_score, _ = _score_list_usage(body_text)
+    
+    if spec_mentions >= 3 and list_score > 5:
+        score += 15
+        factors.append({"factor": "Detailed specifications", "impact": "positive", "detail": f"{spec_mentions} spec sections with structured lists"})
+    elif spec_mentions >= 2:
+        score += 10
+        factors.append({"factor": "Product features present", "impact": "positive", "detail": "Some specifications provided"})
+    elif spec_mentions >= 1:
+        score += 5
+        factors.append({"factor": "Minimal specs", "impact": "neutral", "detail": "Limited specification details"})
+    else:
+        factors.append({"factor": "Missing product specifications", "impact": "negative", "detail": "No clear features or specs listed"})
+    
+    # 4. Reviews/Ratings (0-15 points)
+    review_keywords = ['review', 'rating', 'star', 'customer', 'testimonial', 'feedback']
+    has_reviews = any(kw in text_lower for kw in review_keywords)
+    
+    if has_reviews:
+        score += 15
+        factors.append({"factor": "Customer reviews present", "impact": "positive", "detail": "Social proof available for AI to reference"})
+    else:
+        score += 5
+        factors.append({"factor": "No reviews visible", "impact": "neutral", "detail": "Missing customer feedback"})
+    
+    # 5. Structured Data (0-15 points)
+    json_ld = parsed.get("json_ld", {})
+    has_product_schema = False
+    
+    if json_ld:
+        schemas = json_ld if isinstance(json_ld, list) else [json_ld]
+        for schema in schemas:
+            if schema.get("@type") in ["Product", "Offer"]:
+                has_product_schema = True
+                break
+    
+    if has_product_schema:
+        score += 15
+        factors.append({"factor": "Product schema markup", "impact": "positive", "detail": "Structured data helps AI understand product info"})
+    else:
+        factors.append({"factor": "Missing product schema", "impact": "negative", "detail": "No structured data for product"})
+    
+    # 6. FAQ or Support Info (0-15 points)
+    faq_score, faq_factors = _score_faq_sections(faq_items, body_text)
+    score += faq_score
+    factors.extend(faq_factors)
+    
+    return score, factors
+
+
 def _score_definition_blocks(body_text: str, parsed: dict) -> tuple:
     """Score presence of clear definition patterns."""
     score = 0.0
