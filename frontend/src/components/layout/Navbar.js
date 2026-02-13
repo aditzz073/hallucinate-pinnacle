@@ -88,10 +88,33 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
   const { user, logout } = useAuth();
 
   if (isLanding) {
+    const handleNavClick = (item) => {
+      if (item === "Features") {
+        // Smooth scroll to features section
+        const featuresSection = document.querySelector('[data-section="features"]');
+        if (featuresSection) {
+          featuresSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      } else if (item === "Dashboard") {
+        // If logged in, go to dashboard; otherwise trigger sign in
+        if (user) {
+          onNavigate && onNavigate("dashboard");
+        } else {
+          onGetStarted && onGetStarted();
+        }
+      } else if (item === "Pricing") {
+        // Smooth scroll to pricing section
+        const pricingSection = document.querySelector('[data-section="pricing"]');
+        if (pricingSection) {
+          pricingSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+    };
+
     return (
       <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-5 px-4" data-testid="navbar">
         <nav className="floating-navbar flex items-center gap-8">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
             <Logo size="sm" />
             <span className="text-lg font-black tracking-tight">
               <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-cyan-400 bg-clip-text text-transparent">Pinnacle</span>
@@ -100,7 +123,11 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
           </div>
           <div className="hidden lg:flex items-center gap-1">
             {["Features", "Dashboard", "Pricing"].map((item) => (
-              <button key={item} className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors duration-200 rounded-full hover:bg-white/5">
+              <button 
+                key={item} 
+                onClick={() => handleNavClick(item)}
+                className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors duration-200 rounded-full hover:bg-white/5"
+              >
                 {item}
               </button>
             ))}
