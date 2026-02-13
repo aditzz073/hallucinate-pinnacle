@@ -7,12 +7,13 @@ def calculate_generative_readiness(parsed: dict) -> dict:
     Calculate how ready content is for AI generative answers.
     
     Score based on:
-    - Presence of clear definition blocks
-    - Summary section near top of page
+    - Presence of clear definition blocks OR product descriptions
+    - Summary section near top of page OR key product info
     - FAQ structured sections
-    - Bullet/numbered lists
+    - Bullet/numbered lists (features, specs)
     - Logical heading hierarchy
     - Low fluff density
+    - Product-specific attributes (for e-commerce pages)
     
     Returns:
         dict: {generative_readiness: int, generative_factors: list}
@@ -24,35 +25,50 @@ def calculate_generative_readiness(parsed: dict) -> dict:
     faq_items = parsed.get("faq_items", [])
     word_count = parsed.get("word_count", 0)
     
-    # 1. Clear Definition Blocks (0-20 points)
-    definition_score, definition_factors = _score_definition_blocks(body_text, parsed)
-    score += definition_score
-    factors.extend(definition_factors)
+    # Detect if this is a product/e-commerce page
+    is_product_page, product_signals = _detect_product_page(parsed, body_text)
     
-    # 2. Summary Section Near Top (0-20 points)
-    summary_score, summary_factors = _score_summary_presence(body_text, headings)
-    score += summary_score
-    factors.extend(summary_factors)
-    
-    # 3. FAQ Structured Sections (0-15 points)
-    faq_score, faq_factors = _score_faq_sections(faq_items, body_text)
-    score += faq_score
-    factors.extend(faq_factors)
-    
-    # 4. Bullet/Numbered Lists (0-15 points)
-    list_score, list_factors = _score_list_usage(body_text)
-    score += list_score
-    factors.extend(list_factors)
-    
-    # 5. Logical Heading Hierarchy (0-15 points)
-    hierarchy_score, hierarchy_factors = _score_heading_hierarchy(headings)
-    score += hierarchy_score
-    factors.extend(hierarchy_factors)
-    
-    # 6. Low Fluff Density (0-15 points)
-    fluff_score, fluff_factors = _score_fluff_density(body_text, word_count)
-    score += fluff_score
-    factors.extend(fluff_factors)
+    if is_product_page:
+        factors.append({
+            "factor": "Product page detected", 
+            "impact": "neutral", 
+            "detail": f"E-commerce content type: {', '.join(product_signals)}"
+        })
+        
+        # Use product-specific scoring
+        score, product_factors = _score_product_page(parsed, body_text, headings, faq_items, word_count)
+        factors.extend(product_factors)
+    else:
+        # Use traditional informational content scoring
+        # 1. Clear Definition Blocks (0-20 points)
+        definition_score, definition_factors = _score_definition_blocks(body_text, parsed)
+        score += definition_score
+        factors.extend(definition_factors)
+        
+        # 2. Summary Section Near Top (0-20 points)
+        summary_score, summary_factors = _score_summary_presence(body_text, headings)
+        score += summary_score
+        factors.extend(summary_factors)
+        
+        # 3. FAQ Structured Sections (0-15 points)
+        faq_score, faq_factors = _score_faq_sections(faq_items, body_text)
+        score += faq_score
+        factors.extend(faq_factors)
+        
+        # 4. Bullet/Numbered Lists (0-15 points)
+        list_score, list_factors = _score_list_usage(body_text)
+        score += list_score
+        factors.extend(list_factors)
+        
+        # 5. Logical Heading Hierarchy (0-15 points)
+        hierarchy_score, hierarchy_factors = _score_heading_hierarchy(headings)
+        score += hierarchy_score
+        factors.extend(hierarchy_factors)
+        
+        # 6. Low Fluff Density (0-15 points)
+        fluff_score, fluff_factors = _score_fluff_density(body_text, word_count)
+        score += fluff_score
+        factors.extend(fluff_factors)
     
     return {
         "generative_readiness": max(0, min(100, int(round(score)))),
