@@ -7,7 +7,7 @@ from datetime import datetime
 import uuid
 
 class AIDiscoverabilityAPITester:
-    def __init__(self, base_url="https://content-discovery-3.preview.emergentagent.com"):
+    def __init__(self, base_url="https://aeo-staging-lab.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.tests_run = 0
