@@ -145,8 +145,11 @@ def _score_product_page(parsed: dict, body_text: str, headings: dict, faq_items:
         score += 15
         factors.append({"factor": "Good product description", "impact": "positive", "detail": f"{word_count} words"})
     elif word_count > 50:
-        score += 8
-        factors.append({"factor": "Basic description present", "impact": "neutral", "detail": "Limited content"})
+        score += 10
+        factors.append({"factor": "Basic description present", "impact": "neutral", "detail": "Adequate content for product page"})
+    elif word_count > 20:
+        score += 5
+        factors.append({"factor": "Minimal description", "impact": "neutral", "detail": f"{word_count} words - typical for image-heavy product pages"})
     else:
         factors.append({"factor": "Thin product description", "impact": "negative", "detail": "Very limited text content"})
     
