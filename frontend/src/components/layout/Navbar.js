@@ -93,8 +93,7 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
         <nav className="floating-navbar flex items-center gap-8">
           <div className="flex items-center gap-1">
             <Logo size="sm" />
-            <span className="text-base brand-name brand-name-primary">Pinnacle</span>
-            <span className="text-base brand-name brand-name-secondary">.ai</span>
+            <span className="text-base font-bold text-white">Pinnacle.ai</span>
           </div>
           <div className="hidden lg:flex items-center gap-1">
             {["Features", "Dashboard", "Pricing"].map((item) => (
@@ -128,10 +127,9 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
     <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4" data-testid="navbar">
       <nav className="floating-navbar flex items-center gap-1">
         {/* Logo */}
-        <div className="flex items-center gap-1.5 pr-4 border-r border-white/10 mr-3">
+        <div className="flex items-center gap-2 pr-4 border-r border-white/10 mr-3">
           <Logo size="sm" />
-          <span className="text-sm brand-name brand-name-primary hidden sm:inline">Pinnacle</span>
-          <span className="text-sm brand-name brand-name-secondary hidden sm:inline">.ai</span>
+          <span className="text-sm font-bold text-white hidden sm:inline">Pinnacle.ai</span>
         </div>
 
         {/* Core Navigation */}
