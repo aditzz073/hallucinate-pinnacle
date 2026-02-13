@@ -211,13 +211,13 @@ export default function Dashboard({ onNavigate }) {
           </div>
 
           {/* Copilot Insight */}
-          <div className="lg:col-span-2 glass-card p-6 flex flex-col justify-between">
+          <div className="lg:col-span-2 glass-card p-6 flex flex-col justify-between border border-cyan-500/10 bg-gradient-to-br from-cyan-500/5 to-blue-500/5">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <Sparkles className="w-4 h-4 text-cyan-400" />
-                <span className="text-xs text-gray-500 uppercase tracking-wider">AI Copilot Insight</span>
+                <Sparkles className="w-4 h-4 text-cyan-400 animate-pulse" />
+                <span className="text-xs text-cyan-400 uppercase tracking-wider font-semibold">AI Strategic Insight</span>
               </div>
-              <p className="text-lg text-white font-medium leading-relaxed mb-4">{copilotInsight}</p>
+              <p className="text-base text-white/90 leading-relaxed mb-4">{copilotInsight}</p>
             </div>
             {priorityActions.length > 0 && (
               <button 
