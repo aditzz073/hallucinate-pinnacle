@@ -16,15 +16,16 @@ import AdvancedAuditPage from "./pages/AdvancedAuditPage";
 import SimulatorPage from "./pages/SimulatorPage";
 import CompetitorPage from "./pages/CompetitorPage";
 import ExecutiveSummaryPage from "./pages/ExecutiveSummaryPage";
+import ProfilePage from "./pages/ProfilePage";
 
 function AppContent() {
   const { user, loading } = useAuth();
-  const [view, setView] = useState("landing"); // landing | login | register
+  const [view, setView] = useState("landing");
   const [activePage, setActivePage] = useState("dashboard");
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center" data-testid="loading-screen">
+      <div className="min-h-screen flex items-center justify-center" data-testid="loading-screen">
         <div className="flex flex-col items-center gap-4">
           <div className="w-8 h-8 border-2 border-brand-blue/30 border-t-brand-blue rounded-full animate-spin" />
           <p className="text-xs text-gray-500 font-medium">Loading</p>
@@ -47,12 +48,13 @@ function AppContent() {
         case "simulator": return <SimulatorPage />;
         case "compare": return <CompetitorPage />;
         case "executive": return <ExecutiveSummaryPage />;
+        case "profile": return <ProfilePage />;
         default: return <Dashboard onNavigate={setActivePage} />;
       }
     };
 
     return (
-      <div className="min-h-screen bg-black text-white antialiased">
+      <div className="min-h-screen text-white antialiased">
         <Blobs />
         <Navbar activePage={activePage} onNavigate={setActivePage} />
         <main className="relative z-10 pt-24 pb-12 px-4 lg:px-0">
@@ -60,7 +62,7 @@ function AppContent() {
             {renderPage()}
           </div>
         </main>
-        <Footer />
+        <Footer onNavigate={setActivePage} />
       </div>
     );
   }
@@ -75,7 +77,7 @@ function AppContent() {
 
   // Landing
   return (
-    <div className="min-h-screen bg-black text-white antialiased">
+    <div className="min-h-screen text-white antialiased">
       <Navbar isLanding onGetStarted={() => setView("login")} />
       <LandingPage onGetStarted={() => setView("register")} />
       <Footer />
