@@ -60,9 +60,16 @@ async def run_ai_test(url: str, query: str, user_id: str) -> dict:
         intent_match, extractability, authority, schema_support, content_depth,
     )
     improvement_suggestions = generate_improvement_suggestions(why_not_cited, intent)
+    
+    # Format recommendations into copilot-style advisory messages
+    formatted_gaps = [format_citation_gap(g) for g in why_not_cited]
+    formatted_suggestions = [format_citation_suggestion(s, intent) for s in improvement_suggestions]
 
     # NEW: Step 8 - GEO Analysis
     geo_result = run_geo_analysis(parsed)
+    
+    # Format GEO insights with impact levels
+    formatted_geo_insights = format_geo_recommendations(geo_result.get("geo_insights"))
 
     # Step 9: Compile scores
     engine_scores = {
