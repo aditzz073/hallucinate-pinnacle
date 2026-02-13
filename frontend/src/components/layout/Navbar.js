@@ -87,6 +87,16 @@ function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate }) {
 export default function Navbar({ activePage, onNavigate, isLanding = false, onGetStarted }) {
   const { user, logout } = useAuth();
 
+  const handleLogoClick = () => {
+    if (isLanding) {
+      // On landing page, scroll to top
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      // Logged in, go back to landing (logout)
+      logout();
+    }
+  };
+
   if (isLanding) {
     const handleNavClick = (item) => {
       if (item === "Features") {
