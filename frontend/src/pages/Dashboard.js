@@ -18,12 +18,44 @@ const getHealthStatus = (score) => {
 
 const generateCopilotInsight = (overview) => {
   const recentTest = overview?.recent_ai_tests?.[0];
-  if (!recentTest) return "Run your first AI test to receive personalized optimization insights.";
+  if (!recentTest) {
+    const onboardingMessages = [
+      "🎯 Ready to dominate AI search? Launch your first test and unlock optimization superpowers.",
+      "💡 Your AI visibility journey starts here. Run a test to see where you stand.",
+      "🚀 Let's decode how AI engines see your content. Fire up your first analysis.",
+    ];
+    return onboardingMessages[Math.floor(Date.now() / (1000 * 60 * 60 * 24)) % onboardingMessages.length];
+  }
   
   const avgScore = ((recentTest.citation_probability || 0) + (recentTest.geo_score || 0)) / 2;
-  if (avgScore < 30) return "Your content structure needs optimization. Focus on adding clear definitions and schema markup.";
-  if (avgScore < 50) return "Your pages show moderate AI readiness. Implementing structured data could boost citation probability.";
-  return "Your content is performing well for AI discoverability. Fine-tune brand attribution to maximize retention.";
+  const citationScore = recentTest.citation_probability || 0;
+  const geoScore = recentTest.geo_score || 0;
+  
+  // Critical issues (< 30)
+  if (avgScore < 30) {
+    return `⚠️ Alert: Your content isn't AI-friendly yet. Score ${Math.round(avgScore)}% means you're invisible to Claude, ChatGPT & Perplexity. Priority: Add structured data and clear definitions.`;
+  }
+  
+  // Needs improvement (30-50)
+  if (avgScore < 50) {
+    if (citationScore < 40) {
+      return `📊 Citation gap detected: ${citationScore}% means AI rarely cites you. Quick win: Add FAQ schema and attributable content blocks.`;
+    }
+    if (geoScore < 40) {
+      return `🎨 Content structure needs polish: ${geoScore}% GEO score. AI can't extract your message cleanly. Add summaries and bullet-point key facts.`;
+    }
+    return `💪 You're getting there: ${Math.round(avgScore)}% puts you in the middle pack. Push to 60%+ by strengthening schema markup and brand mentions.`;
+  }
+  
+  // Good performance (50-70)
+  if (avgScore < 70) {
+    const strength = citationScore > geoScore ? 'citation' : 'content structure';
+    const weakness = citationScore > geoScore ? 'GEO' : 'citation';
+    return `✨ Solid foundation: ${Math.round(avgScore)}% visibility. Your ${strength} shines, but boost your ${weakness} score for elite status.`;
+  }
+  
+  // Excellent (70+)
+  return `🏆 Crushing it: ${Math.round(avgScore)}% puts you in the top tier. AI engines love your content. Now fine-tune brand attribution to own every mention.`;
 };
 
 const getPriorityActions = (overview) => {
