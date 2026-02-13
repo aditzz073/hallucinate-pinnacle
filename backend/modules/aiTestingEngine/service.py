@@ -102,7 +102,7 @@ async def run_ai_test(url: str, query: str, user_id: str) -> dict:
         "geo_scores_json": geo_scores,
         "detected_brand": geo_result.get("detected_brand"),
         "geo_breakdown_json": geo_result.get("geo_breakdown"),
-        "geo_insights_json": geo_result.get("geo_insights"),
+        "geo_insights_json": formatted_geo_insights,
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
     result = await ai_tests_collection.insert_one(test_doc)
@@ -116,15 +116,15 @@ async def run_ai_test(url: str, query: str, user_id: str) -> dict:
         "citation_probability": citation_prob,
         "breakdown": engine_scores,
         "likely_position": likely_position,
-        "why_not_cited": why_not_cited,
-        "improvement_suggestions": improvement_suggestions,
+        "why_not_cited": formatted_gaps,
+        "improvement_suggestions": formatted_suggestions,
         # GEO metrics
         "geo_score": geo_result["geo_score"],
         "generative_readiness": geo_result["generative_readiness"],
         "summarization_resilience": geo_result["summarization_resilience"],
         "brand_retention_probability": geo_result["brand_retention_probability"],
         "detected_brand": geo_result.get("detected_brand"),
-        "geo_insights": geo_result.get("geo_insights"),
+        "geo_insights": formatted_geo_insights,
         "created_at": test_doc["created_at"],
     }
 
