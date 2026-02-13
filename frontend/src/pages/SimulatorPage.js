@@ -33,16 +33,33 @@ export default function SimulatorPage() {
   };
 
   return (
-    <div className="space-y-10" data-testid="simulator-page">
-      <div className="mb-0">
-        <p className="text-xs uppercase tracking-[0.2em] text-gray-400 mb-2">Phase 7</p>
-        <h1 className="font-semibold text-3xl mb-2">Strategy Simulator</h1>
-        <p className="text-gray-400 text-sm">Simulate content optimizations and see projected impact on citation probability.</p>
+    <div className="space-y-8" data-testid="simulator-page">
+      {/* Page Header */}
+      <div className="page-header">
+        <h1>Strategy Simulator</h1>
+        <p>Simulate content optimizations and see projected impact on citation probability.</p>
       </div>
 
-      <form onSubmit={handleSimulate} className="space-y-4 mb-8" data-testid="simulator-form">
-        <input data-testid="sim-url-input" type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://example.com/page" className="w-full h-12 rounded-md border border-input bg-background px-4 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-ring" required />
-        <input data-testid="sim-query-input" type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search query to test against" className="w-full h-12 rounded-md border border-input bg-background px-4 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-ring" required />
+      {/* Form */}
+      <form onSubmit={handleSimulate} className="space-y-4" data-testid="simulator-form">
+        <input 
+          data-testid="sim-url-input" 
+          type="url" 
+          value={url} 
+          onChange={(e) => setUrl(e.target.value)} 
+          placeholder="https://example.com/page" 
+          className="glass-input w-full h-12 px-4 text-sm" 
+          required 
+        />
+        <input 
+          data-testid="sim-query-input" 
+          type="text" 
+          value={query} 
+          onChange={(e) => setQuery(e.target.value)} 
+          placeholder="Search query to test against" 
+          className="glass-input w-full h-12 px-4 text-sm" 
+          required 
+        />
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {STRATEGIES.map((s) => (
@@ -51,21 +68,34 @@ export default function SimulatorPage() {
               type="button"
               onClick={() => setStrategy(s.id)}
               data-testid={`strategy-${s.id}`}
-              className={`text-left p-4 rounded-lg border transition-all duration-200 ${strategy === s.id ? "border-primary bg-primary/10" : "border-white/5 bg-card hover:border-primary/30"}`}
+              className={`text-left p-4 rounded-xl border transition-all duration-200 ${
+                strategy === s.id 
+                  ? "border-brand-blue/50 bg-brand-blue/10" 
+                  : "border-white/5 bg-white/[0.02] hover:border-white/10 hover:bg-white/[0.04]"
+              }`}
             >
-              <p className="text-sm font-medium">{s.label}</p>
-              <p className="text-[10px] text-gray-400 mt-1">{s.desc}</p>
+              <p className="text-sm font-medium text-white">{s.label}</p>
+              <p className="text-xs text-gray-500 mt-1">{s.desc}</p>
             </button>
           ))}
         </div>
 
-        <button data-testid="sim-submit" type="submit" disabled={loading} className="h-12 px-6 bg-primary text-brand-blue-foreground font-medium rounded-sm flex items-center gap-2 hover:bg-primary/90 transition-all duration-200 disabled:opacity-50">
+        <button 
+          data-testid="sim-submit" 
+          type="submit" 
+          disabled={loading} 
+          className="btn-primary"
+        >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FlaskConical className="w-4 h-4" />}
           {loading ? "Simulating..." : "Run Simulation"}
         </button>
       </form>
 
-      {error && <div className="bg-destructive/10 border border-destructive/30 text-destructive text-sm px-4 py-3 rounded-md mb-6">{error}</div>}
+      {error && (
+        <div className="rounded-xl bg-red-400/10 border border-red-400/20 px-4 py-3 text-sm text-red-400">
+          {error}
+        </div>
+      )}
 
       {result && (
         <div className="glass-card p-6 space-y-6" data-testid="sim-result">
@@ -73,20 +103,20 @@ export default function SimulatorPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-8">
               <div className="text-center">
-                <p className="font-semibold text-3xl" style={{ color: getScoreColor(result.original_probability) }}>{result.original_probability}%</p>
-                <p className="text-xs text-gray-400">Current</p>
-                <p className="text-[10px] font-mono text-gray-400">{result.original_position}</p>
+                <p className="text-3xl font-light" style={{ color: getScoreColor(result.original_probability) }}>{result.original_probability}%</p>
+                <p className="text-xs text-gray-500 mt-1">Current</p>
+                <p className="text-xs text-gray-600">{result.original_position}</p>
               </div>
-              <ArrowRight className="w-6 h-6 text-gray-400" />
+              <ArrowRight className="w-6 h-6 text-gray-600" />
               <div className="text-center">
-                <p className="font-semibold text-3xl" style={{ color: getScoreColor(result.simulated_probability) }}>{result.simulated_probability}%</p>
-                <p className="text-xs text-gray-400">Simulated</p>
-                <p className="text-[10px] font-mono text-gray-400">{result.simulated_position}</p>
+                <p className="text-3xl font-light" style={{ color: getScoreColor(result.simulated_probability) }}>{result.simulated_probability}%</p>
+                <p className="text-xs text-gray-500 mt-1">Simulated</p>
+                <p className="text-xs text-gray-600">{result.simulated_position}</p>
               </div>
             </div>
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${result.improvement_delta > 0 ? "bg-emerald-500/10" : "bg-zinc-500/10"}`}>
-              {result.improvement_delta > 0 ? <TrendingUp className="w-5 h-5 text-emerald-400" /> : <TrendingDown className="w-5 h-5 text-zinc-400" />}
-              <span className={`font-semibold text-2xl ${result.improvement_delta > 0 ? "text-emerald-400" : "text-zinc-400"}`}>
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-xl ${result.improvement_delta > 0 ? "bg-emerald-400/10 border border-emerald-400/20" : "bg-white/5 border border-white/10"}`}>
+              {result.improvement_delta > 0 ? <TrendingUp className="w-5 h-5 text-emerald-400" /> : <TrendingDown className="w-5 h-5 text-gray-400" />}
+              <span className={`text-2xl font-semibold ${result.improvement_delta > 0 ? "text-emerald-400" : "text-gray-400"}`}>
                 {result.improvement_delta > 0 ? "+" : ""}{result.improvement_delta}
               </span>
             </div>
@@ -99,14 +129,14 @@ export default function SimulatorPage() {
               const sim = result.simulated_breakdown[key];
               const delta = sim - orig;
               return (
-                <div key={key} className="rounded-xl bg-white/[0.03] border border-white/5 p-3 text-center">
-                  <p className="text-xs text-gray-400 font-mono mb-2">{key.replace(/_/g, " ")}</p>
+                <div key={key} className="rounded-xl bg-white/[0.02] border border-white/5 p-3 text-center">
+                  <p className="text-xs text-gray-500 mb-2 capitalize">{key.replace(/_/g, " ")}</p>
                   <div className="flex items-center justify-center gap-2">
                     <span className="text-sm" style={{ color: getScoreColor(orig) }}>{orig}</span>
-                    <ArrowRight className="w-3 h-3 text-gray-400" />
-                    <span className="text-sm font-bold" style={{ color: getScoreColor(sim) }}>{sim}</span>
+                    <ArrowRight className="w-3 h-3 text-gray-600" />
+                    <span className="text-sm font-semibold" style={{ color: getScoreColor(sim) }}>{sim}</span>
                   </div>
-                  {delta !== 0 && <p className={`text-[10px] font-mono mt-1 ${delta > 0 ? "text-emerald-400" : "text-red-400"}`}>{delta > 0 ? "+" : ""}{delta}</p>}
+                  {delta !== 0 && <p className={`text-xs mt-1 ${delta > 0 ? "text-emerald-400" : "text-red-400"}`}>{delta > 0 ? "+" : ""}{delta}</p>}
                 </div>
               );
             })}
@@ -116,10 +146,12 @@ export default function SimulatorPage() {
 
           {result.adjustments_applied?.length > 0 && (
             <div>
-              <p className="text-xs font-mono text-gray-400 uppercase mb-2">Adjustments Applied</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Adjustments Applied</p>
               <ul className="space-y-1">
                 {result.adjustments_applied.map((a, i) => (
-                  <li key={i} className="text-xs text-gray-400 flex items-center gap-2"><ArrowRight className="w-3 h-3 text-brand-blue" /> {a}</li>
+                  <li key={i} className="text-xs text-gray-400 flex items-center gap-2">
+                    <ArrowRight className="w-3 h-3 text-brand-blue" /> {a}
+                  </li>
                 ))}
               </ul>
             </div>
