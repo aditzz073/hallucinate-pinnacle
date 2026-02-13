@@ -174,8 +174,11 @@ export default function Dashboard({ onNavigate }) {
         {/* Main Score Card */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* AI Visibility Score */}
-          <div className="lg:col-span-1 glass-card p-6 flex flex-col items-center justify-center text-center">
-            <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">AI Visibility Score</p>
+          <div className="lg:col-span-1 glass-card p-6 flex flex-col items-center justify-center text-center border border-blue-500/10">
+            <div className="flex items-center gap-2 mb-3">
+              <Target className="w-3 h-3 text-cyan-400" />
+              <p className="text-xs text-cyan-400 uppercase tracking-wider font-semibold">Visibility Index</p>
+            </div>
             <div className="relative mb-3">
               <svg className="w-32 h-32 transform -rotate-90">
                 <circle cx="64" cy="64" r="56" stroke="rgba(255,255,255,0.05)" strokeWidth="8" fill="none" />
@@ -186,6 +189,7 @@ export default function Dashboard({ onNavigate }) {
                   fill="none"
                   strokeLinecap="round"
                   strokeDasharray={`${aiVisibilityScore * 3.52} 352`}
+                  className="transition-all duration-1000 ease-out"
                 />
                 <defs>
                   <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -195,10 +199,15 @@ export default function Dashboard({ onNavigate }) {
                 </defs>
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-4xl font-bold text-white">{aiVisibilityScore}</span>
+                <span className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">{aiVisibilityScore}</span>
               </div>
             </div>
-            <p className="text-sm text-gray-400">out of 100</p>
+            <p className="text-xs text-gray-500">
+              {aiVisibilityScore < 30 && "Invisible to AI engines"}
+              {aiVisibilityScore >= 30 && aiVisibilityScore < 50 && "Getting discovered"}
+              {aiVisibilityScore >= 50 && aiVisibilityScore < 70 && "Solid AI presence"}
+              {aiVisibilityScore >= 70 && "AI engine favorite"}
+            </p>
           </div>
 
           {/* Copilot Insight */}
