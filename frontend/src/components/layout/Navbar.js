@@ -124,7 +124,11 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
     return (
       <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-5 px-4" data-testid="navbar">
         <nav className="floating-navbar flex items-center gap-8">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+          <div 
+            className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity" 
+            onClick={handleLogoClick}
+            data-testid="nav-logo-landing"
+          >
             <Logo size="sm" />
             <span className="text-lg font-black tracking-tight">
               <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-cyan-400 bg-clip-text text-transparent">Pinnacle</span>
