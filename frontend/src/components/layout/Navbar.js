@@ -173,8 +173,9 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
         {/* Logo */}
         <div 
           className="flex items-center gap-2 pr-4 border-r border-white/10 mr-3 cursor-pointer hover:opacity-80 transition-opacity"
-          onClick={() => onNavigate("landing")}
-          data-testid="nav-logo"
+          onClick={handleLogoClick}
+          data-testid="nav-logo-app"
+          title="Return to home"
         >
           <Logo size="sm" />
           <span className="hidden sm:flex items-baseline text-base font-black tracking-tight">
