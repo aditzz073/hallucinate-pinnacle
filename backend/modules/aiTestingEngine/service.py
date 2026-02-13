@@ -95,8 +95,8 @@ async def run_ai_test(url: str, query: str, user_id: str) -> dict:
         "citation_probability": citation_prob,
         "engine_scores_json": engine_scores,
         "likely_position": likely_position,
-        "why_not_cited": why_not_cited,
-        "improvement_suggestions": improvement_suggestions,
+        "why_not_cited": formatted_gaps,
+        "improvement_suggestions": formatted_suggestions,
         # GEO fields
         "geo_score": geo_result["geo_score"],
         "geo_scores_json": geo_scores,
