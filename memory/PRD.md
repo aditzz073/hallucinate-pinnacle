@@ -42,6 +42,15 @@ Build a production-grade SaaS platform ("Pinnacle.AI") for AI Engine Optimizatio
 - **AI Tests Page**: Citation + GEO scores side-by-side, 3 GEO factor cards, expandable insights
 - **Color Palette**: Pure black background, brand blue (#3A9BFF), brand teal (#60D5C8)
 
+### Frontend Unification (2026-02-13)
+- **Brand Name Fix**: "Pinnacle.ai" (no space) standardized everywhere
+- **Enhanced Navbar**: Increased height/padding, Profile button added
+- **Global Footer**: Brand + navigation links + copyright on all pages
+- **Profile Page**: Account info, usage stats, subscription, security sections
+- **Page Consistency**: Unified card styles, spacing, typography system
+- **Removed "Phase X"**: Clean headings across all enterprise pages
+- **Background**: Unified deep dark gradient (`#0a0a0f`)
+
 ## Test Coverage
 - Backend: 100% (48/48 tests - 31 core + 17 GEO tests)
 - Frontend: 100% (all flows verified including GEO display)
