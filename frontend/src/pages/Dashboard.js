@@ -11,9 +11,11 @@ import axios from "axios";
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const getHealthStatus = (score) => {
-  if (score >= 60) return { label: "Strong", color: "text-emerald-400", dotColor: "bg-emerald-400" };
-  if (score >= 40) return { label: "Moderate", color: "text-amber-400", dotColor: "bg-amber-400" };
-  return { label: "Needs Work", color: "text-red-400", dotColor: "bg-red-400" };
+  if (score >= 80) return { label: "🔥 Elite", color: "text-emerald-400", dotColor: "bg-emerald-400" };
+  if (score >= 60) return { label: "💪 Strong", color: "text-emerald-400", dotColor: "bg-emerald-400" };
+  if (score >= 40) return { label: "⚡ Building", color: "text-amber-400", dotColor: "bg-amber-400" };
+  if (score >= 20) return { label: "🎯 Improving", color: "text-orange-400", dotColor: "bg-orange-400" };
+  return { label: "⚠️ Critical", color: "text-red-400", dotColor: "bg-red-400" };
 };
 
 const generateCopilotInsight = (overview) => {
