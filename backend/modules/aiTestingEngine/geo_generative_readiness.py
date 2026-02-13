@@ -137,8 +137,6 @@ def _score_product_page(parsed: dict, body_text: str, headings: dict, faq_items:
     
     # 2. Product Description (0-20 points)
     description = parsed.get("meta_description", "")
-    # Look for descriptive content blocks
-    has_description = len(description) > 50 or word_count > 100
     
     if word_count > 300:
         score += 20
