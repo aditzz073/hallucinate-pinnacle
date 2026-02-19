@@ -26,7 +26,7 @@ def create_token(user_id: str, email: str) -> str:
     return jwt.encode(payload, JWT_SECRET, algorithm="HS256")
 
 
-async def register_user(email: str, password: str) -> dict:
+async def register_user(email: str, password: str, nickname: str = None) -> dict:
     existing = await users_collection.find_one({"email": email})
     if existing:
         raise ValueError("Email already registered")
@@ -35,6 +35,7 @@ async def register_user(email: str, password: str) -> dict:
     user_doc = {
         "email": email,
         "password_hash": hash_password(password),
+        "nickname": nickname,
         "created_at": now,
     }
     result = await users_collection.insert_one(user_doc)
@@ -44,7 +45,7 @@ async def register_user(email: str, password: str) -> dict:
     return {
         "access_token": token,
         "token_type": "bearer",
-        "user": {"id": user_id, "email": email, "created_at": now},
+        "user": {"id": user_id, "email": email, "nickname": nickname, "created_at": now},
     }
 
 
