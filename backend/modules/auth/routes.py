@@ -9,7 +9,7 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 @router.post("/register", response_model=TokenResponse)
 async def register(req: UserRegisterRequest):
     try:
-        result = await register_user(req.email, req.password)
+        result = await register_user(req.email, req.password, req.nickname)
         return result
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
