@@ -65,6 +65,7 @@ async def login_user(email: str, password: str) -> dict:
         "user": {
             "id": user_id,
             "email": user["email"],
+            "nickname": user.get("nickname"),
             "created_at": user["created_at"],
         },
     }
