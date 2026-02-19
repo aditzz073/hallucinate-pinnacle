@@ -270,6 +270,37 @@ h3, .h3 {
   50% { transform: translate(20px, -15px) scale(0.95); }
 }
 
+@keyframes pulse-orb {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+@keyframes gradient-shift {
+  0%, 100% { 
+    background-position: 0% 50%;
+  }
+  50% { 
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes beam-pulse {
+  0%, 100% { 
+    opacity: 0.1;
+    transform: scaleY(0.8);
+  }
+  50% { 
+    opacity: 0.3;
+    transform: scaleY(1);
+  }
+}
+
 @keyframes scanline {
   0% { transform: translateY(-100%); }
   100% { transform: translateY(100%); }
