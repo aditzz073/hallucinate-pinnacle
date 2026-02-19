@@ -119,7 +119,7 @@ export default function Dashboard({ onNavigate }) {
     );
   }
 
-  const userName = user?.email?.split("@")[0] || "there";
+  const userName = user?.nickname || user?.email?.split("@")[0] || "there";
 
   // Dynamic welcome messages that rotate
   const getWelcomeMessage = () => {
