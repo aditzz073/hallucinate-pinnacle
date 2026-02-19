@@ -255,6 +255,36 @@ h3, .h3 {
   50% { transform: translate(-20px, -20px); }
 }
 
+@keyframes float-medium-reverse {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(25px, 15px) rotate(3deg); }
+}
+
+@keyframes float-fast {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-15px, -25px) scale(1.1); }
+}
+
+@keyframes float-fast-reverse {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, -15px) scale(0.95); }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.03; }
+  50% { opacity: 0.08; }
+}
+
+@keyframes pulse-slower {
+  0%, 100% { opacity: 0.02; }
+  50% { opacity: 0.06; }
+}
+
 @keyframes scroll-down {
   0% { opacity: 1; transform: translateY(0); }
   100% { opacity: 0; transform: translateY(8px); }
