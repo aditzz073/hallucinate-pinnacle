@@ -310,6 +310,30 @@ h3, .h3 {
   animation: float-medium 6s ease-in-out infinite;
 }
 
+.animate-float-medium-reverse {
+  animation: float-medium-reverse 7s ease-in-out infinite;
+}
+
+.animate-float-fast {
+  animation: float-fast 4s ease-in-out infinite;
+}
+
+.animate-float-fast-reverse {
+  animation: float-fast-reverse 5s ease-in-out infinite;
+}
+
+.animate-scanline {
+  animation: scanline 8s linear infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 4s ease-in-out infinite;
+}
+
+.animate-pulse-slower {
+  animation: pulse-slower 6s ease-in-out infinite;
+}
+
 .animate-scroll-down {
   animation: scroll-down 1.5s ease-in-out infinite;
 }
