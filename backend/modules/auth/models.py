@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 class UserRegisterRequest(BaseModel):
     email: EmailStr
     password: str = Field(..., min_length=6)
+    nickname: Optional[str] = Field(None, max_length=50)
 
 
 class UserLoginRequest(BaseModel):
@@ -16,6 +17,7 @@ class UserLoginRequest(BaseModel):
 class UserResponse(BaseModel):
     id: str
     email: str
+    nickname: Optional[str] = None
     created_at: str
 
 
