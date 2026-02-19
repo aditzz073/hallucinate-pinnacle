@@ -80,5 +80,6 @@ async def get_user_by_id(user_id: str) -> dict:
     return {
         "id": str(user["_id"]),
         "email": user["email"],
+        "nickname": user.get("nickname"),
         "created_at": user["created_at"],
     }
