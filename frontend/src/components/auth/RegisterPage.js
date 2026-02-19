@@ -49,6 +49,18 @@ export default function RegisterPage({ onSwitch }) {
               <div className="rounded-xl bg-red-400/10 border border-red-400/20 px-4 py-3 text-sm text-red-400" data-testid="register-error">{error}</div>
             )}
             <div className="space-y-2">
+              <label className="text-xs font-medium text-gray-400">Nickname <span className="text-gray-600">(optional)</span></label>
+              <input 
+                data-testid="register-nickname-input" 
+                type="text" 
+                value={nickname} 
+                onChange={(e) => setNickname(e.target.value)} 
+                className="glass-input w-full h-12 px-4 text-sm" 
+                placeholder="How should we call you?" 
+                maxLength={50}
+              />
+            </div>
+            <div className="space-y-2">
               <label className="text-xs font-medium text-gray-400">Email</label>
               <input data-testid="register-email-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="glass-input w-full h-12 px-4 text-sm" placeholder="you@company.com" required />
             </div>
