@@ -8,6 +8,7 @@ export default function RegisterPage({ onSwitch }) {
   const { register } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [nickname, setNickname] = useState("");
   const [confirmPw, setConfirmPw] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState("");
@@ -20,7 +21,7 @@ export default function RegisterPage({ onSwitch }) {
     if (password.length < 6) { setError("Password must be at least 6 characters"); return; }
     setLoading(true);
     try {
-      await register(email, password);
+      await register(email, password, nickname.trim() || null);
     } catch (err) {
       setError(err.response?.data?.detail || "Registration failed");
     } finally {
