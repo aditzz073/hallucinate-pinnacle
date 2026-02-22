@@ -4,7 +4,7 @@ import Logo from "../ui/Logo";
 import Blobs from "../ui/Blobs";
 import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 
-export default function RegisterPage({ onSwitch }) {
+export default function RegisterPage({ onSwitch, onSuccess }) {
   const { register } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,6 +22,7 @@ export default function RegisterPage({ onSwitch }) {
     setLoading(true);
     try {
       await register(email, password, nickname.trim() || null);
+      if (onSuccess) onSuccess(); // Call success callback
     } catch (err) {
       setError(err.response?.data?.detail || "Registration failed");
     } finally {
