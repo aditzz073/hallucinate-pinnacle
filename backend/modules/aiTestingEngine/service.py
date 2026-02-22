@@ -1,8 +1,9 @@
 """AI Testing Engine Service - Phase 2 Orchestrator with GEO Integration"""
 from datetime import datetime, timezone
+import logging
 
 from database.connection import ai_tests_collection
-from modules.aeoEngine.html_fetcher import fetch_html
+from modules.aeoEngine.html_fetcher_hybrid import fetch_html_hybrid
 from modules.aeoEngine.html_parser import parse_html
 from modules.aiTestingEngine.query_processor import tokenize_query, detect_intent
 from modules.aiTestingEngine.content_matcher import calculate_content_match
@@ -24,10 +25,19 @@ from modules.aiTestingEngine.recommendation_formatter import (
     format_geo_recommendations,
 )
 
+logger = logging.getLogger(__name__)
+
 
 async def run_ai_test(url: str, query: str, user_id: str = None) -> dict:
-    # Fetch and parse
-    html = await fetch_html(url)
+    # Fetch and parse (hybrid: raw with intelligent headless fallback)
+    fetch_result = await fetch_html_hybrid(url)
+    html = fetch_result["html"]
+    
+    # Log fetch method for monitoring
+    logger.info(f"AI Test for {url}: method={fetch_result['method']}, "
+               f"used_headless={fetch_result['used_headless']}, "
+               f"render_time_ms={fetch_result['render_time_ms']}")
+    
     parsed = parse_html(html, url)
 
     # Step 1: Query processing
