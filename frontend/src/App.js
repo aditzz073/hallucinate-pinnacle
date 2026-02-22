@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import AppBackground from "./components/ui/AppBackground";
+import HistorySlider from "./components/ui/HistorySlider";
 import LoginPage from "./components/auth/LoginPage";
 import RegisterPage from "./components/auth/RegisterPage";
 import FeatureLockedModal from "./components/modals/FeatureLockedModal";
@@ -26,9 +27,13 @@ function AppContent() {
   const [showFeatureLockedModal, setShowFeatureLockedModal] = useState(false);
   const [lockedFeature, setLockedFeature] = useState("");
   const [isTransitioning, setIsTransitioning] = useState(false);
+  
+  // Navigation history tracking
+  const [navigationHistory, setNavigationHistory] = useState(["landing"]);
+  const [historyIndex, setHistoryIndex] = useState(0);
 
   // Smooth page navigation with fade transition
-  const handlePageNavigation = (page) => {
+  const handlePageNavigation = (page, skipHistory = false) => {
     if (page === activePage) return; // Don't transition to same page
     
     setIsTransitioning(true);
@@ -36,7 +41,34 @@ function AppContent() {
       setActivePage(page);
       setIsTransitioning(false);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      // Update navigation history (only if not navigating via back/forward)
+      if (!skipHistory) {
+        // Remove any forward history when navigating to a new page
+        const newHistory = navigationHistory.slice(0, historyIndex + 1);
+        newHistory.push(page);
+        setNavigationHistory(newHistory);
+        setHistoryIndex(newHistory.length - 1);
+      }
     }, 200); // Short fade out before page change
+  };
+
+  // Navigate back in history
+  const handleNavigateBack = () => {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      handlePageNavigation(navigationHistory[newIndex], true);
+    }
+  };
+
+  // Navigate forward in history
+  const handleNavigateForward = () => {
+    if (historyIndex < navigationHistory.length - 1) {
+      const newIndex = historyIndex + 1;
+      setHistoryIndex(newIndex);
+      handlePageNavigation(navigationHistory[newIndex], true);
+    }
   };
 
   const handleShowFeatureLocked = (feature) => {
