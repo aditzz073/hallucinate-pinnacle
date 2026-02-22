@@ -10,7 +10,7 @@ from modules.aeoEngine.scorer import calculate_all_scores
 from modules.aeoEngine.recommender import generate_recommendations
 
 
-async def run_audit(url: str, user_id: str) -> dict:
+async def run_audit(url: str, user_id: str = None) -> dict:
     # Step 1: Fetch HTML
     html = await fetch_html(url)
 
@@ -29,28 +29,33 @@ async def run_audit(url: str, user_id: str) -> dict:
     # Step 6: Generate recommendations
     recommendations = generate_recommendations(signals, scores)
 
-    # Step 7: Save audit
-    audit_doc = {
-        "user_id": user_id,
-        "url": url,
-        "overall_score": scores["overall_score"],
-        "breakdown_json": scores["breakdown"],
-        "signals_json": signals,
-        "recommendations": recommendations,
-        "page_type": page_type,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-    }
-    result = await audits_collection.insert_one(audit_doc)
+    # Step 7: Save audit (only for authenticated users)
+    audit_id = None
+    created_at = datetime.now(timezone.utc).isoformat()
+    
+    if user_id:
+        audit_doc = {
+            "user_id": user_id,
+            "url": url,
+            "overall_score": scores["overall_score"],
+            "breakdown_json": scores["breakdown"],
+            "signals_json": signals,
+            "recommendations": recommendations,
+            "page_type": page_type,
+            "created_at": created_at,
+        }
+        result = await audits_collection.insert_one(audit_doc)
+        audit_id = str(result.inserted_id)
 
     return {
-        "id": str(result.inserted_id),
+        "id": audit_id,
         "url": url,
         "page_type": page_type,
         "overall_score": scores["overall_score"],
         "breakdown": scores["breakdown"],
         "signals": signals,
         "recommendations": recommendations,
-        "created_at": audit_doc["created_at"],
+        "created_at": created_at,
     }
 
 
