@@ -203,6 +203,7 @@ function AppContent() {
         isLanding={activePage === "landing" && !user}
         onGetStarted={() => setView(user ? "dashboard" : "login")}
         onShowFeatureLocked={handleShowFeatureLocked}
+        onLogout={logout}
       />
       <main className="relative z-10 pt-24 pb-12 px-4 lg:px-0">
         <div 
