@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import Logo from "../ui/Logo";
+import FoundingAccessBadge from "../ui/FoundingAccessBadge";
 import {
   LayoutDashboard, FileSearch, Search, Eye, BarChart3,
   Sparkles, FlaskConical, Swords, Crown, LogOut, ChevronDown,
