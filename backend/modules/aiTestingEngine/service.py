@@ -25,7 +25,7 @@ from modules.aiTestingEngine.recommendation_formatter import (
 )
 
 
-async def run_ai_test(url: str, query: str, user_id: str) -> dict:
+async def run_ai_test(url: str, query: str, user_id: str = None) -> dict:
     # Fetch and parse
     html = await fetch_html(url)
     parsed = parse_html(html, url)
@@ -86,29 +86,34 @@ async def run_ai_test(url: str, query: str, user_id: str) -> dict:
         "brand_retention_probability": geo_result["brand_retention_probability"],
     }
 
-    # Step 10: Save result
-    test_doc = {
-        "user_id": user_id,
-        "url": url,
-        "query": query,
-        "intent": intent,
-        "citation_probability": citation_prob,
-        "engine_scores_json": engine_scores,
-        "likely_position": likely_position,
-        "why_not_cited": formatted_gaps,
-        "improvement_suggestions": formatted_suggestions,
-        # GEO fields
-        "geo_score": geo_result["geo_score"],
-        "geo_scores_json": geo_scores,
-        "detected_brand": geo_result.get("detected_brand"),
-        "geo_breakdown_json": geo_result.get("geo_breakdown"),
-        "geo_insights_json": formatted_geo_insights,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-    }
-    result = await ai_tests_collection.insert_one(test_doc)
+    created_at = datetime.now(timezone.utc).isoformat()
+    test_id = None
+
+    # Step 10: Save result (only for authenticated users)
+    if user_id:
+        test_doc = {
+            "user_id": user_id,
+            "url": url,
+            "query": query,
+            "intent": intent,
+            "citation_probability": citation_prob,
+            "engine_scores_json": engine_scores,
+            "likely_position": likely_position,
+            "why_not_cited": formatted_gaps,
+            "improvement_suggestions": formatted_suggestions,
+            # GEO fields
+            "geo_score": geo_result["geo_score"],
+            "geo_scores_json": geo_scores,
+            "detected_brand": geo_result.get("detected_brand"),
+            "geo_breakdown_json": geo_result.get("geo_breakdown"),
+            "geo_insights_json": formatted_geo_insights,
+            "created_at": created_at,
+        }
+        result = await ai_tests_collection.insert_one(test_doc)
+        test_id = str(result.inserted_id)
 
     return {
-        "id": str(result.inserted_id),
+        "id": test_id,
         "url": url,
         "query": query,
         "intent": intent,
@@ -125,7 +130,7 @@ async def run_ai_test(url: str, query: str, user_id: str) -> dict:
         "brand_retention_probability": geo_result["brand_retention_probability"],
         "detected_brand": geo_result.get("detected_brand"),
         "geo_insights": formatted_geo_insights,
-        "created_at": test_doc["created_at"],
+        "created_at": created_at,
     }
 
 
