@@ -224,7 +224,12 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
   }
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4" data-testid="navbar">
+    <header 
+      className={`fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4 transition-all duration-300 ${
+        scrolled ? 'backdrop-blur-xl bg-black/30 shadow-lg' : ''
+      }`}
+      data-testid="navbar"
+    >
       <nav className="floating-navbar flex items-center gap-1">
         {/* Logo */}
         <div 
