@@ -182,22 +182,17 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Navbar Visibility for Guests"
-    - "Guest Mode - Audits Page - Audit Functionality"
-    - "Guest Mode - AI Tests Page - Test Functionality"
     - "Guest Usage Limits - Audits"
     - "Guest Usage Limits - AI Tests"
-    - "Locked Sections Display - Audits Results"
-    - "Locked Sections Display - AI Test Results"
-    - "Feature-Lock Modal - Dashboard"
-    - "Feature-Lock Modal - Enterprise Features"
   stuck_tasks: []
-  test_all: true
-  test_priority: "sequential"
+  test_all: false
+  test_priority: "high_first"
 
 agent_communication:
   - agent: "main"
     message: "Fixed critical guest mode bugs: 1) Updated navbar to show full navigation to guests, 2) Made backend authentication optional for audit/AI test POST endpoints, 3) Updated frontend API client to only send auth header when token exists, 4) Guest mode hooks and components already exist and are properly implemented. Ready for comprehensive testing."
+  - agent: "testing"
+    message: "TESTING COMPLETE. 7 of 9 features working correctly. 2 CRITICAL UX ISSUES found: GuestLimitModal does not appear when guests reach their usage limit (0 uses remaining). The form inputs and submit button are disabled when hasReachedLimit=true, preventing the modal from being triggered. Only an inline warning message shows. Users cannot access the modal's conversion CTA. See detailed findings in Guest Usage Limits tasks."
 
 ## Incorporate User Feedback
 If the user provides feedback or reports issues after testing:
