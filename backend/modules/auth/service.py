@@ -43,10 +43,13 @@ async def register_user(email: str, password: str, nickname: str = None) -> dict
         raise ValueError("Email already registered")
 
     now = datetime.now(timezone.utc).isoformat()
+    is_privileged = is_privileged_email(email)
+    
     user_doc = {
         "email": email,
         "password_hash": hash_password(password),
         "nickname": nickname,
+        "is_privileged": is_privileged,
         "created_at": now,
     }
     result = await users_collection.insert_one(user_doc)
@@ -56,7 +59,13 @@ async def register_user(email: str, password: str, nickname: str = None) -> dict
     return {
         "access_token": token,
         "token_type": "bearer",
-        "user": {"id": user_id, "email": email, "nickname": nickname, "created_at": now},
+        "user": {
+            "id": user_id,
+            "email": email,
+            "nickname": nickname,
+            "is_privileged": is_privileged,
+            "created_at": now
+        },
     }
 
 
