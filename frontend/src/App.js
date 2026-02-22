@@ -193,15 +193,13 @@ function AppContent() {
       </main>
       {activePage !== "landing" && <Footer onNavigate={setActivePage} />}
       
-      {/* Navigation History Slider - Only show in main app view (not login/register) */}
-      {view !== "login" && view !== "register" && (
-        <HistorySlider
-          history={navigationHistory}
-          currentIndex={historyIndex}
-          onNavigateBack={handleNavigateBack}
-          onNavigateForward={handleNavigateForward}
-        />
-      )}
+      {/* Navigation History Slider - Visible everywhere */}
+      <HistorySlider
+        history={navigationHistory}
+        currentIndex={historyIndex}
+        onNavigateBack={handleNavigateBack}
+        onNavigateForward={handleNavigateForward}
+      />
       
       {/* Feature Locked Modal */}
       <FeatureLockedModal
