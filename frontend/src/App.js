@@ -21,22 +21,36 @@ import ExecutiveSummaryPage from "./pages/ExecutiveSummaryPage";
 import ProfilePage from "./pages/ProfilePage";
 
 function AppContent() {
-  const { user, loading } = useAuth();
+  const { user, loading, logout: authLogout } = useAuth();
   const [view, setView] = useState("landing");
   const [activePage, setActivePage] = useState("landing");
   const [showFeatureLockedModal, setShowFeatureLockedModal] = useState(false);
   const [lockedFeature, setLockedFeature] = useState("");
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const hasRedirectedRef = React.useRef(false);
   
   // Navigation history tracking
   const [navigationHistory, setNavigationHistory] = useState(["landing"]);
   const [historyIndex, setHistoryIndex] = useState(0);
 
-  // Handle logout - redirect to landing
+  // Custom logout that also redirects
+  const logout = () => {
+    hasRedirectedRef.current = true;
+    authLogout();
+    setView("landing");
+    setActivePage("landing");
+  };
+
+  // Handle logout - redirect to landing (only once)
   useEffect(() => {
-    if (!loading && !user && view === "app") {
+    if (!loading && !user && view === "app" && !hasRedirectedRef.current) {
+      hasRedirectedRef.current = true;
       setView("landing");
       setActivePage("landing");
+    }
+    // Reset ref when user logs in
+    if (user) {
+      hasRedirectedRef.current = false;
     }
   }, [user, loading, view]);
 
