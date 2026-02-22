@@ -153,7 +153,8 @@ export default function AITestsPage({ onSignUp }) {
         </div>
       )}
 
-      {activeResult && (
+      {/* Hide results when guest reaches limit */}
+      {activeResult && !(isGuest && hasReachedLimit) && (
         <div className="space-y-4" data-testid="ai-test-result">
           {/* Main Scores */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -288,8 +289,8 @@ export default function AITestsPage({ onSignUp }) {
         </div>
       )}
 
-      {/* Locked Sections for Guests */}
-      {isGuest && activeResult && (
+      {/* Locked Sections for Guests - hide when limit reached */}
+      {isGuest && activeResult && !hasReachedLimit && (
         <div className="space-y-4">
           <LockedSection
             title="Deep Competitive Analysis"
