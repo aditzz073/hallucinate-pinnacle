@@ -79,8 +79,18 @@ function AppContent() {
   const handleNavigateBack = () => {
     if (historyIndex > 0) {
       const newIndex = historyIndex - 1;
+      const targetPage = navigationHistory[newIndex];
       setHistoryIndex(newIndex);
-      handlePageNavigation(navigationHistory[newIndex], true);
+      
+      // If navigating to/from login/register, update view
+      if (targetPage === "login") {
+        setView("login");
+      } else if (targetPage === "register") {
+        setView("register");
+      } else {
+        setView("app");
+        handlePageNavigation(targetPage, true);
+      }
     }
   };
 
@@ -88,8 +98,18 @@ function AppContent() {
   const handleNavigateForward = () => {
     if (historyIndex < navigationHistory.length - 1) {
       const newIndex = historyIndex + 1;
+      const targetPage = navigationHistory[newIndex];
       setHistoryIndex(newIndex);
-      handlePageNavigation(navigationHistory[newIndex], true);
+      
+      // If navigating to/from login/register, update view
+      if (targetPage === "login") {
+        setView("login");
+      } else if (targetPage === "register") {
+        setView("register");
+      } else {
+        setView("app");
+        handlePageNavigation(targetPage, true);
+      }
     }
   };
 
