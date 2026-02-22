@@ -135,14 +135,18 @@ function AppContent() {
     setShowFeatureLockedModal(true);
   };
 
-  const handleSignInFromModal = () => {
-    setShowFeatureLockedModal(false);
-    setView("login");
-    // Add to navigation history
+  // Navigate to login/register with history tracking
+  const navigateToAuth = (authView) => {
+    setView(authView);
     const newHistory = navigationHistory.slice(0, historyIndex + 1);
-    newHistory.push("login");
+    newHistory.push(authView);
     setNavigationHistory(newHistory);
     setHistoryIndex(newHistory.length - 1);
+  };
+
+  const handleSignInFromModal = () => {
+    setShowFeatureLockedModal(false);
+    navigateToAuth("login");
   };
 
   if (loading) {
