@@ -32,6 +32,14 @@ function AppContent() {
   const [navigationHistory, setNavigationHistory] = useState(["landing"]);
   const [historyIndex, setHistoryIndex] = useState(0);
 
+  // Handle logout - redirect to landing
+  useEffect(() => {
+    if (!loading && !user && view === "app") {
+      setView("landing");
+      setActivePage("landing");
+    }
+  }, [user, loading, view]);
+
   // Smooth page navigation with fade transition
   const handlePageNavigation = (page, skipHistory = false) => {
     if (page === activePage) return; // Don't transition to same page
