@@ -25,6 +25,19 @@ function AppContent() {
   const [activePage, setActivePage] = useState("landing");
   const [showFeatureLockedModal, setShowFeatureLockedModal] = useState(false);
   const [lockedFeature, setLockedFeature] = useState("");
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Smooth page navigation with fade transition
+  const handlePageNavigation = (page) => {
+    if (page === activePage) return; // Don't transition to same page
+    
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setActivePage(page);
+      setIsTransitioning(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 200); // Short fade out before page change
+  };
 
   const handleShowFeatureLocked = (feature) => {
     // Map page IDs to user-friendly names
