@@ -149,7 +149,7 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
         }`}>
           {/* Logo */}
           <div 
-            className="flex items-center gap-2 pr-4 border-r border-white/10 mr-3 cursor-pointer hover:opacity-80 transition-opacity"
+            className="flex items-center gap-2 pr-4 border-r border-white/10 mr-3 cursor-pointer hover:opacity-80 transition-all duration-500 ease-out"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             data-testid="nav-logo-landing"
           >
@@ -237,7 +237,7 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
       }`}>
         {/* Logo */}
         <div 
-          className="flex items-center gap-2 pr-4 border-r border-white/10 mr-3 cursor-pointer hover:opacity-80 transition-opacity"
+          className="flex items-center gap-2 pr-4 border-r border-white/10 mr-3 cursor-pointer hover:opacity-80 transition-all duration-500 ease-out"
           onClick={handleLogoClick}
           data-testid="nav-logo-app"
           title="Return to home"
