@@ -111,10 +111,16 @@ function AppContent() {
 
   // Handle auth views (login/register)
   if (view === "login") {
-    return <LoginPage onSwitch={() => setView("register")} />;
+    return <LoginPage onSwitch={() => setView("register")} onSuccess={() => {
+      setView("app");
+      setActivePage("dashboard");
+    }} />;
   }
   if (view === "register") {
-    return <RegisterPage onSwitch={() => setView("login")} />;
+    return <RegisterPage onSwitch={() => setView("login")} onSuccess={() => {
+      setView("app");
+      setActivePage("dashboard");
+    }} />;
   }
 
   // Main app view (landing or app pages)
