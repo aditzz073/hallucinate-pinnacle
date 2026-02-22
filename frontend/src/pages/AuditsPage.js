@@ -100,7 +100,7 @@ export default function AuditsPage({ onSignUp }) {
         {isGuest && hasReachedLimit && (
           <p className="mt-3 text-sm text-amber-400 flex items-center gap-2">
             <Lock className="w-4 h-4" />
-            You've used all 2 free audits. Click the button above to create an account.
+            You've used all 5 free audits. Click the button above to create an account.
           </p>
         )}
       </div>
