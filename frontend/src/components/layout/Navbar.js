@@ -101,8 +101,8 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
       // On landing page, scroll to top
       window.scrollTo({ top: 0, behavior: "smooth" });
     } else {
-      // Logged in, go back to landing (logout)
-      logout();
+      // Navigate to landing page
+      onNavigate && onNavigate("landing");
     }
   };
 
