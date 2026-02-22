@@ -9,6 +9,18 @@ export default function FeatureLockedModal({ isOpen, onClose, onSignIn, feature 
       title: 'Sign in to access your Dashboard',
       description: 'View your saved insights, analytics, and AI visibility metrics in one place.',
     },
+    'Monitor Pages': {
+      title: 'Sign in to Monitor Pages',
+      description: 'Track and monitor your pages performance over time with automated alerts.',
+    },
+    'Reports': {
+      title: 'Sign in to access Reports',
+      description: 'Generate comprehensive reports with historical data and trend analysis.',
+    },
+    'Advanced Audit': {
+      title: 'Sign in to access Advanced Audit',
+      description: 'Get deeper insights with advanced scoring algorithms and detailed recommendations.',
+    },
     'Strategy Simulator': {
       title: 'Enterprise Feature',
       description: 'Simulate content optimizations and see projected impact on citation probability.',
@@ -20,6 +32,10 @@ export default function FeatureLockedModal({ isOpen, onClose, onSignIn, feature 
     'Executive Summary': {
       title: 'Enterprise Feature',
       description: 'Generate executive-ready reports and data-driven decision summaries.',
+    },
+    'Profile': {
+      title: 'Sign in to access your Profile',
+      description: 'Manage your account settings, preferences, and subscription details.',
     },
   };
 
