@@ -18,6 +18,7 @@ class UserResponse(BaseModel):
     id: str
     email: str
     nickname: Optional[str] = None
+    is_privileged: bool = False
     created_at: str
 
 
