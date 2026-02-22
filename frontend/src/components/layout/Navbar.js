@@ -140,8 +140,9 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
   if (isLanding) {
     return (
       <header 
-        className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4 transition-all duration-1000 ease-in-out"
+        className="fixed top-0 left-0 right-0 z-50 flex justify-center py-4 px-4 transition-all duration-1000 ease-in-out"
         data-testid="navbar"
+        style={{ transform: 'translateZ(0)' }}
       >
         <nav className={`flex items-center gap-1 rounded-full border px-6 py-2.5 transition-all duration-1000 ease-in-out ${
           scrolled 
@@ -228,8 +229,9 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
 
   return (
     <header 
-      className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4 transition-all duration-1000 ease-in-out"
+      className="fixed top-0 left-0 right-0 z-50 flex justify-center py-4 px-4 transition-all duration-1000 ease-in-out"
       data-testid="navbar"
+      style={{ transform: 'translateZ(0)' }}
     >
       <nav className={`flex items-center gap-1 rounded-full border px-6 py-2.5 transition-all duration-1000 ease-in-out ${
         scrolled 
