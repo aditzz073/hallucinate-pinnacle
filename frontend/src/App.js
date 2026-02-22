@@ -101,7 +101,7 @@ function AppContent() {
         handleShowFeatureLocked("dashboard");
         return <LandingPage onGetStarted={() => setView("register")} />;
       }
-      return <Dashboard onNavigate={setActivePage} />;
+      return <Dashboard onNavigate={handlePageNavigation} />;
     }
 
     // Authenticated-only pages
