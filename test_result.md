@@ -172,3 +172,5 @@ test_plan:
 agent_communication:
   - agent: "testing"
     message: "Starting comprehensive test of guest-to-user conversion flow for Pinnacle.ai. Will test all guest mode features, access controls, navbar visibility, and sign up flow as per review request."
+  - agent: "testing"
+    message: "CRITICAL BLOCKING ISSUE DISCOVERED: The navbar implementation does not show Audits, AI Tests, Tools, or Enterprise items on the landing page. Landing page has a separate simplified navbar (Features, Dashboard, Pricing) while the full application navbar (Audits, AI Tests, Tools, Enterprise) only appears when NOT on landing page. However, there is no way for guests to navigate from landing page to application pages. The test spec requires: 'Navigate to landing page, Click on Audits in navbar' - but Audits button does not exist on landing page. This is a fundamental architectural issue that blocks all guest mode testing."
