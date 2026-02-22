@@ -10,7 +10,14 @@ import LockedSection from "../components/ui/LockedSection";
 
 export default function AuditsPage({ onSignUp }) {
   const { user } = useAuth();
+  
+  // Skip guest mode entirely for privileged users
+  const isPrivileged = user?.is_privileged || false;
   const { isGuest, remainingUses, hasReachedLimit, incrementUsage, showLimitModal, setShowLimitModal } = useGuestMode('audits');
+  
+  // Privileged users are never treated as guests
+  const effectiveIsGuest = isPrivileged ? false : isGuest;
+  const effectiveHasReachedLimit = isPrivileged ? false : hasReachedLimit;
   
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
