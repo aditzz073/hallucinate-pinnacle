@@ -8,21 +8,21 @@ import {
 } from "lucide-react";
 
 const CORE_NAV = [
-  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "audits", label: "Audits", icon: FileSearch },
-  { id: "ai-tests", label: "AI Tests", icon: Search },
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, requiresAuth: true },
+  { id: "audits", label: "Audits", icon: FileSearch, requiresAuth: false },
+  { id: "ai-tests", label: "AI Tests", icon: Search, requiresAuth: false },
 ];
 
 const TOOLS_DROPDOWN = [
-  { id: "monitor", label: "Monitor Pages", icon: Eye },
-  { id: "reports", label: "Reports", icon: BarChart3 },
-  { id: "advanced", label: "Advanced Audit", icon: Sparkles },
-  { id: "simulator", label: "Strategy Simulator", icon: FlaskConical },
+  { id: "monitor", label: "Monitor Pages", icon: Eye, requiresAuth: true },
+  { id: "reports", label: "Reports", icon: BarChart3, requiresAuth: true },
+  { id: "advanced", label: "Advanced Audit", icon: Sparkles, requiresAuth: true },
+  { id: "simulator", label: "Strategy Simulator", icon: FlaskConical, requiresAuth: true, isEnterprise: true },
 ];
 
 const ENTERPRISE_DROPDOWN = [
-  { id: "compare", label: "Competitor Intel", icon: Swords },
-  { id: "executive", label: "Executive Summary", icon: Crown },
+  { id: "compare", label: "Competitor Intel", icon: Swords, requiresAuth: true, isEnterprise: true },
+  { id: "executive", label: "Executive Summary", icon: Crown, requiresAuth: true, isEnterprise: true },
 ];
 
 function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate }) {
