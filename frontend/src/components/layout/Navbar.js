@@ -139,10 +139,10 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
   if (isLanding) {
     return (
       <header 
-        className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4 transition-all duration-300"
+        className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4 transition-all duration-500 ease-out"
         data-testid="navbar"
       >
-        <nav className={`flex items-center gap-1 rounded-full border px-6 py-2.5 transition-all duration-300 ${
+        <nav className={`flex items-center gap-1 rounded-full border px-6 py-2.5 transition-all duration-500 ease-out ${
           scrolled 
             ? 'bg-black/70 backdrop-blur-xl border-white/25 shadow-2xl' 
             : 'bg-black/30 backdrop-blur-lg border-white/15 shadow-lg'
@@ -227,10 +227,10 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
 
   return (
     <header 
-      className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4 transition-all duration-300"
+      className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4 transition-all duration-500 ease-out"
       data-testid="navbar"
     >
-      <nav className={`flex items-center gap-1 rounded-full border px-6 py-2.5 transition-all duration-300 ${
+      <nav className={`flex items-center gap-1 rounded-full border px-6 py-2.5 transition-all duration-500 ease-out ${
         scrolled 
           ? 'bg-black/70 backdrop-blur-xl border-white/25 shadow-2xl' 
           : 'bg-black/30 backdrop-blur-lg border-white/15 shadow-lg'
