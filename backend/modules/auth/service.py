@@ -78,6 +78,8 @@ async def login_user(email: str, password: str) -> dict:
         raise ValueError("Invalid email or password")
 
     user_id = str(user["_id"])
+    is_privileged = is_privileged_email(email)
+    
     token = create_token(user_id, email)
     return {
         "access_token": token,
@@ -86,6 +88,7 @@ async def login_user(email: str, password: str) -> dict:
             "id": user_id,
             "email": user["email"],
             "nickname": user.get("nickname"),
+            "is_privileged": is_privileged,
             "created_at": user["created_at"],
         },
     }
