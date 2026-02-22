@@ -21,7 +21,19 @@ import ProfilePage from "./pages/ProfilePage";
 function AppContent() {
   const { user, loading } = useAuth();
   const [view, setView] = useState("landing");
-  const [activePage, setActivePage] = useState("dashboard");
+  const [activePage, setActivePage] = useState("landing");
+  const [showFeatureLockedModal, setShowFeatureLockedModal] = useState(false);
+  const [lockedFeature, setLockedFeature] = useState("");
+
+  const handleShowFeatureLocked = (feature) => {
+    setLockedFeature(feature);
+    setShowFeatureLockedModal(true);
+  };
+
+  const handleSignInFromModal = () => {
+    setShowFeatureLockedModal(false);
+    setView("login");
+  };
 
   if (loading) {
     return (
@@ -34,13 +46,42 @@ function AppContent() {
     );
   }
 
-  // Authenticated: show dashboard
-  if (user) {
-    const renderPage = () => {
+  // Handle auth views (login/register)
+  if (view === "login") {
+    return <LoginPage onSwitch={() => setView("register")} />;
+  }
+  if (view === "register") {
+    return <RegisterPage onSwitch={() => setView("login")} />;
+  }
+
+  // Main app view (landing or app pages)
+  const renderPage = () => {
+    // Landing page
+    if (activePage === "landing") {
+      return <LandingPage onGetStarted={() => setView("register")} />;
+    }
+
+    // Public pages (accessible to guests)
+    if (activePage === "audits") {
+      return <AuditsPage onSignUp={() => setView("register")} />;
+    }
+    if (activePage === "ai-tests") {
+      return <AITestsPage onSignUp={() => setView("register")} />;
+    }
+
+    // Dashboard - requires auth
+    if (activePage === "dashboard") {
+      if (!user) {
+        handleShowFeatureLocked("Dashboard");
+        setActivePage("landing");
+        return <LandingPage onGetStarted={() => setView("register")} />;
+      }
+      return <Dashboard onNavigate={setActivePage} />;
+    }
+
+    // Authenticated pages
+    if (user) {
       switch (activePage) {
-        case "dashboard": return <Dashboard onNavigate={setActivePage} />;
-        case "audits": return <AuditsPage />;
-        case "ai-tests": return <AITestsPage />;
         case "monitor": return <MonitoringPage />;
         case "changes": return <MonitoringPage />;
         case "reports": return <ReportsPage />;
@@ -51,36 +92,38 @@ function AppContent() {
         case "profile": return <ProfilePage />;
         default: return <Dashboard onNavigate={setActivePage} />;
       }
-    };
+    }
 
-    return (
-      <div className="min-h-screen text-white antialiased">
-        <AppBackground />
-        <Navbar activePage={activePage} onNavigate={setActivePage} />
-        <main className="relative z-10 pt-24 pb-12 px-4 lg:px-0">
-          <div className="max-w-6xl mx-auto">
-            {renderPage()}
-          </div>
-        </main>
-        <Footer onNavigate={setActivePage} />
-      </div>
-    );
-  }
+    // Guest trying to access enterprise features
+    handleShowFeatureLocked(activePage);
+    setActivePage("landing");
+    return <LandingPage onGetStarted={() => setView("register")} />;
+  };
 
-  // Unauthenticated
-  if (view === "login") {
-    return <LoginPage onSwitch={() => setView("register")} />;
-  }
-  if (view === "register") {
-    return <RegisterPage onSwitch={() => setView("login")} />;
-  }
-
-  // Landing
   return (
     <div className="min-h-screen text-white antialiased">
-      <Navbar isLanding onGetStarted={() => setView("login")} />
-      <LandingPage onGetStarted={() => setView("register")} />
-      <Footer />
+      <AppBackground />
+      <Navbar 
+        activePage={activePage} 
+        onNavigate={setActivePage} 
+        isLanding={activePage === "landing" && !user}
+        onGetStarted={() => setView(user ? "dashboard" : "login")}
+        onShowFeatureLocked={handleShowFeatureLocked}
+      />
+      <main className="relative z-10 pt-24 pb-12 px-4 lg:px-0">
+        <div className="max-w-6xl mx-auto">
+          {renderPage()}
+        </div>
+      </main>
+      {activePage !== "landing" && <Footer onNavigate={setActivePage} />}
+      
+      {/* Feature Locked Modal */}
+      <FeatureLockedModal
+        isOpen={showFeatureLockedModal}
+        onClose={() => setShowFeatureLockedModal(false)}
+        onSignIn={handleSignInFromModal}
+        feature={lockedFeature}
+      />
     </div>
   );
 }
