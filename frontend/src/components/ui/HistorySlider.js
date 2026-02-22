@@ -70,29 +70,6 @@ export default function HistorySlider({ history, currentIndex, onNavigateBack, o
         >
           <ChevronRight className="w-4 h-4" />
         </button>
-
-        {/* History Progress Indicator */}
-        <div className="ml-2 flex items-center gap-1">
-          {history.map((_, index) => (
-            <div
-              key={index}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                index === currentIndex
-                  ? 'w-6 bg-blue-400'
-                  : index < currentIndex
-                  ? 'w-1.5 bg-white/30'
-                  : 'w-1.5 bg-white/10'
-              }`}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Tooltip */}
-      <div className="mt-2 text-center">
-        <p className="text-xs text-gray-500">
-          {currentIndex + 1} of {history.length}
-        </p>
       </div>
     </div>
   );
