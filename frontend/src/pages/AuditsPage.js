@@ -144,30 +144,53 @@ export default function AuditsPage({ onSignUp }) {
         </div>
       )}
 
-      {/* Audit History */}
-      <div>
-        <h2 className="text-lg font-semibold text-white mb-4">Audit History</h2>
-        {listLoading ? (
-          <p className="text-sm text-gray-600">Loading...</p>
-        ) : audits.length === 0 ? (
-          <div className="glass-card flex flex-col items-center py-12 text-center">
-            <FileSearch className="w-8 h-8 text-gray-700 mb-3" />
-            <p className="text-sm text-gray-600">No audits yet. Run your first audit above.</p>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {audits.map((a, i) => (
-              <div key={i} className="glass-card flex items-center justify-between px-5 py-4">
-                <div className="flex items-center gap-4 min-w-0">
-                  <span className="text-lg font-bold" style={{ color: getScoreColor(a.overall_score) }}>{a.overall_score}</span>
-                  <p className="text-sm text-white truncate">{a.url}</p>
+      {/* Locked Sections for Guests */}
+      {isGuest && activeAudit && (
+        <div className="space-y-4">
+          <LockedSection
+            title="Competitive Gap Analysis"
+            description="See how your content compares to top-ranking pages and identify strategic opportunities."
+            onUnlock={onSignUp || (() => {})}
+          />
+          <LockedSection
+            title="PDF Report Export"
+            description="Download a comprehensive PDF report with all audit findings and recommendations."
+            onUnlock={onSignUp || (() => {})}
+          />
+          <LockedSection
+            title="Historical Tracking"
+            description="Track changes over time and monitor your AEO score improvements with saved audit history."
+            onUnlock={onSignUp || (() => {})}
+          />
+        </div>
+      )}
+
+      {/* Audit History - Only for logged in users */}
+      {user && (
+        <div>
+          <h2 className="text-lg font-semibold text-white mb-4">Audit History</h2>
+          {listLoading ? (
+            <p className="text-sm text-gray-600">Loading...</p>
+          ) : audits.length === 0 ? (
+            <div className="glass-card flex flex-col items-center py-12 text-center">
+              <FileSearch className="w-8 h-8 text-gray-700 mb-3" />
+              <p className="text-sm text-gray-600">No audits yet. Run your first audit above.</p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {audits.map((a, i) => (
+                <div key={i} className="glass-card flex items-center justify-between px-5 py-4">
+                  <div className="flex items-center gap-4 min-w-0">
+                    <span className="text-lg font-bold" style={{ color: getScoreColor(a.overall_score) }}>{a.overall_score}</span>
+                    <p className="text-sm text-white truncate">{a.url}</p>
+                  </div>
+                  <span className="text-xs text-gray-600">{new Date(a.created_at).toLocaleDateString()}</span>
                 </div>
-                <span className="text-xs text-gray-600">{new Date(a.created_at).toLocaleDateString()}</span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
