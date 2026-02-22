@@ -101,6 +101,7 @@ export default function AITestsPage({ onSignUp }) {
                 placeholder="e.g., best CRM software" 
                 className="glass-input w-full h-12 px-4 text-sm" 
                 required 
+                disabled={isGuest && hasReachedLimit}
               />
             </div>
             <div className="flex items-end">
