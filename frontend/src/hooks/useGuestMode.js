@@ -7,8 +7,8 @@ export function useGuestMode(feature) {
   const [showLimitModal, setShowLimitModal] = useState(false);
 
   const GUEST_LIMITS = {
-    audits: 5,
-    ai_tests: 5,
+    audits: 2,
+    ai_tests: 2,
   };
 
   useEffect(() => {
