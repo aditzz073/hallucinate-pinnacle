@@ -4,7 +4,7 @@ import Logo from "../ui/Logo";
 import Blobs from "../ui/Blobs";
 import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 
-export default function LoginPage({ onSwitch }) {
+export default function LoginPage({ onSwitch, onSuccess }) {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,6 +18,7 @@ export default function LoginPage({ onSwitch }) {
     setLoading(true);
     try {
       await login(email, password);
+      if (onSuccess) onSuccess(); // Call success callback
     } catch (err) {
       setError(err.response?.data?.detail || "Login failed");
     } finally {
