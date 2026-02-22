@@ -95,6 +95,17 @@ function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate, onShow
 
 export default function Navbar({ activePage, onNavigate, isLanding = false, onGetStarted, onShowFeatureLocked }) {
   const { user, logout } = useAuth();
+  const [scrolled, setScrolled] = useState(false);
+
+  // Add scroll listener for glass effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleLogoClick = () => {
     if (isLanding) {
