@@ -268,28 +268,30 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
         </div>
 
         {/* User Section */}
-        <div className="flex items-center gap-2 pl-4 border-l border-white/10 ml-3">
-          <button
-            data-testid="nav-profile"
-            onClick={() => onNavigate("profile")}
-            className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-              activePage === "profile"
-                ? "bg-white/10 text-white"
-                : "text-gray-400 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            <User className="w-4 h-4" />
-            <span className="hidden lg:inline">Profile</span>
-          </button>
-          <button
-            data-testid="logout-button"
-            onClick={logout}
-            className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-sm font-medium text-gray-400 hover:text-red-400 hover:border-red-400/30 hover:bg-red-400/5 transition-all duration-200"
-          >
-            <LogOut className="w-4 h-4" />
-            <span className="hidden sm:inline">Sign Out</span>
-          </button>
-        </div>
+        {user && (
+          <div className="flex items-center gap-2 pl-4 border-l border-white/10 ml-3">
+            <button
+              data-testid="nav-profile"
+              onClick={() => onNavigate("profile")}
+              className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                activePage === "profile"
+                  ? "bg-white/10 text-white"
+                  : "text-gray-400 hover:text-white hover:bg-white/5"
+              }`}
+            >
+              <User className="w-4 h-4" />
+              <span className="hidden lg:inline">Profile</span>
+            </button>
+            <button
+              data-testid="logout-button"
+              onClick={logout}
+              className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-sm font-medium text-gray-400 hover:text-red-400 hover:border-red-400/30 hover:bg-red-400/5 transition-all duration-200"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:inline">Sign Out</span>
+            </button>
+          </div>
+        )}
       </nav>
     </header>
   );
