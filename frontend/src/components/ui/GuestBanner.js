@@ -3,7 +3,7 @@ import { Info, Sparkles } from 'lucide-react';
 
 export default function GuestBanner({ remainingUses, onSignUp }) {
   return (
-    <div className="mb-6 rounded-xl border border-cyan-500/20 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 backdrop-blur-sm p-4">
+    <div data-testid="guest-banner" className="mb-6 rounded-xl border border-cyan-500/20 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 backdrop-blur-sm p-4">
       <div className="flex items-start gap-3">
         <Info className="w-5 h-5 text-cyan-400 mt-0.5 flex-shrink-0" />
         <div className="flex-1">
