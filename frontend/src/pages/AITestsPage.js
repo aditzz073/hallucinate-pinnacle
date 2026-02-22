@@ -14,7 +14,14 @@ import LockedSection from "../components/ui/LockedSection";
 
 export default function AITestsPage({ onSignUp }) {
   const { user } = useAuth();
+  
+  // Skip guest mode entirely for privileged users
+  const isPrivileged = user?.is_privileged || false;
   const { isGuest, remainingUses, hasReachedLimit, incrementUsage, showLimitModal, setShowLimitModal } = useGuestMode('ai_tests');
+  
+  // Privileged users are never treated as guests
+  const effectiveIsGuest = isPrivileged ? false : isGuest;
+  const effectiveHasReachedLimit = isPrivileged ? false : hasReachedLimit;
 
   const [url, setUrl] = useState("");
   const [query, setQuery] = useState("");
