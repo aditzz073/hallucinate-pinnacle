@@ -4,7 +4,11 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 function authHeaders() {
   const token = localStorage.getItem("token");
-  return { Authorization: `Bearer ${token}` };
+  // Only include Authorization header if token exists
+  if (token) {
+    return { Authorization: `Bearer ${token}` };
+  }
+  return {};
 }
 
 // Audit endpoints
