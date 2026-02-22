@@ -127,56 +127,69 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
     onNavigate(itemId);
   };
 
+  // Landing page navbar - show full nav for guests to access Audits and AI Tests
   if (isLanding) {
-    const handleNavClick = (item) => {
-      if (item === "Features") {
-        // Smooth scroll to features section
-        const featuresSection = document.querySelector('[data-section="features"]');
-        if (featuresSection) {
-          featuresSection.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      } else if (item === "Dashboard") {
-        // If logged in, go to dashboard; otherwise trigger sign in
-        if (user) {
-          onNavigate && onNavigate("dashboard");
-        } else {
-          onGetStarted && onGetStarted();
-        }
-      } else if (item === "Pricing") {
-        // Smooth scroll to pricing section
-        const pricingSection = document.querySelector('[data-section="pricing"]');
-        if (pricingSection) {
-          pricingSection.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      }
-    };
-
     return (
-      <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-5 px-4" data-testid="navbar">
-        <nav className="floating-navbar flex items-center gap-8">
+      <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4" data-testid="navbar">
+        <nav className="floating-navbar flex items-center gap-1">
+          {/* Logo */}
           <div 
-            className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity" 
-            onClick={handleLogoClick}
+            className="flex items-center gap-2 pr-4 border-r border-white/10 mr-3 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             data-testid="nav-logo-landing"
           >
             <Logo size="sm" />
-            <span className="text-lg font-black tracking-tight">
+            <span className="text-base font-black tracking-tight">
               <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-cyan-400 bg-clip-text text-transparent">Pinnacle</span>
               <span className="text-cyan-400 font-light">.ai</span>
             </span>
           </div>
-          <div className="hidden lg:flex items-center gap-1">
-            {["Features", "Dashboard", "Pricing"].map((item) => (
-              <button 
-                key={item} 
-                onClick={() => handleNavClick(item)}
-                className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors duration-200 rounded-full hover:bg-white/5"
-              >
-                {item}
-              </button>
-            ))}
+
+          {/* Core Navigation - accessible to guests */}
+          <div className="flex items-center gap-0.5">
+            {CORE_NAV.map((item) => {
+              const Icon = item.icon;
+              const isActive = activePage === item.id;
+              return (
+                <button
+                  key={item.id}
+                  data-testid={`nav-${item.id}`}
+                  onClick={() => handleNavClickWithAuth(item.id, item.requiresAuth)}
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? "bg-white/10 text-white"
+                      : "text-gray-400 hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span className="hidden md:inline">{item.label}</span>
+                </button>
+              );
+            })}
+
+            {/* Tools Dropdown */}
+            <DropdownMenu
+              label="Tools"
+              icon={Layers}
+              items={TOOLS_DROPDOWN}
+              activePage={activePage}
+              onNavigate={onNavigate}
+              onShowFeatureLocked={onShowFeatureLocked}
+            />
+
+            {/* Enterprise Dropdown */}
+            <DropdownMenu
+              label="Enterprise"
+              icon={Beaker}
+              items={ENTERPRISE_DROPDOWN}
+              activePage={activePage}
+              onNavigate={onNavigate}
+              onShowFeatureLocked={onShowFeatureLocked}
+            />
           </div>
-          <div className="flex items-center gap-3">
+
+          {/* Auth Buttons */}
+          <div className="flex items-center gap-3 pl-4 border-l border-white/10 ml-3">
             <button
               data-testid="nav-login-btn"
               onClick={onGetStarted}
