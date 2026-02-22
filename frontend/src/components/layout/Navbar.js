@@ -139,12 +139,14 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
   if (isLanding) {
     return (
       <header 
-        className={`fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4 transition-all duration-300 ${
-          scrolled ? 'backdrop-blur-xl bg-black/30 shadow-lg' : ''
-        }`}
+        className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4 transition-all duration-300"
         data-testid="navbar"
       >
-        <nav className="floating-navbar flex items-center gap-1">
+        <nav className={`flex items-center gap-1 rounded-full border px-6 py-2.5 transition-all duration-300 ${
+          scrolled 
+            ? 'bg-black/60 backdrop-blur-xl border-white/20 shadow-2xl' 
+            : 'bg-black/20 backdrop-blur-md border-white/10 shadow-lg'
+        }`}>
           {/* Logo */}
           <div 
             className="flex items-center gap-2 pr-4 border-r border-white/10 mr-3 cursor-pointer hover:opacity-80 transition-opacity"
