@@ -339,6 +339,7 @@ export default function AITestsPage({ onSignUp }) {
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }
