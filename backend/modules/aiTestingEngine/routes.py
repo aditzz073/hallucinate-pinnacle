@@ -1,7 +1,8 @@
 """AI Testing Engine Routes - Phase 2"""
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-from middlewares.auth_middleware import verify_token
+from middlewares.auth_middleware import verify_token, verify_token_optional
+from typing import Optional
 
 router = APIRouter(prefix="/ai-test", tags=["AI Citation Testing"])
 
@@ -12,13 +13,17 @@ class AITestRequest(BaseModel):
 
 
 @router.post("")
-async def run_ai_test(req: AITestRequest, current_user: dict = Depends(verify_token)):
+async def run_ai_test(req: AITestRequest, current_user: Optional[dict] = Depends(verify_token_optional)):
     from modules.aiTestingEngine.service import run_ai_test as _run_ai_test
 
     if not req.query.strip():
         raise HTTPException(status_code=400, detail="Query cannot be empty")
+    
+    # Guest mode: user_id is None
+    user_id = current_user["user_id"] if current_user else None
+    
     try:
-        result = await _run_ai_test(str(req.url), req.query.strip(), current_user["user_id"])
+        result = await _run_ai_test(str(req.url), req.query.strip(), user_id)
         return result
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
