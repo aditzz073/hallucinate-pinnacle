@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { runAudit, listAudits } from "../api";
 import { getScoreColor } from "../components/ui/ScoreRing";
-import { FileSearch, Loader2, ExternalLink, AlertTriangle } from "lucide-react";
+import { FileSearch, Loader2, ExternalLink, AlertTriangle, Lock } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { useGuestMode } from "../hooks/useGuestMode";
+import GuestBanner from "../components/ui/GuestBanner";
+import GuestLimitModal from "../components/modals/GuestLimitModal";
+import LockedSection from "../components/ui/LockedSection";
 
-export default function AuditsPage() {
+export default function AuditsPage({ onSignUp }) {
+  const { user } = useAuth();
+  const { isGuest, remainingUses, hasReachedLimit, incrementUsage, showLimitModal, setShowLimitModal } = useGuestMode('audits');
+  
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [audits, setAudits] = useState([]);
@@ -11,7 +19,14 @@ export default function AuditsPage() {
   const [error, setError] = useState("");
   const [listLoading, setListLoading] = useState(true);
 
-  useEffect(() => { loadAudits(); }, []);
+  useEffect(() => {
+    if (user) {
+      loadAudits();
+    } else {
+      setListLoading(false);
+    }
+  }, [user]);
+
   const loadAudits = async () => {
     try { setAudits(await listAudits()); } catch {}
     setListLoading(false);
@@ -20,12 +35,20 @@ export default function AuditsPage() {
   const handleAudit = async (e) => {
     e.preventDefault();
     if (!url.trim()) return;
+
+    // Check guest limit
+    if (isGuest && !incrementUsage()) {
+      return; // Modal will show automatically
+    }
+
     setError("");
     setLoading(true);
     try {
       const result = await runAudit(url.trim());
       setActiveAudit(result);
-      loadAudits();
+      if (user) {
+        loadAudits();
+      }
     } catch (err) {
       setError(err.response?.data?.detail || "Audit failed");
     }
