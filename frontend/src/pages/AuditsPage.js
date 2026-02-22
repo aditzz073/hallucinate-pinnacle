@@ -112,13 +112,15 @@ export default function AuditsPage({ onSignUp }) {
         )}
       </div>
 
-      {/* Guest Limit Modal */}
-      <GuestLimitModal
-        isOpen={showLimitModal}
-        onClose={() => setShowLimitModal(false)}
-        onSignUp={onSignUp || (() => {})}
-        feature="audits"
-      />
+      {/* Guest Limit Modal - Don't show for privileged users */}
+      {!isPrivileged && (
+        <GuestLimitModal
+          isOpen={showLimitModal}
+          onClose={() => setShowLimitModal(false)}
+          onSignUp={onSignUp || (() => {})}
+          feature="audits"
+        />
+      )}
 
       {error && (
         <div className="glass-card border-red-500/20 p-4">
@@ -129,8 +131,8 @@ export default function AuditsPage({ onSignUp }) {
         </div>
       )}
 
-      {/* Hide results when guest reaches limit */}
-      {activeAudit && !(isGuest && hasReachedLimit) && (
+      {/* Hide results when guest reaches limit (but not for privileged) */}
+      {activeAudit && !(effectiveIsGuest && effectiveHasReachedLimit) && (
         <div className="glass-card p-6" data-testid="audit-result">
           <div className="flex items-start justify-between mb-6">
             <div>
@@ -158,8 +160,8 @@ export default function AuditsPage({ onSignUp }) {
         </div>
       )}
 
-      {/* Locked Sections for Guests - hide when limit reached */}
-      {isGuest && activeAudit && !hasReachedLimit && (
+      {/* Locked Sections for Guests only - never show for privileged users */}
+      {effectiveIsGuest && activeAudit && !effectiveHasReachedLimit && (
         <div className="space-y-4">
           <LockedSection
             title="Strategy Simulator"
