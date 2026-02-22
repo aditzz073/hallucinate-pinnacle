@@ -64,61 +64,68 @@ async def run_ai_test(url: str, query: str, user_id: str = None) -> dict:
         # Parse HTML → extract structured signals only
         parsed = parse_html(html, url)
 
-    # Step 1: Query processing
-    tokens = tokenize_query(query)
-    intent = detect_intent(query)
+        # Step 1: Query processing
+        tokens = tokenize_query(query)
+        intent = detect_intent(query)
 
-    # Step 2: Content matching
-    content_match = calculate_content_match(parsed, tokens, intent)
+        # Step 2: Content matching
+        content_match = calculate_content_match(parsed, tokens, intent)
 
-    # Step 3: Extractability
-    extractability = calculate_extractability(parsed, content_match)
+        # Step 3: Extractability
+        extractability = calculate_extractability(parsed, content_match)
 
-    # Step 4: Authority
-    authority = calculate_authority(parsed, {})
+        # Step 4: Authority
+        authority = calculate_authority(parsed, {})
 
-    # Step 5: Citation probability
-    intent_match = calculate_intent_match(content_match, intent)
-    schema_support = calculate_schema_support(parsed, intent)
-    content_depth = calculate_content_depth(parsed)
-    citation_prob = calculate_citation_probability(
-        intent_match, extractability, authority, schema_support, content_depth
-    )
+        # Step 5: Citation probability
+        intent_match = calculate_intent_match(content_match, intent)
+        schema_support = calculate_schema_support(parsed, intent)
+        content_depth = calculate_content_depth(parsed)
+        citation_prob = calculate_citation_probability(
+            intent_match, extractability, authority, schema_support, content_depth
+        )
 
-    # Step 6: Position estimation
-    likely_position = estimate_position(citation_prob)
+        # Step 6: Position estimation
+        likely_position = estimate_position(citation_prob)
 
-    # Step 7: Why not cited
-    why_not_cited = generate_why_not_cited(
-        parsed, content_match, intent,
-        intent_match, extractability, authority, schema_support, content_depth,
-    )
-    improvement_suggestions = generate_improvement_suggestions(why_not_cited, intent)
+        # Step 7: Why not cited
+        why_not_cited = generate_why_not_cited(
+            parsed, content_match, intent,
+            intent_match, extractability, authority, schema_support, content_depth,
+        )
+        improvement_suggestions = generate_improvement_suggestions(why_not_cited, intent)
+        
+        # Format recommendations into copilot-style advisory messages
+        formatted_gaps = [format_citation_gap(g) for g in why_not_cited]
+        formatted_suggestions = [format_citation_suggestion(s, intent) for s in improvement_suggestions]
+
+        # NEW: Step 8 - GEO Analysis
+        geo_result = run_geo_analysis(parsed)
+        
+        # Format GEO insights with impact levels
+        formatted_geo_insights = format_geo_recommendations(geo_result.get("geo_insights"))
+
+        # Step 9: Compile scores (derived metrics only)
+        engine_scores = {
+            "intent_match": intent_match,
+            "extractability": extractability,
+            "authority": authority,
+            "schema_support": schema_support,
+            "content_depth": content_depth,
+        }
+        
+        geo_scores = {
+            "generative_readiness": geo_result["generative_readiness"],
+            "summarization_resilience": geo_result["summarization_resilience"],
+            "brand_retention_probability": geo_result["brand_retention_probability"],
+        }
     
-    # Format recommendations into copilot-style advisory messages
-    formatted_gaps = [format_citation_gap(g) for g in why_not_cited]
-    formatted_suggestions = [format_citation_suggestion(s, intent) for s in improvement_suggestions]
-
-    # NEW: Step 8 - GEO Analysis
-    geo_result = run_geo_analysis(parsed)
-    
-    # Format GEO insights with impact levels
-    formatted_geo_insights = format_geo_recommendations(geo_result.get("geo_insights"))
-
-    # Step 9: Compile scores
-    engine_scores = {
-        "intent_match": intent_match,
-        "extractability": extractability,
-        "authority": authority,
-        "schema_support": schema_support,
-        "content_depth": content_depth,
-    }
-    
-    geo_scores = {
-        "generative_readiness": geo_result["generative_readiness"],
-        "summarization_resilience": geo_result["summarization_resilience"],
-        "brand_retention_probability": geo_result["brand_retention_probability"],
-    }
+    finally:
+        # CRITICAL: Explicitly delete HTML from memory after processing
+        # Enforce ephemeral content policy - HTML must not persist
+        del html
+        del fetch_result
+        gc.collect()  # Suggest garbage collection to free memory
 
     created_at = datetime.now(timezone.utc).isoformat()
     test_id = None
