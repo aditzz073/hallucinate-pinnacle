@@ -36,7 +36,13 @@ export default function AuditsPage({ onSignUp }) {
     e.preventDefault();
     if (!url.trim()) return;
 
-    // Check guest limit
+    // If guest has reached limit, show modal immediately
+    if (isGuest && hasReachedLimit) {
+      setShowLimitModal(true);
+      return;
+    }
+
+    // Check guest limit before making API call
     if (isGuest && !incrementUsage()) {
       return; // Modal will show automatically
     }
@@ -84,17 +90,17 @@ export default function AuditsPage({ onSignUp }) {
           <button
             data-testid="audit-submit"
             type="submit"
-            disabled={loading || (isGuest && hasReachedLimit)}
+            disabled={loading}
             className="h-12 px-6 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold flex items-center gap-2 hover:shadow-[0_0_30px_rgba(59,130,246,0.4)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileSearch className="w-4 h-4" />}
-            {loading ? "Auditing..." : "Run Audit"}
+            {loading ? "Auditing..." : (isGuest && hasReachedLimit ? "Sign In to Continue" : "Run Audit")}
           </button>
         </form>
         {isGuest && hasReachedLimit && (
           <p className="mt-3 text-sm text-amber-400 flex items-center gap-2">
             <Lock className="w-4 h-4" />
-            Guest limit reached. Sign in to continue.
+            You've used all {GUEST_LIMITS.audits || 2} free audits. Click the button above to create an account.
           </p>
         )}
       </div>
