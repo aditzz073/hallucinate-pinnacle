@@ -27,7 +27,19 @@ function AppContent() {
   const [lockedFeature, setLockedFeature] = useState("");
 
   const handleShowFeatureLocked = (feature) => {
-    setLockedFeature(feature);
+    // Map page IDs to user-friendly names
+    const featureNames = {
+      'dashboard': 'Dashboard',
+      'monitor': 'Monitor Pages',
+      'changes': 'Change Detection',
+      'reports': 'Reports',
+      'advanced': 'Advanced Audit',
+      'simulator': 'Strategy Simulator',
+      'compare': 'Competitor Intel',
+      'executive': 'Executive Summary',
+      'profile': 'Profile'
+    };
+    setLockedFeature(featureNames[feature] || feature);
     setShowFeatureLockedModal(true);
   };
 
