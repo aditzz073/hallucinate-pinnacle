@@ -87,6 +87,7 @@ export default function AITestsPage({ onSignUp }) {
               placeholder="https://example.com/page" 
               className="glass-input w-full h-12 px-4 text-sm" 
               required 
+              disabled={isGuest && hasReachedLimit}
             />
           </div>
           <div className="flex gap-4">
