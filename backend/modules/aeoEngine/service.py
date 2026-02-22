@@ -1,6 +1,7 @@
-"""AEO Engine Service - Phase 1 Orchestrator"""
+"""AEO Engine Service - Phase 1 Orchestrator with Ephemeral Content Processing"""
 from datetime import datetime, timezone
 import logging
+import gc
 
 from database.connection import audits_collection
 from modules.aeoEngine.html_fetcher_hybrid import fetch_html_hybrid
@@ -14,31 +15,53 @@ logger = logging.getLogger(__name__)
 
 
 async def run_audit(url: str, user_id: str = None) -> dict:
+    """
+    Run AEO audit with strict no-storage policy for HTML content.
+    
+    Content Flow (Ephemeral):
+    1. Fetch HTML → in-memory only
+    2. Parse → extract structured signals
+    3. Score → calculate metrics
+    4. Delete HTML from memory
+    5. Store ONLY derived metrics
+    
+    NEVER persists raw HTML or rendered DOM.
+    """
     # Step 1: Fetch HTML (hybrid: raw with intelligent headless fallback)
+    # HTML stored in memory only
     fetch_result = await fetch_html_hybrid(url)
     html = fetch_result["html"]
     
-    # Log fetch method for monitoring
+    # Log fetch method for monitoring (NO HTML CONTENT)
     logger.info(f"Audit for {url}: method={fetch_result['method']}, "
                f"used_headless={fetch_result['used_headless']}, "
                f"render_time_ms={fetch_result['render_time_ms']}")
 
-    # Step 2: Parse HTML
-    parsed = parse_html(html, url)
+    try:
+        # Step 2: Parse HTML → extract structured signals only
+        parsed = parse_html(html, url)
 
-    # Step 3: Classify page type
-    page_type = classify_page(parsed)
+        # Step 3: Classify page type
+        page_type = classify_page(parsed)
 
-    # Step 4: Build signal object
-    signals = build_signals(parsed, page_type)
+        # Step 4: Build signal object (derived metrics only)
+        signals = build_signals(parsed, page_type)
 
-    # Step 5: Calculate scores
-    scores = calculate_all_scores(signals)
+        # Step 5: Calculate scores
+        scores = calculate_all_scores(signals)
 
-    # Step 6: Generate recommendations
-    recommendations = generate_recommendations(signals, scores)
+        # Step 6: Generate recommendations
+        recommendations = generate_recommendations(signals, scores)
+
+    finally:
+        # CRITICAL: Explicitly delete HTML from memory after processing
+        # Enforce ephemeral content policy
+        del html
+        del fetch_result
+        gc.collect()  # Suggest garbage collection
 
     # Step 7: Save audit (only for authenticated users)
+    # Store ONLY derived analytical metrics, NEVER raw HTML
     audit_id = None
     created_at = datetime.now(timezone.utc).isoformat()
     
@@ -48,16 +71,16 @@ async def run_audit(url: str, user_id: str = None) -> dict:
             "url": url,
             "overall_score": scores["overall_score"],
             "breakdown_json": scores["breakdown"],
-            "signals_json": signals,
+            "signals_json": signals,  # Structured signals only, no raw HTML
             "recommendations": recommendations,
             "page_type": page_type,
             "created_at": created_at,
-            # Store fetch metadata for analytics
+            # Store fetch metadata for analytics (NO HTML CONTENT)
             "fetch_metadata": {
                 "method": fetch_result["method"],
                 "used_headless": fetch_result["used_headless"],
                 "render_time_ms": fetch_result["render_time_ms"],
-                "content_stats": fetch_result["content_stats"],
+                "content_stats": fetch_result["content_stats"],  # Stats only, no content
             },
         }
         result = await audits_collection.insert_one(audit_doc)
@@ -69,7 +92,7 @@ async def run_audit(url: str, user_id: str = None) -> dict:
         "page_type": page_type,
         "overall_score": scores["overall_score"],
         "breakdown": scores["breakdown"],
-        "signals": signals,
+        "signals": signals,  # Structured metrics only
         "recommendations": recommendations,
         "created_at": created_at,
     }
