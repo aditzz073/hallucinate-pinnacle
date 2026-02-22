@@ -134,13 +134,17 @@ function AppContent() {
       <AppBackground />
       <Navbar 
         activePage={activePage} 
-        onNavigate={setActivePage} 
+        onNavigate={handlePageNavigation}
         isLanding={activePage === "landing" && !user}
         onGetStarted={() => setView(user ? "dashboard" : "login")}
         onShowFeatureLocked={handleShowFeatureLocked}
       />
       <main className="relative z-10 pt-24 pb-12 px-4 lg:px-0">
-        <div className="max-w-6xl mx-auto">
+        <div 
+          className={`max-w-6xl mx-auto transition-opacity duration-300 ${
+            isTransitioning ? 'opacity-0' : 'opacity-100'
+          }`}
+        >
           {renderPage()}
         </div>
       </main>
