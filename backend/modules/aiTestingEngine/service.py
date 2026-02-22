@@ -1,6 +1,7 @@
-"""AI Testing Engine Service - Phase 2 Orchestrator with GEO Integration"""
+"""AI Testing Engine Service - Phase 2 Orchestrator with GEO Integration and Ephemeral Content Processing"""
 from datetime import datetime, timezone
 import logging
+import gc
 
 from database.connection import ai_tests_collection
 from modules.aeoEngine.html_fetcher_hybrid import fetch_html_hybrid
@@ -29,16 +30,39 @@ logger = logging.getLogger(__name__)
 
 
 async def run_ai_test(url: str, query: str, user_id: str = None) -> dict:
+    """
+    Run AI Citation Test with strict no-storage policy for HTML content.
+    
+    Content Flow (Ephemeral):
+    1. Fetch HTML → in-memory only
+    2. Parse → extract structured signals
+    3. Calculate citation & GEO metrics
+    4. Delete HTML from memory
+    5. Store ONLY derived metrics
+    
+    NEVER persists raw HTML or rendered DOM.
+    """
     # Fetch and parse (hybrid: raw with intelligent headless fallback)
+    # HTML stored in memory only
     fetch_result = await fetch_html_hybrid(url)
     html = fetch_result["html"]
     
-    # Log fetch method for monitoring
-    logger.info(f"AI Test for {url}: method={fetch_result['method']}, "
-               f"used_headless={fetch_result['used_headless']}, "
-               f"render_time_ms={fetch_result['render_time_ms']}")
+    # Extract metadata before processing (NO HTML CONTENT)
+    fetch_metadata = {
+        "method": fetch_result["method"],
+        "used_headless": fetch_result["used_headless"],
+        "render_time_ms": fetch_result["render_time_ms"],
+        "content_stats": fetch_result["content_stats"],  # Stats only, no content
+    }
     
-    parsed = parse_html(html, url)
+    # Log fetch method for monitoring (NO HTML CONTENT)
+    logger.info(f"AI Test for {url}: method={fetch_metadata['method']}, "
+               f"used_headless={fetch_metadata['used_headless']}, "
+               f"render_time_ms={fetch_metadata['render_time_ms']}")
+    
+    try:
+        # Parse HTML → extract structured signals only
+        parsed = parse_html(html, url)
 
     # Step 1: Query processing
     tokens = tokenize_query(query)
