@@ -108,28 +108,28 @@ export default function ProfilePage() {
                 icon: FileSearch, 
                 label: "Total Audits", 
                 value: stats.total_audits || 0,
-                color: "from-blue-500 to-cyan-500",
+                iconColor: "text-blue-400",
                 bgColor: "from-blue-500/10 to-cyan-500/10"
               },
               { 
                 icon: Search, 
                 label: "AI Tests", 
                 value: stats.total_ai_tests || 0,
-                color: "from-purple-500 to-pink-500",
+                iconColor: "text-purple-400",
                 bgColor: "from-purple-500/10 to-pink-500/10"
               },
               { 
                 icon: TrendingUp, 
                 label: "Avg Score", 
                 value: stats.avg_score || "N/A",
-                color: "from-emerald-500 to-green-500",
+                iconColor: "text-emerald-400",
                 bgColor: "from-emerald-500/10 to-green-500/10"
               },
               { 
                 icon: Clock, 
                 label: "Last Active", 
                 value: "Today",
-                color: "from-amber-500 to-orange-500",
+                iconColor: "text-amber-400",
                 bgColor: "from-amber-500/10 to-orange-500/10"
               },
             ].map((metric, i) => {
@@ -140,7 +140,7 @@ export default function ProfilePage() {
                   className="glass-card p-6 hover:border-white/20 transition-all duration-300 group"
                 >
                   <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${metric.bgColor} border border-white/10 mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className={`w-6 h-6 bg-gradient-to-r ${metric.color} bg-clip-text text-transparent`} style={{ WebkitTextFillColor: 'transparent', backgroundClip: 'text' }} />
+                    <Icon className={`w-6 h-6 ${metric.iconColor}`} />
                   </div>
                   <p className="text-sm text-gray-500 mb-1">{metric.label}</p>
                   <p className="text-3xl font-bold text-white">{metric.value}</p>
