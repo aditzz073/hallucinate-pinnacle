@@ -85,7 +85,7 @@ export default function AITestsPage({ onSignUp }) {
       </div>
 
       {/* Guest Mode Banner */}
-      {isGuest && <GuestBanner remainingUses={remainingUses} onSignUp={onSignUp || (() => {})} />}
+      {effectiveIsGuest && <GuestBanner remainingUses={remainingUses} onSignUp={onSignUp || (() => {})} />}
 
       {/* Form */}
       <div className="glass-card p-6">
@@ -100,7 +100,7 @@ export default function AITestsPage({ onSignUp }) {
               placeholder="https://example.com/page" 
               className="glass-input w-full h-12 px-4 text-sm" 
               required 
-              disabled={isGuest && hasReachedLimit}
+              disabled={effectiveIsGuest && effectiveHasReachedLimit}
             />
           </div>
           <div className="flex gap-4">
@@ -114,7 +114,7 @@ export default function AITestsPage({ onSignUp }) {
                 placeholder="e.g., best CRM software" 
                 className="glass-input w-full h-12 px-4 text-sm" 
                 required 
-                disabled={isGuest && hasReachedLimit}
+                disabled={effectiveIsGuest && effectiveHasReachedLimit}
               />
             </div>
             <div className="flex items-end">
@@ -125,7 +125,7 @@ export default function AITestsPage({ onSignUp }) {
                 className="h-12 px-6 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold flex items-center gap-2 hover:shadow-[0_0_30px_rgba(59,130,246,0.4)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-                {loading ? "Analyzing..." : (isGuest && hasReachedLimit ? "Sign In to Continue" : "Run Test")}
+                {loading ? "Analyzing..." : (effectiveIsGuest && effectiveHasReachedLimit ? "Sign In to Continue" : "Run Test")}
               </button>
             </div>
           </div>
@@ -161,7 +161,7 @@ export default function AITestsPage({ onSignUp }) {
       )}
 
       {/* Hide results when guest reaches limit */}
-      {activeResult && !(isGuest && hasReachedLimit) && (
+      {activeResult && !(effectiveIsGuest && effectiveHasReachedLimit) && (
         <div className="space-y-4" data-testid="ai-test-result">
           {/* Main Scores */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -297,7 +297,7 @@ export default function AITestsPage({ onSignUp }) {
       )}
 
       {/* Locked Sections for Guests - hide when limit reached */}
-      {isGuest && activeResult && !hasReachedLimit && (
+      {effectiveIsGuest && activeResult && !effectiveHasReachedLimit && (
         <div className="space-y-4">
           <LockedSection
             title="Deep Competitive Analysis"
