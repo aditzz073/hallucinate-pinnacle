@@ -7,6 +7,17 @@ from database.connection import users_collection
 JWT_SECRET = os.environ.get("JWT_SECRET", "")
 JWT_EXPIRY_HOURS = int(os.environ.get("JWT_EXPIRY_HOURS", "24"))
 
+# Privileged access whitelist (founding team)
+PRIVILEGED_EMAILS = {
+    "mrsahebsandhu@gmail.com",
+    "pujeradi@gmail.com",
+}
+
+
+def is_privileged_email(email: str) -> bool:
+    """Check if email has privileged founding access"""
+    return email.lower() in PRIVILEGED_EMAILS
+
 
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
