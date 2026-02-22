@@ -71,6 +71,9 @@ export default function AITestsPage({ onSignUp }) {
         <p className="text-gray-500">Test how likely AI engines are to cite and generate content from your page.</p>
       </div>
 
+      {/* Guest Mode Banner */}
+      {isGuest && <GuestBanner remainingUses={remainingUses} onSignUp={onSignUp || (() => {})} />}
+
       {/* Form */}
       <div className="glass-card p-6">
         <form onSubmit={handleTest} className="space-y-4" data-testid="ai-test-form">
