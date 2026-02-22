@@ -243,6 +243,7 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
             items={TOOLS_DROPDOWN}
             activePage={activePage}
             onNavigate={onNavigate}
+            onShowFeatureLocked={onShowFeatureLocked}
           />
 
           {/* Enterprise Dropdown */}
@@ -252,6 +253,7 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
             items={ENTERPRISE_DROPDOWN}
             activePage={activePage}
             onNavigate={onNavigate}
+            onShowFeatureLocked={onShowFeatureLocked}
           />
         </div>
 
