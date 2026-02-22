@@ -9,6 +9,8 @@ export default function HistorySlider({ history, currentIndex, onNavigateBack, o
   const getPageName = (pageId) => {
     const pageNames = {
       'landing': 'Home',
+      'login': 'Sign In',
+      'register': 'Sign Up',
       'audits': 'Audits',
       'ai-tests': 'AI Tests',
       'dashboard': 'Dashboard',
