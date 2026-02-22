@@ -49,14 +49,14 @@ export default function AITestsPage({ onSignUp }) {
     e.preventDefault();
     if (!url.trim() || !query.trim()) return;
 
-    // If guest has reached limit, show modal immediately
-    if (isGuest && hasReachedLimit) {
+    // If guest has reached limit (but not privileged), show modal immediately
+    if (effectiveIsGuest && effectiveHasReachedLimit) {
       setShowLimitModal(true);
       return;
     }
 
-    // Check guest limit before making API call
-    if (isGuest && !incrementUsage()) {
+    // Check guest limit before making API call (skip for privileged)
+    if (effectiveIsGuest && !incrementUsage()) {
       return;
     }
 
