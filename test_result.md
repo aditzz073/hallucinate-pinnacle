@@ -24,9 +24,9 @@ frontend:
         comment: "Need to verify that 3 locked sections appear after audit results: Competitive Gap Analysis, PDF Report Export, and Historical Tracking - all should be blurred/locked."
 
   - task: "Guest Mode - Audits Page - Audit Functionality"
-    implemented: true
-    working: "NA"
-    file: "/app/frontend/src/pages/AuditsPage.js"
+    implemented: false
+    working: false
+    file: "/app/frontend/src/pages/AuditsPage.js, /app/frontend/src/api.js, /app/backend/modules/aeoEngine/routes.py"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
@@ -34,6 +34,9 @@ frontend:
       - working: "NA"
         agent: "testing"
         comment: "Need to verify audits can be run successfully and results display correctly with overall score and breakdown."
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL FAILURE: Audit API calls fail with 401 Unauthorized 'Invalid token' error. Frontend always sends Authorization header (even for guests), and backend requires authentication via verify_token dependency. Guest mode is NOT implemented in the API layer. Frontend api.js sends authHeaders() which includes token even when null. Backend /api/audit route has `current_user: dict = Depends(verify_token)` making auth REQUIRED. For guest mode to work: 1) Frontend must not send Authorization header when no token exists, 2) Backend must make auth optional (e.g., Depends(optional_verify_token)), 3) Backend must handle None user_id for guest requests."
 
   - task: "Guest Mode - AI Tests Page - Banner and Usage Counter"
     implemented: true
