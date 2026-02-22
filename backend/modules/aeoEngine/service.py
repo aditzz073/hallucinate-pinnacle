@@ -1,18 +1,27 @@
 """AEO Engine Service - Phase 1 Orchestrator"""
 from datetime import datetime, timezone
+import logging
 
 from database.connection import audits_collection
-from modules.aeoEngine.html_fetcher import fetch_html
+from modules.aeoEngine.html_fetcher_hybrid import fetch_html_hybrid
 from modules.aeoEngine.html_parser import parse_html
 from modules.aeoEngine.page_classifier import classify_page
 from modules.aeoEngine.signal_builder import build_signals
 from modules.aeoEngine.scorer import calculate_all_scores
 from modules.aeoEngine.recommender import generate_recommendations
 
+logger = logging.getLogger(__name__)
+
 
 async def run_audit(url: str, user_id: str = None) -> dict:
-    # Step 1: Fetch HTML
-    html = await fetch_html(url)
+    # Step 1: Fetch HTML (hybrid: raw with intelligent headless fallback)
+    fetch_result = await fetch_html_hybrid(url)
+    html = fetch_result["html"]
+    
+    # Log fetch method for monitoring
+    logger.info(f"Audit for {url}: method={fetch_result['method']}, "
+               f"used_headless={fetch_result['used_headless']}, "
+               f"render_time_ms={fetch_result['render_time_ms']}")
 
     # Step 2: Parse HTML
     parsed = parse_html(html, url)
@@ -43,6 +52,13 @@ async def run_audit(url: str, user_id: str = None) -> dict:
             "recommendations": recommendations,
             "page_type": page_type,
             "created_at": created_at,
+            # Store fetch metadata for analytics
+            "fetch_metadata": {
+                "method": fetch_result["method"],
+                "used_headless": fetch_result["used_headless"],
+                "render_time_ms": fetch_result["render_time_ms"],
+                "content_stats": fetch_result["content_stats"],
+            },
         }
         result = await audits_collection.insert_one(audit_doc)
         audit_id = str(result.inserted_id)
