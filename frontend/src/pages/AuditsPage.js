@@ -78,8 +78,8 @@ export default function AuditsPage({ onSignUp }) {
         <p className="text-gray-500">Analyze any URL for AI Engine Optimization signals.</p>
       </div>
 
-      {/* Guest Mode Banner */}
-      {isGuest && <GuestBanner remainingUses={remainingUses} onSignUp={onSignUp || (() => {})} />}
+      {/* Guest Mode Banner - Hide for privileged users */}
+      {effectiveIsGuest && <GuestBanner remainingUses={remainingUses} onSignUp={onSignUp || (() => {})} />}
 
       {/* Form */}
       <div className="glass-card p-6">
@@ -92,7 +92,7 @@ export default function AuditsPage({ onSignUp }) {
             placeholder="https://example.com/page"
             className="glass-input flex-1 h-12 px-4 text-sm"
             required
-            disabled={isGuest && hasReachedLimit}
+            disabled={effectiveIsGuest && effectiveHasReachedLimit}
           />
           <button
             data-testid="audit-submit"
@@ -101,10 +101,10 @@ export default function AuditsPage({ onSignUp }) {
             className="h-12 px-6 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold flex items-center gap-2 hover:shadow-[0_0_30px_rgba(59,130,246,0.4)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileSearch className="w-4 h-4" />}
-            {loading ? "Auditing..." : (isGuest && hasReachedLimit ? "Sign In to Continue" : "Run Audit")}
+            {loading ? "Auditing..." : (effectiveIsGuest && effectiveHasReachedLimit ? "Sign In to Continue" : "Run Audit")}
           </button>
         </form>
-        {isGuest && hasReachedLimit && (
+        {effectiveIsGuest && effectiveHasReachedLimit && (
           <p className="mt-3 text-sm text-amber-400 flex items-center gap-2">
             <Lock className="w-4 h-4" />
             You've used all 2 free audits. Click the button above to create an account.
