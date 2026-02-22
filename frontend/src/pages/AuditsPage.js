@@ -154,6 +154,11 @@ export default function AuditsPage({ onSignUp }) {
       {isGuest && activeAudit && (
         <div className="space-y-4">
           <LockedSection
+            title="Strategy Simulator"
+            description="Simulate changes to improve your AI visibility score."
+            onUnlock={onSignUp || (() => {})}
+          />
+          <LockedSection
             title="Competitive Gap Analysis"
             description="See how your content compares to top-ranking pages and identify strategic opportunities."
             onUnlock={onSignUp || (() => {})}
@@ -161,11 +166,6 @@ export default function AuditsPage({ onSignUp }) {
           <LockedSection
             title="PDF Report Export"
             description="Download a comprehensive PDF report with all audit findings and recommendations."
-            onUnlock={onSignUp || (() => {})}
-          />
-          <LockedSection
-            title="Historical Tracking"
-            description="Track changes over time and monitor your AEO score improvements with saved audit history."
             onUnlock={onSignUp || (() => {})}
           />
         </div>
