@@ -6,6 +6,7 @@ import Footer from "./components/layout/Footer";
 import AppBackground from "./components/ui/AppBackground";
 import LoginPage from "./components/auth/LoginPage";
 import RegisterPage from "./components/auth/RegisterPage";
+import FeatureLockedModal from "./components/modals/FeatureLockedModal";
 import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import AuditsPage from "./pages/AuditsPage";
