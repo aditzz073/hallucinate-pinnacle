@@ -25,9 +25,10 @@ const ENTERPRISE_DROPDOWN = [
   { id: "executive", label: "Executive Summary", icon: Crown, requiresAuth: true, isEnterprise: true },
 ];
 
-function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate }) {
+function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate, onShowFeatureLocked }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
+  const { user } = useAuth();
   const isActive = items.some((item) => item.id === activePage);
 
   useEffect(() => {
@@ -37,6 +38,17 @@ function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate }) {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleItemClick = (item) => {
+    setOpen(false);
+    
+    if (item.requiresAuth && !user) {
+      onShowFeatureLocked && onShowFeatureLocked(item.label);
+      return;
+    }
+    
+    onNavigate(item.id);
+  };
 
   return (
     <div ref={ref} className="relative">
