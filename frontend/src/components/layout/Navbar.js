@@ -139,17 +139,17 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
   if (isLanding) {
     return (
       <header 
-        className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4 transition-all duration-700 ease-in-out"
+        className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4 transition-all duration-1000 ease-in-out"
         data-testid="navbar"
       >
-        <nav className={`flex items-center gap-1 rounded-full border px-6 py-2.5 transition-all duration-700 ease-in-out ${
+        <nav className={`flex items-center gap-1 rounded-full border px-6 py-2.5 transition-all duration-1000 ease-in-out ${
           scrolled 
             ? 'bg-black/70 backdrop-blur-xl border-white/25 shadow-2xl' 
             : 'bg-black/30 backdrop-blur-lg border-white/15 shadow-lg'
         }`}>
           {/* Logo */}
           <div 
-            className="flex items-center gap-2 pr-4 border-r border-white/10 mr-3 cursor-pointer hover:opacity-80 transition-all duration-700 ease-in-out"
+            className="flex items-center gap-2 pr-4 border-r border-white/10 mr-3 cursor-pointer hover:opacity-80 transition-all duration-1000 ease-in-out"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             data-testid="nav-logo-landing"
           >
@@ -227,17 +227,17 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
 
   return (
     <header 
-      className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4 transition-all duration-700 ease-in-out"
+      className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4 transition-all duration-1000 ease-in-out"
       data-testid="navbar"
     >
-      <nav className={`flex items-center gap-1 rounded-full border px-6 py-2.5 transition-all duration-700 ease-in-out ${
+      <nav className={`flex items-center gap-1 rounded-full border px-6 py-2.5 transition-all duration-1000 ease-in-out ${
         scrolled 
           ? 'bg-black/70 backdrop-blur-xl border-white/25 shadow-2xl' 
           : 'bg-black/30 backdrop-blur-lg border-white/15 shadow-lg'
       }`}>
         {/* Logo */}
         <div 
-          className="flex items-center gap-2 pr-4 border-r border-white/10 mr-3 cursor-pointer hover:opacity-80 transition-all duration-700 ease-in-out"
+          className="flex items-center gap-2 pr-4 border-r border-white/10 mr-3 cursor-pointer hover:opacity-80 transition-all duration-1000 ease-in-out"
           onClick={handleLogoClick}
           data-testid="nav-logo-app"
           title="Return to home"
