@@ -94,8 +94,8 @@ function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate, onShow
   );
 }
 
-export default function Navbar({ activePage, onNavigate, isLanding = false, onGetStarted, onShowFeatureLocked }) {
-  const { user, logout } = useAuth();
+export default function Navbar({ activePage, onNavigate, isLanding = false, onGetStarted, onShowFeatureLocked, onLogout }) {
+  const { user } = useAuth();
   const [scrolled, setScrolled] = useState(false);
 
   // Add scroll listener for glass effect
@@ -315,7 +315,7 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
             </button>
             <button
               data-testid="logout-button"
-              onClick={logout}
+              onClick={onLogout}
               className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-sm font-medium text-gray-400 hover:text-red-400 hover:border-red-400/30 hover:bg-red-400/5 transition-all duration-200"
             >
               <LogOut className="w-4 h-4" />
