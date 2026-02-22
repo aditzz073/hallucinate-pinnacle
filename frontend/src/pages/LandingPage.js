@@ -162,6 +162,15 @@ export default function LandingPage({ onGetStarted }) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {FEATURES.map((f, i) => {
               const Icon = f.icon;
+              // Assign bright colors to each icon
+              const iconColors = [
+                "text-blue-400",      // AEO Audits
+                "text-purple-400",    // Citation Testing
+                "text-emerald-400",   // Page Monitoring
+                "text-amber-400",     // Strategy Simulator
+                "text-indigo-400",    // Advanced Explainability
+                "text-pink-400",      // Enterprise Intelligence
+              ];
               return (
                 <div
                   key={i}
@@ -169,7 +178,7 @@ export default function LandingPage({ onGetStarted }) {
                   data-testid={`feature-card-${i}`}
                 >
                   <div className={`mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${f.gradient} border border-white/5`}>
-                    <Icon className="h-6 w-6 text-white" />
+                    <Icon className={`h-6 w-6 ${iconColors[i]}`} />
                   </div>
                   <h3 className="mb-2 text-lg font-semibold text-white">{f.title}</h3>
                   <p className="text-gray-500 text-sm leading-relaxed">{f.desc}</p>
