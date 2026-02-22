@@ -108,16 +108,30 @@ export default function AITestsPage({ onSignUp }) {
               <button 
                 data-testid="ai-test-submit-button" 
                 type="submit" 
-                disabled={loading} 
-                className="h-12 px-6 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold flex items-center gap-2 hover:shadow-[0_0_30px_rgba(59,130,246,0.4)] transition-all duration-300 disabled:opacity-50 shrink-0"
+                disabled={loading || (isGuest && hasReachedLimit)} 
+                className="h-12 px-6 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold flex items-center gap-2 hover:shadow-[0_0_30px_rgba(59,130,246,0.4)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
                 {loading ? "Analyzing..." : "Run Test"}
               </button>
             </div>
           </div>
+          {isGuest && hasReachedLimit && (
+            <p className="text-sm text-amber-400 flex items-center gap-2">
+              <Lock className="w-4 h-4" />
+              Guest limit reached. Create an account to continue testing.
+            </p>
+          )}
         </form>
       </div>
+
+      {/* Guest Limit Modal */}
+      <GuestLimitModal
+        isOpen={showLimitModal}
+        onClose={() => setShowLimitModal(false)}
+        onSignUp={onSignUp || (() => {})}
+        feature="AI tests"
+      />
 
       {error && (
         <div className="glass-card border-red-500/20 p-4" data-testid="ai-test-error">
