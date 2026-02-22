@@ -84,7 +84,7 @@ function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate }) {
   );
 }
 
-export default function Navbar({ activePage, onNavigate, isLanding = false, onGetStarted }) {
+export default function Navbar({ activePage, onNavigate, isLanding = false, onGetStarted, onShowFeatureLocked }) {
   const { user, logout } = useAuth();
 
   const handleLogoClick = () => {
@@ -95,6 +95,24 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
       // Logged in, go back to landing (logout)
       logout();
     }
+  };
+
+  // Handle navigation with access control
+  const handleNavClickWithAuth = (itemId, requiresAuth = false) => {
+    // Public items - always allow
+    if (!requiresAuth) {
+      onNavigate(itemId);
+      return;
+    }
+
+    // Requires auth but user not logged in
+    if (!user) {
+      onShowFeatureLocked && onShowFeatureLocked(itemId);
+      return;
+    }
+
+    // Logged in - navigate
+    onNavigate(itemId);
   };
 
   if (isLanding) {
