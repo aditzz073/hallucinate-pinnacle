@@ -109,7 +109,7 @@ frontend:
 
   - task: "Navbar Visibility for Guests"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/frontend/src/components/layout/Navbar.js"
     stuck_count: 0
     priority: "high"
@@ -118,6 +118,9 @@ frontend:
       - working: "NA"
         agent: "testing"
         comment: "CRITICAL: Need to verify ALL navbar items are visible when not logged in: Logo, Dashboard, Audits, AI Tests, Tools dropdown, Enterprise dropdown, Pricing, Sign In button. This is a critical requirement."
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL FAILURE: Landing page navbar does NOT show Audits, AI Tests, Tools, or Enterprise navigation items. The navbar has two modes: 1) Landing mode (shows only Features, Dashboard, Pricing, Sign In, Get Started) 2) Application mode (shows full navbar with Audits, AI Tests, Tools, Enterprise). There is NO way for guests to access Audits or AI Tests pages from the landing page. This violates the test requirement that states: 'Navigate to landing page, Click on Audits in navbar (should work without login)'. The Audits button does not exist on the landing page navbar. This is a BLOCKING ISSUE that prevents guest mode testing."
 
   - task: "Sign Up Flow - Registration"
     implemented: true
