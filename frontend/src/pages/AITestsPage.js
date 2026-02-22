@@ -4,10 +4,18 @@ import { getScoreColor } from "../components/ui/ScoreRing";
 import { 
   Search, ExternalLink, Loader2, AlertTriangle, Lightbulb, 
   Sparkles, Brain, FileText, Building2, ChevronDown, ChevronUp,
-  Target, Zap, Award
+  Target, Zap, Award, Lock
 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { useGuestMode } from "../hooks/useGuestMode";
+import GuestBanner from "../components/ui/GuestBanner";
+import GuestLimitModal from "../components/modals/GuestLimitModal";
+import LockedSection from "../components/ui/LockedSection";
 
-export default function AITestsPage() {
+export default function AITestsPage({ onSignUp }) {
+  const { user } = useAuth();
+  const { isGuest, remainingUses, hasReachedLimit, incrementUsage, showLimitModal, setShowLimitModal } = useGuestMode('ai_tests');
+
   const [url, setUrl] = useState("");
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
@@ -17,7 +25,14 @@ export default function AITestsPage() {
   const [listLoading, setListLoading] = useState(true);
   const [showGeoDetails, setShowGeoDetails] = useState(false);
 
-  useEffect(() => { loadTests(); }, []);
+  useEffect(() => {
+    if (user) {
+      loadTests();
+    } else {
+      setListLoading(false);
+    }
+  }, [user]);
+
   const loadTests = async () => { 
     try { setTests(await listAITests()); } catch {} 
     setListLoading(false); 
@@ -26,13 +41,21 @@ export default function AITestsPage() {
   const handleTest = async (e) => {
     e.preventDefault();
     if (!url.trim() || !query.trim()) return;
+
+    // Check guest limit
+    if (isGuest && !incrementUsage()) {
+      return;
+    }
+
     setError("");
     setLoading(true);
     setShowGeoDetails(false);
     try { 
       const r = await runAITest(url.trim(), query.trim()); 
       setActiveResult(r); 
-      loadTests(); 
+      if (user) {
+        loadTests();
+      }
     }
     catch (err) { setError(err.response?.data?.detail || "AI test failed"); }
     setLoading(false);
