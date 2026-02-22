@@ -85,15 +85,20 @@ function AppContent() {
     // Dashboard - requires auth
     if (activePage === "dashboard") {
       if (!user) {
-        handleShowFeatureLocked("Dashboard");
-        setActivePage("landing");
+        handleShowFeatureLocked("dashboard");
         return <LandingPage onGetStarted={() => setView("register")} />;
       }
       return <Dashboard onNavigate={setActivePage} />;
     }
 
-    // Authenticated pages
-    if (user) {
+    // Authenticated-only pages
+    const authPages = ["monitor", "changes", "reports", "advanced", "simulator", "compare", "executive", "profile"];
+    if (authPages.includes(activePage)) {
+      if (!user) {
+        handleShowFeatureLocked(activePage);
+        return <LandingPage onGetStarted={() => setView("register")} />;
+      }
+      
       switch (activePage) {
         case "monitor": return <MonitoringPage />;
         case "changes": return <MonitoringPage />;
@@ -107,9 +112,7 @@ function AppContent() {
       }
     }
 
-    // Guest trying to access enterprise features
-    handleShowFeatureLocked(activePage);
-    setActivePage("landing");
+    // Default - back to landing
     return <LandingPage onGetStarted={() => setView("register")} />;
   };
 
