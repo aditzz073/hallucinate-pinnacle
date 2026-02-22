@@ -133,16 +133,36 @@ function AppContent() {
 
   // Handle auth views (login/register)
   if (view === "login") {
-    return <LoginPage onSwitch={() => setView("register")} onSuccess={() => {
-      setView("app");
-      setActivePage("dashboard");
-    }} />;
+    return (
+      <>
+        <LoginPage onSwitch={() => setView("register")} onSuccess={() => {
+          setView("app");
+          setActivePage("dashboard");
+        }} />
+        <HistorySlider
+          history={navigationHistory}
+          currentIndex={historyIndex}
+          onNavigateBack={handleNavigateBack}
+          onNavigateForward={handleNavigateForward}
+        />
+      </>
+    );
   }
   if (view === "register") {
-    return <RegisterPage onSwitch={() => setView("login")} onSuccess={() => {
-      setView("app");
-      setActivePage("dashboard");
-    }} />;
+    return (
+      <>
+        <RegisterPage onSwitch={() => setView("login")} onSuccess={() => {
+          setView("app");
+          setActivePage("dashboard");
+        }} />
+        <HistorySlider
+          history={navigationHistory}
+          currentIndex={historyIndex}
+          onNavigateBack={handleNavigateBack}
+          onNavigateForward={handleNavigateForward}
+        />
+      </>
+    );
   }
 
   // Main app view (landing or app pages)
