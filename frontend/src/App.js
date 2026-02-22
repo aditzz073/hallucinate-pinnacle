@@ -118,6 +118,11 @@ function AppContent() {
   const handleSignInFromModal = () => {
     setShowFeatureLockedModal(false);
     setView("login");
+    // Add to navigation history
+    const newHistory = navigationHistory.slice(0, historyIndex + 1);
+    newHistory.push("login");
+    setNavigationHistory(newHistory);
+    setHistoryIndex(newHistory.length - 1);
   };
 
   if (loading) {
