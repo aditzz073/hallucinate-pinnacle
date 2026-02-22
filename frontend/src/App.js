@@ -32,6 +32,14 @@ function AppContent() {
   const [navigationHistory, setNavigationHistory] = useState(["landing"]);
   const [historyIndex, setHistoryIndex] = useState(0);
 
+  // Auto-redirect to dashboard after successful login/register
+  useEffect(() => {
+    if (user && (view === "login" || view === "register")) {
+      setView("app");
+      setActivePage("dashboard");
+    }
+  }, [user, view]);
+
   // Smooth page navigation with fade transition
   const handlePageNavigation = (page, skipHistory = false) => {
     if (page === activePage) return; // Don't transition to same page
