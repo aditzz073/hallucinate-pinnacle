@@ -32,22 +32,6 @@ function AppContent() {
   const [navigationHistory, setNavigationHistory] = useState(["landing"]);
   const [historyIndex, setHistoryIndex] = useState(0);
 
-  // Auto-redirect to dashboard after successful login/register (with guard to prevent loops)
-  useEffect(() => {
-    if (user && (view === "login" || view === "register")) {
-      // Use setTimeout to prevent infinite loop
-      const timer = setTimeout(() => {
-        setView("app");
-        setActivePage("dashboard");
-      }, 0);
-      return () => clearTimeout(timer);
-    } else if (!user && view === "app") {
-      // If logged out while in app, go to landing
-      setView("landing");
-      setActivePage("landing");
-    }
-  }, [user]); // Only depend on user, not view to prevent loops
-
   // Smooth page navigation with fade transition
   const handlePageNavigation = (page, skipHistory = false) => {
     if (page === activePage) return; // Don't transition to same page
