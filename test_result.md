@@ -63,9 +63,9 @@ frontend:
         comment: "Need to verify locked sections appear after AI test results: Deep Competitive Analysis, Strategy Simulator Access, and Save & Track Results."
 
   - task: "Guest Mode - AI Tests Page - Test Functionality"
-    implemented: true
-    working: "NA"
-    file: "/app/frontend/src/pages/AITestsPage.js"
+    implemented: false
+    working: false
+    file: "/app/frontend/src/pages/AITestsPage.js, /app/frontend/src/api.js, /app/backend/modules/aiTestingEngine/routes.py"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
@@ -73,6 +73,9 @@ frontend:
       - working: "NA"
         agent: "testing"
         comment: "Need to verify AI tests can be run successfully and results display correctly with citation probability, GEO score, and breakdowns."
+      - working: false
+        agent: "testing"
+        comment: "CRITICAL FAILURE: Same issue as Audits - AI Test API calls fail with 401 Unauthorized. Backend requires authentication for all /api/ai-test endpoints. Guest mode is not supported in the API layer. Same fixes needed as Audits task."
 
   - task: "Dashboard Access Control - Feature Locked Modal"
     implemented: true
