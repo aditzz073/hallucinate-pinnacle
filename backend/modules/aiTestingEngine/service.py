@@ -118,6 +118,13 @@ async def run_ai_test(url: str, query: str, user_id: str = None) -> dict:
             "geo_breakdown_json": geo_result.get("geo_breakdown"),
             "geo_insights_json": formatted_geo_insights,
             "created_at": created_at,
+            # Store fetch metadata for analytics
+            "fetch_metadata": {
+                "method": fetch_result["method"],
+                "used_headless": fetch_result["used_headless"],
+                "render_time_ms": fetch_result["render_time_ms"],
+                "content_stats": fetch_result["content_stats"],
+            },
         }
         result = await ai_tests_collection.insert_one(test_doc)
         test_id = str(result.inserted_id)
