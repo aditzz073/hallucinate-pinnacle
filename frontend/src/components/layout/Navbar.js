@@ -144,8 +144,8 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
       >
         <nav className={`flex items-center gap-1 rounded-full border px-6 py-2.5 transition-all duration-300 ${
           scrolled 
-            ? 'bg-black/60 backdrop-blur-xl border-white/20 shadow-2xl' 
-            : 'bg-black/20 backdrop-blur-md border-white/10 shadow-lg'
+            ? 'bg-black/70 backdrop-blur-xl border-white/25 shadow-2xl' 
+            : 'bg-black/30 backdrop-blur-lg border-white/15 shadow-lg'
         }`}>
           {/* Logo */}
           <div 
@@ -232,8 +232,8 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
     >
       <nav className={`flex items-center gap-1 rounded-full border px-6 py-2.5 transition-all duration-300 ${
         scrolled 
-          ? 'bg-black/60 backdrop-blur-xl border-white/20 shadow-2xl' 
-          : 'bg-black/20 backdrop-blur-md border-white/10 shadow-lg'
+          ? 'bg-black/70 backdrop-blur-xl border-white/25 shadow-2xl' 
+          : 'bg-black/30 backdrop-blur-lg border-white/15 shadow-lg'
       }`}>
         {/* Logo */}
         <div 
