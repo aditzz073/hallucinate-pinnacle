@@ -282,7 +282,29 @@ export default function AITestsPage({ onSignUp }) {
         </div>
       )}
 
-      {/* Test History */}
+      {/* Locked Sections for Guests */}
+      {isGuest && activeResult && (
+        <div className="space-y-4">
+          <LockedSection
+            title="Deep Competitive Analysis"
+            description="Compare your citation probability against top-ranking pages and identify gaps in your AI optimization strategy."
+            onUnlock={onSignUp || (() => {})}
+          />
+          <LockedSection
+            title="Strategy Simulator Access"
+            description="Simulate content optimizations and see projected improvements in citation probability before making changes."
+            onUnlock={onSignUp || (() => {})}
+          />
+          <LockedSection
+            title="Save & Track Results"
+            description="Access unlimited test history, trend analysis, and compare performance across all your tested pages."
+            onUnlock={onSignUp || (() => {})}
+          />
+        </div>
+      )}
+
+      {/* Test History - Only for logged in users */}
+      {user && (
       <div>
         <h2 className="text-lg font-semibold text-white mb-4">Test History</h2>
         {listLoading ? (
