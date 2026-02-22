@@ -72,6 +72,11 @@ function AppContent() {
   };
 
   const handleShowFeatureLocked = (feature) => {
+    // Privileged users never see feature locked modals
+    if (user?.is_privileged) {
+      return; // Do nothing for privileged users
+    }
+    
     // Map page IDs to user-friendly names
     const featureNames = {
       'dashboard': 'Dashboard',
