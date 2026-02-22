@@ -42,7 +42,13 @@ export default function AITestsPage({ onSignUp }) {
     e.preventDefault();
     if (!url.trim() || !query.trim()) return;
 
-    // Check guest limit
+    // If guest has reached limit, show modal immediately
+    if (isGuest && hasReachedLimit) {
+      setShowLimitModal(true);
+      return;
+    }
+
+    // Check guest limit before making API call
     if (isGuest && !incrementUsage()) {
       return;
     }
@@ -108,18 +114,18 @@ export default function AITestsPage({ onSignUp }) {
               <button 
                 data-testid="ai-test-submit-button" 
                 type="submit" 
-                disabled={loading || (isGuest && hasReachedLimit)} 
+                disabled={loading} 
                 className="h-12 px-6 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold flex items-center gap-2 hover:shadow-[0_0_30px_rgba(59,130,246,0.4)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-                {loading ? "Analyzing..." : "Run Test"}
+                {loading ? "Analyzing..." : (isGuest && hasReachedLimit ? "Sign In to Continue" : "Run Test")}
               </button>
             </div>
           </div>
           {isGuest && hasReachedLimit && (
             <p className="text-sm text-amber-400 flex items-center gap-2">
               <Lock className="w-4 h-4" />
-              Guest limit reached. Create an account to continue testing.
+              You've used all 2 free tests. Click the button above to create an account.
             </p>
           )}
         </form>
