@@ -122,7 +122,8 @@ export default function AuditsPage({ onSignUp }) {
         </div>
       )}
 
-      {activeAudit && (
+      {/* Hide results when guest reaches limit */}
+      {activeAudit && !(isGuest && hasReachedLimit) && (
         <div className="glass-card p-6" data-testid="audit-result">
           <div className="flex items-start justify-between mb-6">
             <div>
@@ -150,8 +151,8 @@ export default function AuditsPage({ onSignUp }) {
         </div>
       )}
 
-      {/* Locked Sections for Guests */}
-      {isGuest && activeAudit && (
+      {/* Locked Sections for Guests - hide when limit reached */}
+      {isGuest && activeAudit && !hasReachedLimit && (
         <div className="space-y-4">
           <LockedSection
             title="Strategy Simulator"
