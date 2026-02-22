@@ -100,9 +100,13 @@ async def get_user_by_id(user_id: str) -> dict:
     user = await users_collection.find_one({"_id": ObjectId(user_id)}, {"password_hash": 0})
     if not user:
         raise ValueError("User not found")
+    
+    is_privileged = is_privileged_email(user["email"])
+    
     return {
         "id": str(user["_id"]),
         "email": user["email"],
         "nickname": user.get("nickname"),
+        "is_privileged": is_privileged,
         "created_at": user["created_at"],
     }
