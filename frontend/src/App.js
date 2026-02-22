@@ -164,7 +164,7 @@ function AppContent() {
   if (view === "login") {
     return (
       <>
-        <LoginPage onSwitch={() => setView("register")} onSuccess={() => {
+        <LoginPage onSwitch={() => navigateToAuth("register")} onSuccess={() => {
           setView("app");
           setActivePage("dashboard");
         }} />
@@ -180,7 +180,7 @@ function AppContent() {
   if (view === "register") {
     return (
       <>
-        <RegisterPage onSwitch={() => setView("login")} onSuccess={() => {
+        <RegisterPage onSwitch={() => navigateToAuth("login")} onSuccess={() => {
           setView("app");
           setActivePage("dashboard");
         }} />
@@ -198,22 +198,22 @@ function AppContent() {
   const renderPage = () => {
     // Landing page
     if (activePage === "landing") {
-      return <LandingPage onGetStarted={() => setView("register")} />;
+      return <LandingPage onGetStarted={() => navigateToAuth("register")} />;
     }
 
     // Public pages (accessible to guests)
     if (activePage === "audits") {
-      return <AuditsPage onSignUp={() => setView("register")} />;
+      return <AuditsPage onSignUp={() => navigateToAuth("register")} />;
     }
     if (activePage === "ai-tests") {
-      return <AITestsPage onSignUp={() => setView("register")} />;
+      return <AITestsPage onSignUp={() => navigateToAuth("register")} />;
     }
 
     // Dashboard - requires auth
     if (activePage === "dashboard") {
       if (!user) {
         handleShowFeatureLocked("dashboard");
-        return <LandingPage onGetStarted={() => setView("register")} />;
+        return <LandingPage onGetStarted={() => navigateToAuth("register")} />;
       }
       return <Dashboard onNavigate={handlePageNavigation} />;
     }
@@ -223,7 +223,7 @@ function AppContent() {
     if (authPages.includes(activePage)) {
       if (!user) {
         handleShowFeatureLocked(activePage);
-        return <LandingPage onGetStarted={() => setView("register")} />;
+        return <LandingPage onGetStarted={() => navigateToAuth("register")} />;
       }
       
       switch (activePage) {
@@ -240,7 +240,7 @@ function AppContent() {
     }
 
     // Default - back to landing
-    return <LandingPage onGetStarted={() => setView("register")} />;
+    return <LandingPage onGetStarted={() => navigateToAuth("register")} />;
   };
 
   return (
@@ -250,7 +250,7 @@ function AppContent() {
         activePage={activePage} 
         onNavigate={handlePageNavigation}
         isLanding={activePage === "landing" && !user}
-        onGetStarted={() => setView(user ? "dashboard" : "login")}
+        onGetStarted={() => navigateToAuth(user ? "dashboard" : "login")}
         onShowFeatureLocked={handleShowFeatureLocked}
         onLogout={logout}
       />
