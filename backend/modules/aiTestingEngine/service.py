@@ -131,6 +131,7 @@ async def run_ai_test(url: str, query: str, user_id: str = None) -> dict:
     test_id = None
 
     # Step 10: Save result (only for authenticated users)
+    # Store ONLY derived analytical metrics, NEVER raw HTML
     if user_id:
         test_doc = {
             "user_id": user_id,
@@ -142,20 +143,14 @@ async def run_ai_test(url: str, query: str, user_id: str = None) -> dict:
             "likely_position": likely_position,
             "why_not_cited": formatted_gaps,
             "improvement_suggestions": formatted_suggestions,
-            # GEO fields
+            # GEO fields (derived metrics only)
             "geo_score": geo_result["geo_score"],
             "geo_scores_json": geo_scores,
             "detected_brand": geo_result.get("detected_brand"),
             "geo_breakdown_json": geo_result.get("geo_breakdown"),
             "geo_insights_json": formatted_geo_insights,
             "created_at": created_at,
-            # Store fetch metadata for analytics
-            "fetch_metadata": {
-                "method": fetch_result["method"],
-                "used_headless": fetch_result["used_headless"],
-                "render_time_ms": fetch_result["render_time_ms"],
-                "content_stats": fetch_result["content_stats"],
-            },
+            "fetch_metadata": fetch_metadata,  # Metadata only, no HTML
         }
         result = await ai_tests_collection.insert_one(test_doc)
         test_id = str(result.inserted_id)
