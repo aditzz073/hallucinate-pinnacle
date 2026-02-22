@@ -32,10 +32,18 @@ async def run_audit(url: str, user_id: str = None) -> dict:
     fetch_result = await fetch_html_hybrid(url)
     html = fetch_result["html"]
     
+    # Extract metadata before processing (NO HTML CONTENT)
+    fetch_metadata = {
+        "method": fetch_result["method"],
+        "used_headless": fetch_result["used_headless"],
+        "render_time_ms": fetch_result["render_time_ms"],
+        "content_stats": fetch_result["content_stats"],  # Stats only, no content
+    }
+    
     # Log fetch method for monitoring (NO HTML CONTENT)
-    logger.info(f"Audit for {url}: method={fetch_result['method']}, "
-               f"used_headless={fetch_result['used_headless']}, "
-               f"render_time_ms={fetch_result['render_time_ms']}")
+    logger.info(f"Audit for {url}: method={fetch_metadata['method']}, "
+               f"used_headless={fetch_metadata['used_headless']}, "
+               f"render_time_ms={fetch_metadata['render_time_ms']}")
 
     try:
         # Step 2: Parse HTML → extract structured signals only
@@ -55,10 +63,10 @@ async def run_audit(url: str, user_id: str = None) -> dict:
 
     finally:
         # CRITICAL: Explicitly delete HTML from memory after processing
-        # Enforce ephemeral content policy
+        # Enforce ephemeral content policy - HTML must not persist
         del html
         del fetch_result
-        gc.collect()  # Suggest garbage collection
+        gc.collect()  # Suggest garbage collection to free memory
 
     # Step 7: Save audit (only for authenticated users)
     # Store ONLY derived analytical metrics, NEVER raw HTML
@@ -75,13 +83,7 @@ async def run_audit(url: str, user_id: str = None) -> dict:
             "recommendations": recommendations,
             "page_type": page_type,
             "created_at": created_at,
-            # Store fetch metadata for analytics (NO HTML CONTENT)
-            "fetch_metadata": {
-                "method": fetch_result["method"],
-                "used_headless": fetch_result["used_headless"],
-                "render_time_ms": fetch_result["render_time_ms"],
-                "content_stats": fetch_result["content_stats"],  # Stats only, no content
-            },
+            "fetch_metadata": fetch_metadata,  # Metadata only, no HTML
         }
         result = await audits_collection.insert_one(audit_doc)
         audit_id = str(result.inserted_id)
