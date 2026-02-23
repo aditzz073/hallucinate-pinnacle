@@ -27,32 +27,23 @@ function AppContent() {
   const [showFeatureLockedModal, setShowFeatureLockedModal] = useState(false);
   const [lockedFeature, setLockedFeature] = useState("");
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const hasRedirectedRef = React.useRef(false);
-  
   // Navigation history tracking
   const [navigationHistory, setNavigationHistory] = useState(["landing"]);
   const [historyIndex, setHistoryIndex] = useState(0);
 
   // Custom logout that also redirects
   const logout = () => {
-    hasRedirectedRef.current = true;
+    // Clear auth state first
     authLogout();
+    
+    // Reset app state to landing
     setView("landing");
     setActivePage("landing");
+    
+    // Reset navigation history
+    setNavigationHistory(["landing"]);
+    setHistoryIndex(0);
   };
-
-  // Handle logout - redirect to landing (only once)
-  useEffect(() => {
-    if (!loading && !user && view === "app" && !hasRedirectedRef.current) {
-      hasRedirectedRef.current = true;
-      setView("landing");
-      setActivePage("landing");
-    }
-    // Reset ref when user logs in
-    if (user) {
-      hasRedirectedRef.current = false;
-    }
-  }, [user, loading, view]);
 
   // Smooth page navigation with fade transition
   const handlePageNavigation = (page, skipHistory = false) => {
