@@ -19,16 +19,5 @@ services:
     depends_on:
       - mongodb
 
-  frontend:
-    build:
-      context: ../frontend
-      dockerfile: ../docker/Dockerfile.frontend
-    ports:
-      - "3000:3000"
-    env_file:
-      - ../frontend/.env
-    depends_on:
-      - backend
-
 volumes:
   mongo_data:
