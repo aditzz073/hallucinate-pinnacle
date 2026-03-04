@@ -1,10 +1,11 @@
-version: "3.8"
-
 services:
   mongodb:
     image: mongo:7
     ports:
       - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: pinnacle_admin
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-pinnacle_secure_pass_2026}
     volumes:
       - mongo_data:/data/db
 
@@ -14,10 +15,30 @@ services:
       dockerfile: ../docker/Dockerfile.backend
     ports:
       - "8001:8001"
+    environment:
+      JWT_SECRET: ${JWT_SECRET:-CHANGE_THIS_TO_A_SECURE_RANDOM_STRING_IN_PRODUCTION_MIN_32_CHARS}
+      MONGODB_USER: pinnacle_admin
+      MONGODB_PASSWORD: ${MONGO_PASSWORD:-pinnacle_secure_pass_2026}
+      MONGODB_HOST: mongodb
+      MONGODB_PORT: 27017
+      MONGODB_DB: pinnacle
     env_file:
       - ../backend/.env
     depends_on:
       - mongodb
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: ../docker/Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ../frontend/.env
+    depends_on:
+      - backend
+    stdin_open: true
+    tty: true
 
 volumes:
   mongo_data:
