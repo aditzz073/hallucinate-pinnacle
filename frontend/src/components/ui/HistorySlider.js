@@ -33,7 +33,7 @@ export default function HistorySlider({ history, currentIndex, onNavigateBack, o
   const nextPage = canGoForward ? history[currentIndex + 1] : null;
 
   return (
-    <div className="fixed bottom-6 left-6 z-50 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="fixed bottom-6 right-6 z-50 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center gap-2 bg-black/70 backdrop-blur-xl border border-white/20 rounded-full px-4 py-3 shadow-2xl">
         {/* Back Button */}
         <button
@@ -50,9 +50,9 @@ export default function HistorySlider({ history, currentIndex, onNavigateBack, o
         </button>
 
         {/* Current Page Indicator */}
-        <div className="px-3 py-1 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 rounded-full border border-blue-400/30">
+        <div className="px-3 py-1 bg-indigo-500/20 rounded-full border border-indigo-400/30">
           <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" />
+            <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse" />
             <span className="text-xs font-semibold text-white">
               {getPageName(currentPage)}
             </span>

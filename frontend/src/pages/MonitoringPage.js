@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { addMonitor, listMonitors, refreshMonitor, getPageChanges, deleteMonitor } from "../api";
-import { Eye, Plus, RefreshCw, Trash2, Loader2, ExternalLink, Activity, ArrowRight, Radio } from "lucide-react";
+import { Eye, Plus, RefreshCw, Trash2, Loader2, ExternalLink, Activity, ArrowRight } from "lucide-react";
 
 export default function MonitoringPage() {
   const [url, setUrl] = useState("");
@@ -48,16 +48,13 @@ export default function MonitoringPage() {
   return (
     <div className="space-y-10" data-testid="monitoring-page">
       <div>
-        <div className="flex items-center gap-3 mb-2">
-          <Radio className="w-6 h-6 text-brand-blue animate-pulse2" />
-          <h1 className="text-3xl lg:text-4xl font-thin text-white">Page Monitoring</h1>
-        </div>
-        <p className="text-gray-400 font-light">Track pages over time and detect signal changes.</p>
+        <h1 className="font-display text-3xl font-bold text-white mb-2">Monitor <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Pages</span></h1>
+        <p className="text-sm" style={{ color: "var(--text-muted)" }}>Track pages over time and detect signal changes.</p>
       </div>
 
       <form onSubmit={handleAdd} className="flex gap-3" data-testid="monitor-form">
         <input data-testid="monitor-url-input" type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://example.com/page" className="glass-input flex-1 h-12 px-4 text-sm" required />
-        <button data-testid="monitor-submit-button" type="submit" disabled={loading} className="h-12 px-6 rounded-xl bg-white text-black font-medium flex items-center gap-2 hover:scale-[1.02] transition-all duration-300 disabled:opacity-50 shrink-0">
+        <button data-testid="monitor-submit-button" type="submit" disabled={loading} className="btn-primary h-12 px-6 rounded-xl flex items-center gap-2 disabled:opacity-50 shrink-0">
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
           {loading ? "Adding..." : "Add Page"}
         </button>

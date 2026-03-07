@@ -1,187 +1,314 @@
 import React from "react";
-import Logo from "../components/ui/Logo";
 import {
-  Sparkles, ArrowRight, Zap, Shield,
-  Search, Eye, FlaskConical, Crown,
+  ArrowRight, Zap, Shield, Search, Eye, FlaskConical, Crown,
+  TrendingUp, CheckCircle, BarChart2, Cpu,
 } from "lucide-react";
 
-const FEATURES = [
+const BENTO_FEATURES = [
   {
     icon: Zap,
     title: "AEO Page Audits",
-    desc: "Deep analysis of any URL for AI Engine Optimization signals with deterministic scoring across 5 dimensions.",
-    gradient: "from-blue-500/20 to-cyan-500/20",
+    desc: "Deterministic scoring across 5 dimensions — authority, structure, content, technical, and freshness.",
+    size: "large", // spans 2 cols
+    accent: "#4F46E5",
   },
   {
     icon: Search,
     title: "Citation Testing",
-    desc: "Test how likely AI engines are to cite your page for specific queries with probability scoring and gap analysis.",
-    gradient: "from-purple-500/20 to-pink-500/20",
+    desc: "Probability scoring + gap analysis for any query.",
+    size: "small",
+    accent: "#7C3AED",
   },
   {
     icon: Eye,
     title: "Page Monitoring",
-    desc: "Track page signal changes over time with append-only snapshots and deterministic impact classification.",
-    gradient: "from-teal-500/20 to-green-500/20",
+    desc: "Append-only snapshots with deterministic impact classification.",
+    size: "small",
+    accent: "#0891B2",
   },
   {
     icon: FlaskConical,
     title: "Strategy Simulator",
-    desc: "Simulate content optimizations and see projected impact on citation probability before making changes.",
-    gradient: "from-orange-500/20 to-yellow-500/20",
+    desc: "Simulate optimizations and see projected citation lift before you ship.",
+    size: "small",
+    accent: "#D97706",
   },
   {
     icon: Shield,
     title: "Advanced Explainability",
-    desc: "Per-category contributing factors, penalties, evidence, and historical intelligence for every audit.",
-    gradient: "from-indigo-500/20 to-blue-500/20",
+    desc: "Per-category contributing factors, penalties, and historical intelligence.",
+    size: "small",
+    accent: "#059669",
   },
   {
     icon: Crown,
     title: "Enterprise Intelligence",
-    desc: "Competitor comparison, sensitivity toggles, and executive summaries for data-driven decisions.",
-    gradient: "from-pink-500/20 to-rose-500/20",
+    desc: "Competitor comparison and executive summaries for data-driven decisions.",
+    size: "large",
+    accent: "#DB2777",
   },
 ];
 
+// Mini dashboard product mockup for hero right column
+function HeroMockup() {
+  const bars = [62, 78, 55, 88, 71, 94, 83];
+  return (
+    <div
+      className="relative w-full max-w-[480px] rounded-2xl overflow-hidden"
+      style={{
+        background: "var(--surface)",
+        border: "1px solid var(--border)",
+        boxShadow: "0 32px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(79,70,229,0.15)",
+      }}
+    >
+      {/* Window chrome */}
+      <div
+        className="flex items-center gap-2 px-4 py-3"
+        style={{ borderBottom: "1px solid var(--border)", background: "var(--surface-2)" }}
+      >
+        <div className="w-3 h-3 rounded-full bg-red-500/60" />
+        <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
+        <div className="w-3 h-3 rounded-full bg-green-500/60" />
+        <span className="ml-3 text-xs font-mono" style={{ color: "var(--muted)" }}>pinnacle.ai / dashboard</span>
+      </div>
+
+      {/* Top scorecard row */}
+      <div className="grid grid-cols-3 gap-px p-4" style={{ gap: "12px" }}>
+        {[
+          { label: "AEO Score", value: "87", unit: "/100", color: "#4F46E5" },
+          { label: "Citation Prob.", value: "74", unit: "%", color: "#7C3AED" },
+          { label: "Pages Tracked", value: "12", unit: "", color: "#0891B2" },
+        ].map((m) => (
+          <div
+            key={m.label}
+            className="rounded-xl p-3"
+            style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}
+          >
+            <p className="text-xs mb-1" style={{ color: "var(--muted)" }}>{m.label}</p>
+            <p className="text-2xl font-bold" style={{ color: m.color }}>
+              {m.value}<span className="text-sm font-normal" style={{ color: "var(--muted)" }}>{m.unit}</span>
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* Bar chart */}
+      <div className="px-4 pb-4">
+        <div
+          className="rounded-xl p-4"
+          style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs font-medium" style={{ color: "var(--foreground)" }}>Citation Probability (7d)</p>
+            <span className="text-xs font-semibold" style={{ color: "#4F46E5" }}>+12%</span>
+          </div>
+          <div className="flex items-end gap-1.5 h-16">
+            {bars.map((h, i) => (
+              <div
+                key={i}
+                className="flex-1 rounded-sm transition-all"
+                style={{
+                  height: `${h}%`,
+                  background: i === bars.length - 1
+                    ? "linear-gradient(to top, #4F46E5, #7C3AED)"
+                    : "rgba(79,70,229,0.3)",
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Audit row */}
+      <div className="px-4 pb-4 space-y-2">
+        {[
+          { url: "blog/ai-seo-guide", score: 94, status: "Excellent" },
+          { url: "docs/getting-started", score: 71, status: "Good" },
+          { url: "pricing", score: 48, status: "Needs Work" },
+        ].map((row) => (
+          <div
+            key={row.url}
+            className="flex items-center justify-between rounded-lg px-3 py-2"
+            style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}
+          >
+            <span className="text-xs font-mono" style={{ color: "var(--muted)" }}>/{row.url}</span>
+            <div className="flex items-center gap-2">
+              <span
+                className="text-xs px-2 py-0.5 rounded-full font-medium"
+                style={{
+                  background: row.score >= 80 ? "rgba(5,150,105,0.15)" : row.score >= 60 ? "rgba(217,119,6,0.15)" : "rgba(220,38,38,0.15)",
+                  color: row.score >= 80 ? "#10B981" : row.score >= 60 ? "#F59E0B" : "#EF4444",
+                }}
+              >
+                {row.status}
+              </span>
+              <span className="text-xs font-bold" style={{ color: "var(--foreground)" }}>{row.score}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Indigo glow at bottom */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
+        style={{ background: "linear-gradient(to top, rgba(79,70,229,0.08), transparent)" }}
+      />
+    </div>
+  );
+}
+
 export default function LandingPage({ onGetStarted }) {
   return (
-    <div className="relative min-h-screen bg-[#050508] overflow-hidden" data-testid="landing-page">
-      {/* Hero */}
-      <section className="relative min-h-screen flex items-center justify-center">
-        {/* Animated gradient background */}
-        <div className="absolute inset-0 overflow-hidden">
-          {/* Central glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-blue-500/20 via-transparent to-transparent blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
-          
-          {/* Floating orbs */}
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] animate-float-slow" />
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-cyan-500/10 rounded-full blur-[100px] animate-float-slow-reverse" />
-          <div className="absolute top-1/3 right-1/3 w-64 h-64 bg-purple-500/8 rounded-full blur-[80px] animate-float-medium" />
-          
-          {/* Grid pattern */}
-          <div 
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-              backgroundSize: '60px 60px'
-            }}
-          />
-          
-          {/* Radial gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-[#050508]" />
-        </div>
+    <div className="relative overflow-hidden" style={{ background: "var(--bg)" }} data-testid="landing-page">
 
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 backdrop-blur-xl mb-10 animate-fade-in">
-            <Sparkles className="h-4 w-4 text-blue-400" />
-            <span className="text-sm font-medium text-gray-300">Powered by Advanced AI Analysis</span>
-          </div>
+      {/* ── HERO — two-column layout ─────────────────────────────────────── */}
+      <section className="relative min-h-[92vh] flex items-center">
+        {/* Subtle grid */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)`,
+            backgroundSize: "72px 72px",
+          }}
+        />
+        {/* Indigo glow */}
+        <div
+          className="absolute top-1/3 left-1/4 w-[600px] h-[500px] pointer-events-none"
+          style={{
+            background: "radial-gradient(ellipse at center, rgba(79,70,229,0.12) 0%, transparent 70%)",
+          }}
+        />
 
-          {/* Main headline with gradient */}
-          <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold leading-[1.05] mb-8 animate-fade-in-up">
-            <span className="bg-gradient-to-r from-white via-white to-gray-400 bg-clip-text text-transparent">Pinnacle</span>
-            <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">.ai</span>
-          </h1>
+        <div className="relative w-full max-w-[1120px] mx-auto px-8 py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
-          {/* Animated underline */}
-          <div className="flex justify-center mb-8 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <div className="h-px w-32 bg-gradient-to-r from-transparent via-blue-500 to-transparent" />
-          </div>
+            {/* Left: Copy */}
+            <div>
+              {/* Badge */}
+              <div
+                className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-8 text-xs font-medium"
+                style={{
+                  background: "rgba(79,70,229,0.12)",
+                  border: "1px solid rgba(79,70,229,0.3)",
+                  color: "#A5B4FC",
+                }}
+              >
+                <Cpu className="w-3.5 h-3.5" />
+                AI Engine Optimization platform
+              </div>
 
-          {/* Subtitle */}
-          <p className="text-lg md:text-xl text-gray-400 font-light max-w-2xl mx-auto mb-12 leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-            The AI Engine Optimization platform that analyzes how your content performs in AI-generated answers. 
-            <span className="text-white font-medium"> Understand. Optimize. Get discovered.</span>
-          </p>
+              {/* Headline */}
+              <h1
+                className="font-display text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.0] mb-6"
+                style={{ color: "var(--foreground)", letterSpacing: "-0.03em" }}
+              >
+                Get discovered<br />
+                <span style={{ color: "#4F46E5" }}>by AI</span> engines.
+              </h1>
 
-          {/* Stats row */}
-          <div className="flex items-center justify-center gap-8 mb-12 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-white">100%</p>
-              <p className="text-xs text-gray-500">Deterministic</p>
+              <p className="text-lg mb-10 max-w-md leading-relaxed" style={{ color: "var(--muted)" }}>
+                Pinnacle analyzes how your content performs in AI-generated answers.
+                Understand your signals, fix your gaps, and get cited.
+              </p>
+
+              {/* Stats row */}
+              <div className="flex items-center gap-6 mb-10">
+                {[
+                  { label: "Deterministic scoring", icon: CheckCircle },
+                  { label: "5 signal dimensions", icon: BarChart2 },
+                  { label: "Real-time tracking", icon: TrendingUp },
+                ].map(({ label, icon: Icon }) => (
+                  <div key={label} className="flex items-center gap-1.5">
+                    <Icon className="w-3.5 h-3.5" style={{ color: "#4F46E5" }} />
+                    <span className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>{label}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* CTAs */}
+              <div className="flex items-center gap-3">
+                <button
+                  data-testid="hero-get-started"
+                  onClick={onGetStarted}
+                  className="btn-primary inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold"
+                >
+                  Start for free
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+                <button
+                  data-testid="hero-learn-more"
+                  onClick={onGetStarted}
+                  className="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-medium transition-colors"
+                  style={{
+                    background: "var(--surface-2)",
+                    border: "1px solid var(--border)",
+                    color: "var(--foreground)",
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
+                >
+                  View demo
+                </button>
+              </div>
             </div>
-            <div className="w-px h-8 bg-white/10" />
-            <div className="text-center">
-              <p className="text-2xl font-bold text-white">5+</p>
-              <p className="text-xs text-gray-500">Analysis Dimensions</p>
-            </div>
-            <div className="w-px h-8 bg-white/10" />
-            <div className="text-center">
-              <p className="text-2xl font-bold text-white">Real-time</p>
-              <p className="text-xs text-gray-500">Insights</p>
-            </div>
-          </div>
 
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
-            <button
-              data-testid="hero-get-started"
-              onClick={onGetStarted}
-              className="group relative rounded-full bg-white px-8 py-4 text-base font-semibold text-black overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(59,130,246,0.5)]"
-            >
-              <span className="relative z-10 flex items-center gap-2">
-                Get Started Free
-                <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
-              </span>
-            </button>
-            <button
-              data-testid="hero-learn-more"
-              onClick={onGetStarted}
-              className="group rounded-full border border-white/20 bg-white/5 px-8 py-4 text-base font-medium text-white backdrop-blur-xl hover:bg-white/10 hover:border-white/30 transition-all duration-300"
-            >
-              View Demo
-            </button>
-          </div>
-
-          {/* Scroll indicator */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce" style={{ animationDuration: '2s' }}>
-            <div className="w-6 h-10 rounded-full border border-white/20 flex items-start justify-center p-2">
-              <div className="w-1 h-2 bg-white/40 rounded-full animate-scroll-down" />
+            {/* Right: Product mockup */}
+            <div className="flex justify-end">
+              <HeroMockup />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="relative py-24 px-4" data-section="features" id="features">
-        {/* Subtle background */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#050508] via-[#0a0a12] to-[#050508]" />
-        
-        <div className="relative max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Everything you need to <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">dominate</span> AI search
-            </h2>
-            <p className="text-gray-400 text-lg font-light max-w-xl mx-auto">
-              A complete toolkit for understanding and optimizing your AI discoverability.
+      {/* ── BENTO FEATURES ───────────────────────────────────────────────── */}
+      <section className="py-24 px-8" data-section="features">
+        <div className="max-w-[1120px] mx-auto">
+          <div className="mb-14">
+            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#4F46E5" }}>
+              Platform
             </p>
+            <h2
+              className="font-display text-4xl lg:text-5xl font-bold leading-tight"
+              style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}
+            >
+              Everything your content needs<br />to rank in AI answers.
+            </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {FEATURES.map((f, i) => {
+          <div className="bento-grid">
+            {BENTO_FEATURES.map((f, i) => {
               const Icon = f.icon;
-              // Assign bright colors to each icon
-              const iconColors = [
-                "text-blue-400",      // AEO Audits
-                "text-purple-400",    // Citation Testing
-                "text-emerald-400",   // Page Monitoring
-                "text-amber-400",     // Strategy Simulator
-                "text-indigo-400",    // Advanced Explainability
-                "text-pink-400",      // Enterprise Intelligence
-              ];
               return (
                 <div
                   key={i}
-                  className="group rounded-2xl border border-white/5 bg-white/[0.02] p-6 backdrop-blur-sm hover:border-white/10 hover:bg-white/[0.04] transition-all duration-300"
+                  className={f.size === "large" ? "bento-large" : "bento-small"}
                   data-testid={`feature-card-${i}`}
+                  style={{
+                    background: "var(--surface)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "16px",
+                    padding: "28px",
+                    transition: "border-color 0.2s",
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = `${f.accent}40`}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
                 >
-                  <div className={`mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${f.gradient} border border-white/5`}>
-                    <Icon className={`h-6 w-6 ${iconColors[i]}`} />
+                  <div
+                    className="inline-flex items-center justify-center w-10 h-10 rounded-xl mb-5"
+                    style={{ background: `${f.accent}18`, border: `1px solid ${f.accent}30` }}
+                  >
+                    <Icon className="w-5 h-5" style={{ color: f.accent }} />
                   </div>
-                  <h3 className="mb-2 text-lg font-semibold text-white">{f.title}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{f.desc}</p>
+                  <h3
+                    className="text-base font-semibold mb-2"
+                    style={{ color: "var(--foreground)" }}
+                  >
+                    {f.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed" style={{ color: "var(--muted)" }}>
+                    {f.desc}
+                  </p>
                 </div>
               );
             })}
@@ -189,149 +316,129 @@ export default function LandingPage({ onGetStarted }) {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section className="relative py-24 px-4" data-section="pricing" id="pricing">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#050508] to-[#0a0a12]" />
-        
-        <div className="relative max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Simple, <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">transparent</span> pricing
-            </h2>
-            <p className="text-gray-400 text-lg font-light max-w-xl mx-auto">
-              Start free, scale as you grow. No hidden fees.
+      {/* ── PRICING ──────────────────────────────────────────────────────── */}
+      <section className="py-24 px-8" data-section="pricing" id="pricing">
+        <div className="max-w-[1120px] mx-auto">
+          <div className="mb-14">
+            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#4F46E5" }}>
+              Pricing
             </p>
+            <h2
+              className="font-display text-4xl lg:text-5xl font-bold"
+              style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}
+            >
+              Simple, transparent pricing.
+            </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {/* Free Tier */}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-8 backdrop-blur-sm">
-              <h3 className="text-xl font-bold text-white mb-2">Starter</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Starter */}
+            <div className="rounded-2xl p-8" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+              <h3 className="text-base font-semibold mb-1" style={{ color: "var(--foreground)" }}>Starter</h3>
+              <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>For individuals exploring AEO.</p>
               <div className="mb-6">
-                <span className="text-4xl font-bold text-white">$0</span>
-                <span className="text-gray-500 ml-2">/month</span>
+                <span className="text-4xl font-bold" style={{ color: "var(--foreground)" }}>$0</span>
+                <span className="text-sm ml-1" style={{ color: "var(--muted)" }}>/month</span>
               </div>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center gap-2 text-gray-400 text-sm">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                  5 audits/month
-                </li>
-                <li className="flex items-center gap-2 text-gray-400 text-sm">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                  10 AI tests/month
-                </li>
-                <li className="flex items-center gap-2 text-gray-400 text-sm">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                  Basic analytics
-                </li>
+              <ul className="space-y-2.5 mb-8">
+                {["5 audits/month", "10 AI tests/month", "Basic analytics"].map(item => (
+                  <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: "var(--muted-foreground)" }}>
+                    <div className="w-1.5 h-1.5 rounded-full" style={{ background: "#4F46E5" }} />
+                    {item}
+                  </li>
+                ))}
               </ul>
-              <button 
+              <button
                 onClick={onGetStarted}
-                className="w-full rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-medium text-white hover:bg-white/10 transition-all duration-300"
+                className="w-full rounded-lg py-2.5 text-sm font-medium transition-colors"
+                style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--foreground)" }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
+                onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
               >
-                Get Started
+                Get started
               </button>
             </div>
 
-            {/* Pro Tier - Featured */}
-            <div className="rounded-2xl border-2 border-cyan-500/50 bg-gradient-to-b from-cyan-500/10 to-blue-500/10 p-8 backdrop-blur-sm relative">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 text-xs font-bold text-white">
+            {/* Pro — featured */}
+            <div
+              className="rounded-2xl p-8 relative"
+              style={{
+                background: "linear-gradient(135deg, rgba(79,70,229,0.12) 0%, rgba(124,58,237,0.08) 100%)",
+                border: "1px solid rgba(79,70,229,0.4)",
+              }}
+            >
+              <div
+                className="absolute -top-3 left-6 px-3 py-1 rounded-full text-2xs font-bold tracking-wide"
+                style={{ background: "#4F46E5", color: "#fff", fontSize: "10px" }}
+              >
                 MOST POPULAR
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Professional</h3>
+              <h3 className="text-base font-semibold mb-1" style={{ color: "var(--foreground)" }}>Professional</h3>
+              <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>For teams serious about AEO.</p>
               <div className="mb-6">
-                <span className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">$49</span>
-                <span className="text-gray-400 ml-2">/month</span>
+                <span className="text-4xl font-bold" style={{ color: "#818CF8" }}>$49</span>
+                <span className="text-sm ml-1" style={{ color: "var(--muted)" }}>/month</span>
               </div>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center gap-2 text-gray-300 text-sm">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                  Unlimited audits
-                </li>
-                <li className="flex items-center gap-2 text-gray-300 text-sm">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                  Unlimited AI tests
-                </li>
-                <li className="flex items-center gap-2 text-gray-300 text-sm">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                  Page monitoring
-                </li>
-                <li className="flex items-center gap-2 text-gray-300 text-sm">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                  Strategy simulator
-                </li>
-                <li className="flex items-center gap-2 text-gray-300 text-sm">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                  Priority support
-                </li>
+              <ul className="space-y-2.5 mb-8">
+                {["Unlimited audits", "Unlimited AI tests", "Page monitoring", "Strategy simulator", "Priority support"].map(item => (
+                  <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: "var(--muted-foreground)" }}>
+                    <div className="w-1.5 h-1.5 rounded-full" style={{ background: "#818CF8" }} />
+                    {item}
+                  </li>
+                ))}
               </ul>
-              <button 
-                onClick={onGetStarted}
-                className="w-full rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-6 py-3 text-sm font-bold text-white hover:shadow-[0_0_30px_rgba(34,211,238,0.4)] transition-all duration-300"
-              >
-                Start Free Trial
+              <button onClick={onGetStarted} className="btn-primary w-full rounded-lg py-2.5 text-sm font-semibold">
+                Start free trial
               </button>
             </div>
 
-            {/* Enterprise Tier */}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-8 backdrop-blur-sm">
-              <h3 className="text-xl font-bold text-white mb-2">Enterprise</h3>
+            {/* Enterprise */}
+            <div className="rounded-2xl p-8" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+              <h3 className="text-base font-semibold mb-1" style={{ color: "var(--foreground)" }}>Enterprise</h3>
+              <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>For large-scale operations.</p>
               <div className="mb-6">
-                <span className="text-4xl font-bold text-white">Custom</span>
+                <span className="text-4xl font-bold" style={{ color: "var(--foreground)" }}>Custom</span>
               </div>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-center gap-2 text-gray-400 text-sm">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                  Everything in Pro
-                </li>
-                <li className="flex items-center gap-2 text-gray-400 text-sm">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                  Competitor intel
-                </li>
-                <li className="flex items-center gap-2 text-gray-400 text-sm">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                  Executive reports
-                </li>
-                <li className="flex items-center gap-2 text-gray-400 text-sm">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                  Dedicated support
-                </li>
-                <li className="flex items-center gap-2 text-gray-400 text-sm">
-                  <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-                  Custom integrations
-                </li>
+              <ul className="space-y-2.5 mb-8">
+                {["Everything in Pro", "Competitor intel", "Executive reports", "Dedicated support", "Custom integrations"].map(item => (
+                  <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: "var(--muted-foreground)" }}>
+                    <div className="w-1.5 h-1.5 rounded-full" style={{ background: "#4F46E5" }} />
+                    {item}
+                  </li>
+                ))}
               </ul>
-              <button 
+              <button
                 onClick={onGetStarted}
-                className="w-full rounded-full border border-white/20 bg-white/5 px-6 py-3 text-sm font-medium text-white hover:bg-white/10 transition-all duration-300"
+                className="w-full rounded-lg py-2.5 text-sm font-medium transition-colors"
+                style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--foreground)" }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
+                onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
               >
-                Contact Sales
+                Contact sales
               </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Bottom CTA */}
-      <section className="relative py-24 px-4 text-center">
-        {/* Glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gradient-radial from-blue-500/10 via-transparent to-transparent blur-3xl" />
-        
-        <div className="relative max-w-2xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Ready to reach the <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">pinnacle</span>?
+      {/* ── BOTTOM CTA ───────────────────────────────────────────────────── */}
+      <section className="py-24 px-8 text-center">
+        <div className="max-w-[640px] mx-auto">
+          <h2
+            className="font-display text-4xl lg:text-5xl font-bold mb-4"
+            style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}
+          >
+            Reach the pinnacle<br />of AI discoverability.
           </h2>
-          <p className="text-gray-400 text-lg font-light mb-10">
-            Start analyzing your AI discoverability in seconds.
+          <p className="text-base mb-10" style={{ color: "var(--muted)" }}>
+            Start analyzing your AI discoverability in seconds. Free forever.
           </p>
           <button
             onClick={onGetStarted}
-            className="group rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 px-10 py-4 text-base font-semibold text-white hover:shadow-[0_0_40px_rgba(59,130,246,0.4)] transition-all duration-300"
+            className="btn-primary inline-flex items-center gap-2 rounded-lg px-8 py-3.5 text-sm font-semibold"
           >
-            <span className="flex items-center gap-2">
-              Start Optimizing
-              <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
-            </span>
+            Start optimizing
+            <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       </section>

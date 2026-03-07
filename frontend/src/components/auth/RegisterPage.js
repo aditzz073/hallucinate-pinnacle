@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import Logo from "../ui/Logo";
-import Blobs from "../ui/Blobs";
 import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 
 export default function RegisterPage({ onSwitch, onSuccess }) {
@@ -31,10 +30,9 @@ export default function RegisterPage({ onSwitch, onSuccess }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative bg-black" data-testid="register-page">
-      <Blobs variant="hero" />
-      <div className="relative z-10 w-full max-w-md px-4">
-        <div className="glass-card p-8 space-y-8">
+    <div className="min-h-screen flex items-center justify-center relative" style={{ background: "var(--bg)" }} data-testid="register-page">
+      <div className="w-full max-w-md px-4">
+        <div className="metric-card p-8 space-y-8" style={{ maxWidth: "440px", margin: "0 auto" }}>
           <div className="text-center">
             <div className="flex items-center justify-center gap-2 mb-6">
               <Logo size="md" />
@@ -85,7 +83,7 @@ export default function RegisterPage({ onSwitch, onSuccess }) {
 
           <p className="text-sm text-gray-500 text-center">
             Already have an account?{" "}
-            <button data-testid="register-switch-to-login" onClick={onSwitch} className="text-brand-blue hover:text-brand-teal font-medium transition-colors">Sign in</button>
+            <button data-testid="register-switch-to-login" onClick={onSwitch} className="font-medium transition-opacity hover:opacity-70" style={{ color: "#818CF8" }}>Sign in</button>
           </p>
         </div>
       </div>

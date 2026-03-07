@@ -78,10 +78,10 @@ export default function AITestsPage({ onSignUp }) {
     <div className="space-y-8" data-testid="ai-tests-page">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold text-white mb-2">
-          AI Citation & <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">Generation</span> Tests
+        <h1 className="font-display text-3xl font-bold text-white mb-2">
+          AI Citation & <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Generation</span> Tests
         </h1>
-        <p className="text-gray-500">Test how likely AI engines are to cite and generate content from your page.</p>
+        <p className="text-sm" style={{ color: "var(--text-muted)" }}>Test how likely AI engines are to cite and generate content from your page.</p>
       </div>
 
       {/* Guest Mode Banner */}
@@ -122,7 +122,7 @@ export default function AITestsPage({ onSignUp }) {
                 data-testid="ai-test-submit-button" 
                 type="submit" 
                 disabled={loading} 
-                className="h-12 px-6 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold flex items-center gap-2 hover:shadow-[0_0_30px_rgba(59,130,246,0.4)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                className="btn-primary h-12 px-6 rounded-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
                 {loading ? "Analyzing..." : (effectiveIsGuest && effectiveHasReachedLimit ? "Sign In to Continue" : "Run Test")}

@@ -27,8 +27,8 @@ export default function AdvancedAuditPage() {
   return (
     <div className="space-y-10" data-testid="advanced-audit-page">
       <div>
-        <h1 className="text-3xl lg:text-4xl font-thin text-white mb-2">Advanced Audit</h1>
-        <p className="text-gray-400 font-light">Deep audit with explainability, historical intelligence, and integrity metadata.</p>
+        <h1 className="font-display text-3xl font-bold text-white mb-2">Advanced <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Audit</span></h1>
+        <p className="text-sm" style={{ color: "var(--text-muted)" }}>Deep audit with explainability, historical intelligence, and integrity metadata.</p>
       </div>
 
       <form onSubmit={handleAudit} className="flex gap-3" data-testid="advanced-audit-form">
@@ -45,7 +45,7 @@ export default function AdvancedAuditPage() {
           data-testid="advanced-audit-submit"
           type="submit"
           disabled={loading}
-          className="h-12 px-6 rounded-xl bg-white text-black font-medium flex items-center gap-2 hover:scale-[1.02] hover:shadow-[0_0_24px_rgba(255,255,255,0.15)] transition-all duration-300 disabled:opacity-50 shrink-0"
+          className="btn-primary h-12 px-6 rounded-xl flex items-center gap-2 disabled:opacity-50 shrink-0"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
           {loading ? "Analyzing..." : "Deep Audit"}

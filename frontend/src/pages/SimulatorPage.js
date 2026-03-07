@@ -35,9 +35,9 @@ export default function SimulatorPage() {
   return (
     <div className="space-y-8" data-testid="simulator-page">
       {/* Page Header */}
-      <div className="page-header">
-        <h1>Strategy Simulator</h1>
-        <p>Simulate content optimizations and see projected impact on citation probability.</p>
+      <div>
+        <h1 className="font-display text-3xl font-bold text-white mb-2">Strategy <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Simulator</span></h1>
+        <p className="text-sm" style={{ color: "var(--text-muted)" }}>Simulate content optimizations and see projected impact on citation probability.</p>
       </div>
 
       {/* Form */}

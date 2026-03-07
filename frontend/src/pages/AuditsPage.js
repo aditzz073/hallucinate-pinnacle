@@ -72,10 +72,10 @@ export default function AuditsPage({ onSignUp }) {
     <div className="space-y-8" data-testid="audits-page">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold text-white mb-2">
-          AEO <span className="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">Page Audits</span>
+        <h1 className="font-display text-3xl font-bold text-white mb-2">
+          AEO <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Page Audits</span>
         </h1>
-        <p className="text-gray-500">Analyze any URL for AI Engine Optimization signals.</p>
+        <p className="text-sm" style={{ color: "var(--text-muted)" }}>Analyze any URL for AI Engine Optimization signals.</p>
       </div>
 
       {/* Guest Mode Banner - Hide for privileged users */}
@@ -98,7 +98,7 @@ export default function AuditsPage({ onSignUp }) {
             data-testid="audit-submit"
             type="submit"
             disabled={loading}
-            className="h-12 px-6 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold flex items-center gap-2 hover:shadow-[0_0_30px_rgba(59,130,246,0.4)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-primary h-12 px-6 rounded-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileSearch className="w-4 h-4" />}
             {loading ? "Auditing..." : (effectiveIsGuest && effectiveHasReachedLimit ? "Sign In to Continue" : "Run Audit")}

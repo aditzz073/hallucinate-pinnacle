@@ -1,14 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { getOverview, getTrends, getCompetitors } from "../api";
 import { getScoreColor } from "../components/ui/ScoreRing";
-import { BarChart3, TrendingUp, Users, Loader2 } from "lucide-react";
+import { BarChart3, TrendingUp, Users, TrendingDown } from "lucide-react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
   AreaChart, Area,
 } from "recharts";
 
-const TOOLTIP_STYLE = { backgroundColor: "rgba(0,0,0,0.85)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "0.75rem", backdropFilter: "blur(12px)" };
+const TOOLTIP_STYLE = {
+  backgroundColor: "var(--surface-2, #14142A)",
+  border: "1px solid var(--border, rgba(255,255,255,0.08))",
+  borderRadius: "10px",
+  color: "#fff",
+  fontSize: "12px",
+};
+
+const GRID_COLOR = "rgba(255,255,255,0.04)";
+const AXIS_TICK = { fontSize: 11, fill: "var(--muted, #7070A0)" };
 
 const TABS = [
   { id: "overview", label: "Overview", icon: BarChart3 },
@@ -23,7 +32,7 @@ export default function ReportsPage() {
   const [competitors, setCompetitors] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { loadData(); }, [tab]);
+  useEffect(() => { loadData(); }, [tab]); // eslint-disable-line
 
   const loadData = async () => {
     setLoading(true);
@@ -36,26 +45,49 @@ export default function ReportsPage() {
   };
 
   return (
-    <div className="space-y-10" data-testid="reports-page">
+    <div className="space-y-8" data-testid="reports-page">
       <div>
-        <h1 className="text-3xl lg:text-4xl font-thin text-white mb-2">Reports & Analytics</h1>
-        <p className="text-gray-400 font-light">Aggregated insights across all your audits and tests.</p>
+        <h1 className="font-display text-3xl font-bold text-white mb-2">
+          Reports & <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Analytics</span>
+        </h1>
+        <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+          Aggregated insights across all your audits and tests.
+        </p>
       </div>
 
       {/* Tabs */}
-      <div className="glass-card inline-flex p-1 gap-1">
+      <div
+        className="inline-flex rounded-xl p-1 gap-1"
+        style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+      >
         {TABS.map((t) => {
           const Icon = t.icon;
+          const isActive = tab === t.id;
           return (
-            <button key={t.id} onClick={() => setTab(t.id)} data-testid={`tab-${t.id}`}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${tab === t.id ? "bg-white/10 text-white" : "text-gray-400 hover:text-white"}`}>
-              <Icon className="w-4 h-4" /> {t.label}
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              data-testid={`tab-${t.id}`}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+              style={{
+                background: isActive ? "var(--surface-2)" : "transparent",
+                color: isActive ? "var(--foreground)" : "var(--muted)",
+                border: isActive ? "1px solid var(--border)" : "1px solid transparent",
+              }}
+            >
+              <Icon className="w-4 h-4" />
+              {t.label}
             </button>
           );
         })}
       </div>
 
-      {loading && !overview && !trends && !competitors ? <div className="flex items-center gap-2 text-gray-500"><Loader2 className="w-4 h-4 animate-spin" />Loading...</div> : (
+      {loading && !overview && !trends && !competitors ? (
+        <div className="space-y-4">
+          <div className="skeleton h-24 rounded-2xl" />
+          <div className="skeleton h-64 rounded-2xl" />
+        </div>
+      ) : (
         <>
           {tab === "overview" && overview && <OverviewTab data={overview} />}
           {tab === "trends" && trends && <TrendsTab data={trends} />}
@@ -78,27 +110,62 @@ function OverviewTab({ data }) {
   ];
 
   return (
-    <div className="space-y-8" data-testid="overview-tab">
+    <div className="space-y-6" data-testid="overview-tab">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {stats.map((st) => (
-          <div key={st.label} className="glass-card p-4 text-center">
-            <p className="text-2xl font-light" style={st.isScore ? { color: getScoreColor(st.value) } : { color: "#fff" }}>{st.isScore ? `${st.value}` : st.value}</p>
-            <p className="text-[10px] text-gray-500 mt-1">{st.label}</p>
+          <div key={st.label} className="metric-card text-center">
+            <p
+              className="text-2xl font-bold mb-1"
+              style={{ color: st.isScore ? getScoreColor(st.value) : "var(--foreground)" }}
+            >
+              {st.value ?? "—"}
+            </p>
+            <p className="text-xs" style={{ color: "var(--muted)" }}>{st.label}</p>
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="glass-card p-6">
-          <h3 className="text-sm font-semibold text-white mb-4">Recent Audits</h3>
-          {data.recent_audits?.length === 0 ? <p className="text-xs text-gray-500">No audits yet.</p> : data.recent_audits?.map((a, i) => (
-            <div key={i} className="flex items-center justify-between text-xs py-1.5"><span className="truncate max-w-[200px] text-gray-400">{a.url}</span><span style={{ color: getScoreColor(a.overall_score) }}>{a.overall_score}</span></div>
-          ))}
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="metric-card p-0 overflow-hidden">
+          <div className="px-5 py-4" style={{ borderBottom: "1px solid var(--border)" }}>
+            <h3 className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Recent Audits</h3>
+          </div>
+          {data.recent_audits?.length === 0 ? (
+            <p className="px-5 py-4 text-xs" style={{ color: "var(--muted)" }}>No audits yet.</p>
+          ) : (
+            <table className="data-table w-full">
+              <thead><tr><th>URL</th><th className="text-right">Score</th></tr></thead>
+              <tbody>
+                {data.recent_audits?.map((a, i) => (
+                  <tr key={i}>
+                    <td className="truncate max-w-[200px] font-mono text-xs" style={{ color: "var(--muted-foreground)" }}>{a.url}</td>
+                    <td className="text-right font-bold" style={{ color: getScoreColor(a.overall_score) }}>{a.overall_score}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
-        <div className="glass-card p-6">
-          <h3 className="text-sm font-semibold text-white mb-4">Recent AI Tests</h3>
-          {data.recent_ai_tests?.length === 0 ? <p className="text-xs text-gray-500">No tests yet.</p> : data.recent_ai_tests?.map((t, i) => (
-            <div key={i} className="flex items-center justify-between text-xs py-1.5"><span className="truncate max-w-[180px] text-gray-400">{t.url}</span><span style={{ color: getScoreColor(t.citation_probability) }}>{t.citation_probability}%</span></div>
-          ))}
+
+        <div className="metric-card p-0 overflow-hidden">
+          <div className="px-5 py-4" style={{ borderBottom: "1px solid var(--border)" }}>
+            <h3 className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Recent AI Tests</h3>
+          </div>
+          {data.recent_ai_tests?.length === 0 ? (
+            <p className="px-5 py-4 text-xs" style={{ color: "var(--muted)" }}>No tests yet.</p>
+          ) : (
+            <table className="data-table w-full">
+              <thead><tr><th>URL</th><th className="text-right">Citation</th></tr></thead>
+              <tbody>
+                {data.recent_ai_tests?.map((t, i) => (
+                  <tr key={i}>
+                    <td className="truncate max-w-[200px] font-mono text-xs" style={{ color: "var(--muted-foreground)" }}>{t.url}</td>
+                    <td className="text-right font-bold" style={{ color: getScoreColor(t.citation_probability) }}>{t.citation_probability}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>
@@ -106,88 +173,116 @@ function OverviewTab({ data }) {
 }
 
 function TrendsTab({ data }) {
-  const auditData = (data.audit_trends || []).map((a) => ({ date: new Date(a.created_at).toLocaleDateString(), score: a.overall_score }));
-  const radarData = Object.entries(data.breakdown_averages || {}).map(([k, v]) => ({ subject: k.charAt(0).toUpperCase() + k.slice(1), score: v, fullMark: 100 }));
+  const auditData = (data.audit_trends || []).map((a) => ({
+    date: new Date(a.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" }),
+    score: a.overall_score,
+  }));
+  const radarData = Object.entries(data.breakdown_averages || {}).map(([k, v]) => ({
+    subject: k.charAt(0).toUpperCase() + k.slice(1),
+    score: v,
+    fullMark: 100,
+  }));
 
   return (
-    <div className="space-y-8" data-testid="trends-tab">
-      <div className="flex gap-4">
-        <DeltaCard label="AEO Score Delta" value={data.deltas?.audit_score_delta || 0} />
-        <DeltaCard label="Citation Prob Delta" value={data.deltas?.citation_probability_delta || 0} />
+    <div className="space-y-6" data-testid="trends-tab">
+      <div className="grid grid-cols-2 gap-3">
+        <DeltaCard label="AEO Score change" value={data.deltas?.audit_score_delta || 0} />
+        <DeltaCard label="Citation probability change" value={data.deltas?.citation_probability_delta || 0} />
       </div>
+
       {auditData.length > 0 && (
-        <div className="glass-card p-6">
-          <h3 className="text-sm font-semibold text-white mb-4">AEO Score Over Time</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={auditData}>
-              <defs><linearGradient id="colorScore" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#3A9BFF" stopOpacity={0.3}/><stop offset="95%" stopColor="#3A9BFF" stopOpacity={0}/></linearGradient></defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#9ca3af" }} />
-              <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: "#9ca3af" }} />
-              <Tooltip contentStyle={TOOLTIP_STYLE} />
-              <Area type="monotone" dataKey="score" stroke="#3A9BFF" strokeWidth={2} fillOpacity={1} fill="url(#colorScore)" />
+        <div className="metric-card">
+          <h3 className="text-sm font-semibold mb-5" style={{ color: "var(--foreground)" }}>AEO Score Over Time</h3>
+          <ResponsiveContainer width="100%" height={280}>
+            <AreaChart data={auditData} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
+              <defs>
+                <linearGradient id="gradIndigo" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#4F46E5" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="#4F46E5" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke={GRID_COLOR} />
+              <XAxis dataKey="date" tick={AXIS_TICK} axisLine={false} tickLine={false} />
+              <YAxis domain={[0, 100]} tick={AXIS_TICK} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ stroke: "rgba(79,70,229,0.3)", strokeWidth: 1 }} />
+              <Area type="monotone" dataKey="score" stroke="#4F46E5" strokeWidth={2} fillOpacity={1} fill="url(#gradIndigo)" dot={false} activeDot={{ r: 4, fill: "#4F46E5" }} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
       )}
+
       {radarData.some(r => r.score > 0) && (
-        <div className="glass-card p-6">
-          <h3 className="text-sm font-semibold text-white mb-4">Average Breakdown</h3>
-          <ResponsiveContainer width="100%" height={300}>
+        <div className="metric-card">
+          <h3 className="text-sm font-semibold mb-5" style={{ color: "var(--foreground)" }}>Average Score Breakdown</h3>
+          <ResponsiveContainer width="100%" height={280}>
             <RadarChart data={radarData}>
-              <PolarGrid stroke="rgba(255,255,255,0.08)" />
-              <PolarAngleAxis dataKey="subject" tick={{ fontSize: 11, fill: "#9ca3af" }} />
-              <PolarRadiusAxis domain={[0, 100]} tick={{ fontSize: 9, fill: "#6b7280" }} />
-              <Radar dataKey="score" stroke="#3A9BFF" fill="#3A9BFF" fillOpacity={0.15} />
+              <PolarGrid stroke={GRID_COLOR} />
+              <PolarAngleAxis dataKey="subject" tick={AXIS_TICK} />
+              <PolarRadiusAxis domain={[0, 100]} tick={{ fontSize: 9, fill: "var(--muted, #7070A0)" }} />
+              <Radar dataKey="score" stroke="#4F46E5" fill="#4F46E5" fillOpacity={0.12} strokeWidth={2} />
             </RadarChart>
           </ResponsiveContainer>
         </div>
       )}
-      {auditData.length === 0 && <p className="text-gray-500 text-sm">No trend data yet. Run some audits.</p>}
+
+      {auditData.length === 0 && (
+        <p className="text-sm" style={{ color: "var(--muted)" }}>No trend data yet. Run some audits to see performance over time.</p>
+      )}
     </div>
   );
 }
 
 function CompetitorsTab({ data }) {
   const items = data.comparison || [];
-  const chartData = items.filter(c => c.aeo_score > 0).map((c) => ({ url: new URL(c.url).hostname.replace("www.", ""), aeo: c.aeo_score, citation: c.citation_probability }));
+  const chartData = items.filter(c => c.aeo_score > 0).map((c) => {
+    let hostname = c.url;
+    try { hostname = new URL(c.url).hostname.replace("www.", ""); } catch {}
+    return { url: hostname, aeo: c.aeo_score, citation: c.citation_probability };
+  });
 
   return (
-    <div className="space-y-8" data-testid="competitors-tab">
+    <div className="space-y-6" data-testid="competitors-tab">
       {chartData.length > 0 && (
-        <div className="glass-card p-6">
-          <h3 className="text-sm font-semibold text-white mb-4">Score Comparison</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="url" tick={{ fontSize: 10, fill: "#9ca3af" }} />
-              <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: "#9ca3af" }} />
-              <Tooltip contentStyle={TOOLTIP_STYLE} />
-              <Bar dataKey="aeo" name="AEO Score" fill="#3A9BFF" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="citation" name="Citation %" fill="#60D5C8" radius={[4, 4, 0, 0]} />
+        <div className="metric-card">
+          <h3 className="text-sm font-semibold mb-5" style={{ color: "var(--foreground)" }}>Score Comparison</h3>
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke={GRID_COLOR} />
+              <XAxis dataKey="url" tick={AXIS_TICK} axisLine={false} tickLine={false} />
+              <YAxis domain={[0, 100]} tick={AXIS_TICK} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: "rgba(255,255,255,0.02)" }} />
+              <Bar dataKey="aeo" name="AEO Score" fill="#4F46E5" radius={[4, 4, 0, 0]} maxBarSize={40} />
+              <Bar dataKey="citation" name="Citation %" fill="#7C3AED" radius={[4, 4, 0, 0]} maxBarSize={40} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       )}
-      {items.length === 0 ? <p className="text-gray-500 text-sm">No data. Run audits on multiple URLs.</p> : (
-        <div className="glass-card overflow-hidden">
-          <table className="w-full text-sm">
-            <thead><tr className="border-b border-white/5">
-              <th className="text-left px-5 py-3 text-xs text-gray-500 font-medium">URL</th>
-              <th className="text-center px-3 py-3 text-xs text-gray-500 font-medium">AEO</th>
-              <th className="text-center px-3 py-3 text-xs text-gray-500 font-medium">Citation %</th>
-              <th className="text-center px-3 py-3 text-xs text-gray-500 font-medium">Audits</th>
-              <th className="text-center px-3 py-3 text-xs text-gray-500 font-medium">Tests</th>
-            </tr></thead>
-            <tbody>{items.map((item, i) => (
-              <tr key={i} className="border-b border-white/3 hover:bg-white/[0.02] transition-colors" data-testid={`competitor-row-${i}`}>
-                <td className="px-5 py-3 text-xs text-gray-400 truncate max-w-xs">{item.url}</td>
-                <td className="text-center px-3 py-3"><span className="text-xs font-semibold" style={{ color: getScoreColor(item.aeo_score) }}>{item.aeo_score}</span></td>
-                <td className="text-center px-3 py-3"><span className="text-xs font-semibold" style={{ color: getScoreColor(item.citation_probability) }}>{item.citation_probability}%</span></td>
-                <td className="text-center px-3 py-3 text-xs text-gray-500">{item.audit_count}</td>
-                <td className="text-center px-3 py-3 text-xs text-gray-500">{item.test_count}</td>
+
+      {items.length === 0 ? (
+        <p className="text-sm" style={{ color: "var(--muted)" }}>No data yet. Run audits on multiple URLs to compare them here.</p>
+      ) : (
+        <div className="metric-card p-0 overflow-hidden">
+          <table className="data-table w-full">
+            <thead>
+              <tr>
+                <th>URL</th>
+                <th className="text-center">AEO</th>
+                <th className="text-center">Citation %</th>
+                <th className="text-center">Audits</th>
+                <th className="text-center">Tests</th>
               </tr>
-            ))}</tbody>
+            </thead>
+            <tbody>
+              {items.map((item, i) => (
+                <tr key={i} data-testid={`competitor-row-${i}`}>
+                  <td className="truncate max-w-xs font-mono text-xs" style={{ color: "var(--muted-foreground)" }}>{item.url}</td>
+                  <td className="text-center font-bold text-sm" style={{ color: getScoreColor(item.aeo_score) }}>{item.aeo_score}</td>
+                  <td className="text-center font-bold text-sm" style={{ color: getScoreColor(item.citation_probability) }}>{item.citation_probability}%</td>
+                  <td className="text-center text-xs" style={{ color: "var(--muted)" }}>{item.audit_count}</td>
+                  <td className="text-center text-xs" style={{ color: "var(--muted)" }}>{item.test_count}</td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </div>
       )}
@@ -199,9 +294,21 @@ function DeltaCard({ label, value }) {
   const isPositive = value > 0;
   const isNeutral = value === 0;
   return (
-    <div className="glass-card px-5 py-4 flex items-center gap-3">
-      <span className={`text-lg font-semibold ${isPositive ? "text-green-400" : isNeutral ? "text-gray-500" : "text-red-400"}`}>{isPositive ? "+" : ""}{value}</span>
-      <span className="text-xs text-gray-500">{label}</span>
+    <div className="metric-card flex items-center gap-3">
+      {isPositive ? (
+        <TrendingUp className="w-4 h-4 flex-shrink-0" style={{ color: "#10B981" }} />
+      ) : (
+        <TrendingDown className="w-4 h-4 flex-shrink-0" style={{ color: isNeutral ? "var(--muted)" : "#EF4444" }} />
+      )}
+      <div>
+        <span
+          className="text-xl font-bold"
+          style={{ color: isPositive ? "#10B981" : isNeutral ? "var(--muted)" : "#EF4444" }}
+        >
+          {isPositive ? "+" : ""}{value}
+        </span>
+        <p className="text-xs mt-0.5" style={{ color: "var(--muted)" }}>{label}</p>
+      </div>
     </div>
   );
 }

@@ -25,8 +25,8 @@ export default function GuestLimitModal({ isOpen, onClose, onSignUp, feature = '
         {/* Content */}
         <div className="p-8">
           {/* Icon */}
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 mb-6">
-            <TrendingUp className="w-8 h-8 text-cyan-400" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500/20 to-violet-500/20 border border-indigo-500/30 mb-6">
+            <TrendingUp className="w-8 h-8 text-indigo-400" />
           </div>
 
           {/* Heading */}
@@ -43,8 +43,8 @@ export default function GuestLimitModal({ isOpen, onClose, onSignUp, feature = '
               const Icon = item.icon;
               return (
                 <div key={i} className="flex items-center gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
-                    <Icon className="w-4 h-4 text-cyan-400" />
+                  <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+                    <Icon className="w-4 h-4 text-indigo-400" />
                   </div>
                   <span className="text-sm text-gray-300">{item.text}</span>
                 </div>
@@ -56,13 +56,14 @@ export default function GuestLimitModal({ isOpen, onClose, onSignUp, feature = '
           <div className="space-y-3">
             <button
               onClick={onSignUp}
-              className="w-full py-3 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-sm font-bold hover:shadow-[0_0_30px_rgba(34,211,238,0.4)] transition-all duration-300"
+              className="btn-primary w-full py-3 rounded-lg text-sm font-bold"
             >
               Create Free Account
             </button>
             <button
               onClick={onClose}
-              className="w-full py-3 rounded-full border border-white/20 bg-white/5 text-white text-sm font-medium hover:bg-white/10 transition-all duration-300"
+              className="w-full py-3 rounded-lg border text-sm font-medium text-white transition-all duration-200 hover:bg-white/5"
+              style={{ borderColor: "var(--border)" }}
             >
               Continue as Guest
             </button>

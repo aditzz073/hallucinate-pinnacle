@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import Logo from "../ui/Logo";
-import Blobs from "../ui/Blobs";
 import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 
 export default function LoginPage({ onSwitch, onSuccess }) {
@@ -27,11 +26,9 @@ export default function LoginPage({ onSwitch, onSuccess }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative bg-black" data-testid="login-page">
-      <Blobs variant="hero" />
-
-      <div className="relative z-10 w-full max-w-md px-4">
-        <div className="glass-card p-8 space-y-8">
+    <div className="min-h-screen flex items-center justify-center relative" style={{ background: "var(--bg)" }} data-testid="login-page">
+      <div className="w-full max-w-md px-4">
+        <div className="metric-card p-8 space-y-8" style={{ maxWidth: "440px", margin: "0 auto" }}>
           <div className="text-center">
             <div className="flex items-center justify-center gap-2 mb-6">
               <Logo size="md" />
@@ -89,7 +86,7 @@ export default function LoginPage({ onSwitch, onSuccess }) {
               data-testid="login-submit-button"
               type="submit"
               disabled={loading}
-              className="w-full h-12 rounded-full bg-white text-black font-medium flex items-center justify-center gap-2 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-primary w-full h-12 rounded-lg font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -104,7 +101,7 @@ export default function LoginPage({ onSwitch, onSuccess }) {
             <button
               data-testid="login-switch-to-register"
               onClick={onSwitch}
-              className="text-brand-blue hover:text-brand-teal font-medium transition-colors"
+              className="font-medium transition-opacity hover:opacity-70" style={{ color: "#818CF8" }}
             >
               Create one
             </button>

@@ -62,7 +62,7 @@ export default function ProfilePage() {
           {/* User Info */}
           <div className="flex-1 text-center lg:text-left">
             <div className="flex items-center justify-center lg:justify-start gap-3 mb-2">
-              <h1 className="text-3xl font-bold text-white">
+              <h1 className="font-display text-3xl font-bold text-white">
                 {user?.nickname || user?.email?.split("@")[0] || "User"}
               </h1>
               {isPrivileged && (

@@ -36,9 +36,9 @@ export default function ExecutiveSummaryPage() {
   return (
     <div className="space-y-8" data-testid="executive-summary-page">
       {/* Page Header */}
-      <div className="page-header">
-        <h1>Executive Summary</h1>
-        <p>High-level AI discoverability health assessment.</p>
+      <div>
+        <h1 className="font-display text-3xl font-bold text-white mb-2">Executive <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Summary</span></h1>
+        <p className="text-sm" style={{ color: "var(--text-muted)" }}>High-level AI discoverability health assessment.</p>
       </div>
 
       {/* Health Status */}
