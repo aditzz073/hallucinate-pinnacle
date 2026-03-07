@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense, lazy } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Navbar from "./components/layout/Navbar";
@@ -20,6 +20,15 @@ import SimulatorPage from "./pages/SimulatorPage";
 import CompetitorPage from "./pages/CompetitorPage";
 import ExecutiveSummaryPage from "./pages/ExecutiveSummaryPage";
 import ProfilePage from "./pages/ProfilePage";
+
+// Lazy-load marketing & legal pages — only fetched when first visited
+const AboutPage        = lazy(() => import("./pages/AboutPage"));
+const BlogPage         = lazy(() => import("./pages/BlogPage"));
+const CareersPage      = lazy(() => import("./pages/CareersPage"));
+const PressPage        = lazy(() => import("./pages/PressPage"));
+const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
+const TermsPage        = lazy(() => import("./pages/TermsPage"));
+const CookiePolicyPage = lazy(() => import("./pages/CookiePolicyPage"));
 import {
   LayoutDashboard, FileSearch, Search, BarChart3, Eye,
 } from "lucide-react";
@@ -43,7 +52,6 @@ function AppContent() {
   const [activePage, setActivePage] = useState("landing");
   const [showFeatureLockedModal, setShowFeatureLockedModal] = useState(false);
   const [lockedFeature, setLockedFeature] = useState("");
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const [navigationHistory, setNavigationHistory] = useState(["landing"]);
   const [historyIndex, setHistoryIndex] = useState(0);
 
@@ -57,18 +65,14 @@ function AppContent() {
 
   const handlePageNavigation = (page, skipHistory = false) => {
     if (page === activePage) return;
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setActivePage(page);
-      setIsTransitioning(false);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      if (!skipHistory) {
-        const newHistory = navigationHistory.slice(0, historyIndex + 1);
-        newHistory.push(page);
-        setNavigationHistory(newHistory);
-        setHistoryIndex(newHistory.length - 1);
-      }
-    }, 180);
+    setActivePage(page);
+    window.scrollTo({ top: 0, behavior: "instant" });
+    if (!skipHistory) {
+      const newHistory = navigationHistory.slice(0, historyIndex + 1);
+      newHistory.push(page);
+      setNavigationHistory(newHistory);
+      setHistoryIndex(newHistory.length - 1);
+    }
   };
 
   const handleNavigateBack = () => {
@@ -146,7 +150,18 @@ function AppContent() {
   }
 
   const renderPage = () => {
-    if (activePage === "landing") return <LandingPage onGetStarted={() => navigateToAuth("register")} />;
+    if (activePage === "landing") return <LandingPage onGetStarted={() => navigateToAuth("register")} onNavigate={handlePageNavigation} />;
+
+    const lazyPages = { about: AboutPage, blog: BlogPage, careers: CareersPage, press: PressPage, privacy: PrivacyPolicyPage, terms: TermsPage, cookies: CookiePolicyPage };
+    if (lazyPages[activePage]) {
+      const Page = lazyPages[activePage];
+      return (
+        <Suspense fallback={<div className="flex items-center justify-center py-32"><div className="w-6 h-6 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" /></div>}>
+          <Page />
+        </Suspense>
+      );
+    }
+
     if (activePage === "audits") return <AuditsPage onSignUp={() => navigateToAuth("register")} />;
     if (activePage === "ai-tests") return <AITestsPage onSignUp={() => navigateToAuth("register")} />;
 
@@ -190,9 +205,7 @@ function AppContent() {
 
         {/* Main content — offset by sidebar on md+ */}
         <main
-          className={`flex-1 transition-opacity duration-200 pb-20 md:pb-0 ${
-            isTransitioning ? "opacity-0" : "opacity-100"
-          }`}
+          className="flex-1 pb-20 md:pb-0"
           style={{ marginLeft: "0" }}
         >
           <style>{`@media (min-width: 768px) { .app-main { margin-left: 220px; } }`}</style>
@@ -260,7 +273,7 @@ function AppContent() {
         onShowFeatureLocked={handleShowFeatureLocked}
         onLogout={logout}
       />
-      <main className={`relative z-10 pt-24 pb-12 px-4 lg:px-0 transition-opacity duration-300 ${isTransitioning ? "opacity-0" : "opacity-100"}`}>
+      <main className="relative z-10 pt-24 pb-12 px-4 lg:px-0">
         <div className="max-w-6xl mx-auto">
           {renderPage()}
         </div>

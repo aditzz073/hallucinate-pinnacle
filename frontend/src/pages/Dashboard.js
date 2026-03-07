@@ -41,7 +41,7 @@ const generateCopilotInsight = (overview) => {
   if (avgScore < 70) {
     const strength = citationScore > geoScore ? "citation" : "content structure";
     const weakness = citationScore > geoScore ? "GEO" : "citation";
-    return `Solid foundation at ${Math.round(avgScore)}%. Your ${strength} score is a strength — focus on improving your ${weakness} score for elite status.`;
+    return `Solid foundation at ${Math.round(avgScore)}%. Your ${strength} score is a strength. Focus on improving your ${weakness} score for elite status.`;
   }
   return `Top tier at ${Math.round(avgScore)}%. AI engines consistently discover your content. Fine-tune brand attribution to lock in every mention.`;
 };

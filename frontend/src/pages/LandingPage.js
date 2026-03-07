@@ -1,14 +1,14 @@
 import React from "react";
 import {
   ArrowRight, Zap, Shield, Search, Eye, FlaskConical, Crown,
-  TrendingUp, CheckCircle, BarChart2, Cpu,
+  TrendingUp, CheckCircle, BarChart2, Cpu, Mail, Phone, MessageSquare,
 } from "lucide-react";
 
 const BENTO_FEATURES = [
   {
     icon: Zap,
     title: "AEO Page Audits",
-    desc: "Deterministic scoring across 5 dimensions — authority, structure, content, technical, and freshness.",
+    desc: "Deterministic scoring across 5 dimensions: authority, structure, content, technical, and freshness.",
     size: "large", // spans 2 cols
     accent: "#4F46E5",
   },
@@ -24,28 +24,28 @@ const BENTO_FEATURES = [
     title: "Page Monitoring",
     desc: "Append-only snapshots with deterministic impact classification.",
     size: "small",
-    accent: "#0891B2",
+    accent: "#4F46E5",
   },
   {
     icon: FlaskConical,
     title: "Strategy Simulator",
     desc: "Simulate optimizations and see projected citation lift before you ship.",
     size: "small",
-    accent: "#D97706",
+    accent: "#7C3AED",
   },
   {
     icon: Shield,
     title: "Advanced Explainability",
     desc: "Per-category contributing factors, penalties, and historical intelligence.",
     size: "small",
-    accent: "#059669",
+    accent: "#6366F1",
   },
   {
     icon: Crown,
     title: "Enterprise Intelligence",
     desc: "Competitor comparison and executive summaries for data-driven decisions.",
     size: "large",
-    accent: "#DB2777",
+    accent: "#8B5CF6",
   },
 ];
 
@@ -157,7 +157,7 @@ function HeroMockup() {
   );
 }
 
-export default function LandingPage({ onGetStarted }) {
+export default function LandingPage({ onGetStarted, onNavigate }) {
   return (
     <div className="relative overflow-hidden" style={{ background: "var(--bg)" }} data-testid="landing-page">
 
@@ -172,11 +172,18 @@ export default function LandingPage({ onGetStarted }) {
             backgroundSize: "72px 72px",
           }}
         />
-        {/* Indigo glow */}
+        {/* Indigo glow left */}
         <div
           className="absolute top-1/3 left-1/4 w-[600px] h-[500px] pointer-events-none"
           style={{
             background: "radial-gradient(ellipse at center, rgba(79,70,229,0.12) 0%, transparent 70%)",
+          }}
+        />
+        {/* Indigo glow right — behind mockup */}
+        <div
+          className="absolute top-1/4 right-0 w-[480px] h-[480px] pointer-events-none"
+          style={{
+            background: "radial-gradient(ellipse at center, rgba(124,58,237,0.10) 0%, transparent 70%)",
           }}
         />
 
@@ -204,7 +211,7 @@ export default function LandingPage({ onGetStarted }) {
                 style={{ color: "var(--foreground)", letterSpacing: "-0.03em" }}
               >
                 Get discovered<br />
-                <span style={{ color: "#4F46E5" }}>by AI</span> engines.
+                <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">by AI</span> engines.
               </h1>
 
               <p className="text-lg mb-10 max-w-md leading-relaxed" style={{ color: "var(--muted)" }}>
@@ -220,8 +227,8 @@ export default function LandingPage({ onGetStarted }) {
                   { label: "Real-time tracking", icon: TrendingUp },
                 ].map(({ label, icon: Icon }) => (
                   <div key={label} className="flex items-center gap-1.5">
-                    <Icon className="w-3.5 h-3.5" style={{ color: "#4F46E5" }} />
-                    <span className="text-xs font-medium" style={{ color: "var(--muted-foreground)" }}>{label}</span>
+                    <Icon className="w-3.5 h-3.5" style={{ color: "#818CF8" }} />
+                    <span className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{label}</span>
                   </div>
                 ))}
               </div>
@@ -249,13 +256,16 @@ export default function LandingPage({ onGetStarted }) {
                   onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
                 >
                   View demo
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
             {/* Right: Product mockup */}
             <div className="flex justify-end">
-              <HeroMockup />
+              <div style={{ transform: "perspective(1200px) rotateY(-4deg) rotateX(2deg)", filter: "drop-shadow(0 40px 80px rgba(79,70,229,0.25))" }}>
+                <HeroMockup />
+              </div>
             </div>
           </div>
         </div>
@@ -291,8 +301,8 @@ export default function LandingPage({ onGetStarted }) {
                     padding: "28px",
                     transition: "border-color 0.2s",
                   }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = `${f.accent}40`}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = `${f.accent}40`; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.transform = "translateY(0)"; }}
                 >
                   <div
                     className="inline-flex items-center justify-center w-10 h-10 rounded-xl mb-5"
@@ -317,9 +327,9 @@ export default function LandingPage({ onGetStarted }) {
       </section>
 
       {/* ── PRICING ──────────────────────────────────────────────────────── */}
-      <section className="py-24 px-8" data-section="pricing" id="pricing">
+      <section className="py-16 px-8" data-section="pricing" id="pricing">
         <div className="max-w-[1120px] mx-auto">
-          <div className="mb-14">
+          <div className="mb-10">
             <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#4F46E5" }}>
               Pricing
             </p>
@@ -333,17 +343,17 @@ export default function LandingPage({ onGetStarted }) {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Starter */}
-            <div className="rounded-2xl p-8" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-              <h3 className="text-base font-semibold mb-1" style={{ color: "var(--foreground)" }}>Starter</h3>
-              <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>For individuals exploring AEO.</p>
-              <div className="mb-6">
+            <div className="rounded-2xl p-6" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+              <h3 className="text-base font-semibold mb-0.5" style={{ color: "var(--foreground)" }}>Starter</h3>
+              <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>For individuals exploring AEO.</p>
+              <div className="mb-4">
                 <span className="text-4xl font-bold" style={{ color: "var(--foreground)" }}>$0</span>
                 <span className="text-sm ml-1" style={{ color: "var(--muted)" }}>/month</span>
               </div>
-              <ul className="space-y-2.5 mb-8">
+              <ul className="space-y-2 mb-6">
                 {["5 audits/month", "10 AI tests/month", "Basic analytics"].map(item => (
-                  <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: "var(--muted-foreground)" }}>
-                    <div className="w-1.5 h-1.5 rounded-full" style={{ background: "#4F46E5" }} />
+                  <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: "var(--text-muted)" }}>
+                    <CheckCircle className="w-4 h-4 shrink-0" style={{ color: "#4F46E5" }} />
                     {item}
                   </li>
                 ))}
@@ -361,7 +371,7 @@ export default function LandingPage({ onGetStarted }) {
 
             {/* Pro — featured */}
             <div
-              className="rounded-2xl p-8 relative"
+              className="rounded-2xl p-6 relative"
               style={{
                 background: "linear-gradient(135deg, rgba(79,70,229,0.12) 0%, rgba(124,58,237,0.08) 100%)",
                 border: "1px solid rgba(79,70,229,0.4)",
@@ -373,16 +383,16 @@ export default function LandingPage({ onGetStarted }) {
               >
                 MOST POPULAR
               </div>
-              <h3 className="text-base font-semibold mb-1" style={{ color: "var(--foreground)" }}>Professional</h3>
-              <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>For teams serious about AEO.</p>
-              <div className="mb-6">
-                <span className="text-4xl font-bold" style={{ color: "#818CF8" }}>$49</span>
+              <h3 className="text-base font-semibold mb-0.5" style={{ color: "var(--foreground)" }}>Professional</h3>
+              <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>For teams serious about AEO.</p>
+              <div className="mb-4">
+                <span className="text-4xl font-bold" style={{ color: "#818CF8" }}>$100</span>
                 <span className="text-sm ml-1" style={{ color: "var(--muted)" }}>/month</span>
               </div>
-              <ul className="space-y-2.5 mb-8">
+              <ul className="space-y-2 mb-6">
                 {["Unlimited audits", "Unlimited AI tests", "Page monitoring", "Strategy simulator", "Priority support"].map(item => (
-                  <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: "var(--muted-foreground)" }}>
-                    <div className="w-1.5 h-1.5 rounded-full" style={{ background: "#818CF8" }} />
+                  <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: "var(--text-muted)" }}>
+                    <CheckCircle className="w-4 h-4 shrink-0" style={{ color: "#818CF8" }} />
                     {item}
                   </li>
                 ))}
@@ -393,44 +403,85 @@ export default function LandingPage({ onGetStarted }) {
             </div>
 
             {/* Enterprise */}
-            <div className="rounded-2xl p-8" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-              <h3 className="text-base font-semibold mb-1" style={{ color: "var(--foreground)" }}>Enterprise</h3>
-              <p className="text-sm mb-6" style={{ color: "var(--muted)" }}>For large-scale operations.</p>
-              <div className="mb-6">
-                <span className="text-4xl font-bold" style={{ color: "var(--foreground)" }}>Custom</span>
+            <div className="rounded-2xl p-6" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+              <h3 className="text-base font-semibold mb-0.5" style={{ color: "var(--foreground)" }}>Enterprise</h3>
+              <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>For large-scale operations.</p>
+              <div className="mb-4">
+                <span className="text-2xl font-semibold" style={{ color: "var(--text-muted)" }}>Custom pricing</span>
               </div>
-              <ul className="space-y-2.5 mb-8">
+              <ul className="space-y-2 mb-5">
                 {["Everything in Pro", "Competitor intel", "Executive reports", "Dedicated support", "Custom integrations"].map(item => (
-                  <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: "var(--muted-foreground)" }}>
-                    <div className="w-1.5 h-1.5 rounded-full" style={{ background: "#4F46E5" }} />
+                  <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: "var(--text-muted)" }}>
+                    <CheckCircle className="w-4 h-4 shrink-0" style={{ color: "#4F46E5" }} />
                     {item}
                   </li>
                 ))}
               </ul>
-              <button
-                onClick={onGetStarted}
-                className="w-full rounded-lg py-2.5 text-sm font-medium transition-colors"
-                style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--foreground)" }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
-                onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
-              >
-                Contact sales
-              </button>
+              <div className="rounded-xl p-3 space-y-2" style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}>
+                <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "var(--text-muted)" }}>Get in touch</p>
+                <a
+                  href="mailto:sales@pinnacle.ai"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
+                  style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
+                >
+                  <div className="w-6 h-6 rounded-md flex items-center justify-center shrink-0" style={{ background: "rgba(79,70,229,0.12)" }}>
+                    <Mail className="w-3 h-3" style={{ color: "#818CF8" }} />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-xs font-medium" style={{ color: "var(--foreground)" }}>sales@pinnacle.ai</div>
+                    <div className="text-xs" style={{ color: "var(--text-muted)" }}>Email our sales team</div>
+                  </div>
+                </a>
+                <a
+                  href="tel:+18005550199"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
+                  style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
+                >
+                  <div className="w-6 h-6 rounded-md flex items-center justify-center shrink-0" style={{ background: "rgba(79,70,229,0.12)" }}>
+                    <Phone className="w-3 h-3" style={{ color: "#818CF8" }} />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-xs font-medium" style={{ color: "var(--foreground)" }}>+1 (800) 555-0199</div>
+                    <div className="text-xs" style={{ color: "var(--text-muted)" }}>Mon–Fri, 9am–6pm EST</div>
+                  </div>
+                </a>
+                <a
+                  href="https://calendly.com/pinnacle-sales"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
+                  style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
+                >
+                  <div className="w-6 h-6 rounded-md flex items-center justify-center shrink-0" style={{ background: "rgba(79,70,229,0.12)" }}>
+                    <MessageSquare className="w-3 h-3" style={{ color: "#818CF8" }} />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-xs font-medium" style={{ color: "var(--foreground)" }}>Book a demo</div>
+                    <div className="text-xs" style={{ color: "var(--text-muted)" }}>Schedule a 30-min call</div>
+                  </div>
+                </a>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* ── BOTTOM CTA ───────────────────────────────────────────────────── */}
-      <section className="py-24 px-8 text-center">
-        <div className="max-w-[640px] mx-auto">
+      <section className="py-20 px-8 text-center">
+        <div className="max-w-[600px] mx-auto" style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "24px", padding: "56px 48px", boxShadow: "0 0 80px rgba(79,70,229,0.08)" }}>
           <h2
             className="font-display text-4xl lg:text-5xl font-bold mb-4"
             style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}
           >
             Reach the pinnacle<br />of AI discoverability.
           </h2>
-          <p className="text-base mb-10" style={{ color: "var(--muted)" }}>
+          <p className="text-base mb-8" style={{ color: "var(--muted)" }}>
             Start analyzing your AI discoverability in seconds. Free forever.
           </p>
           <button
@@ -442,6 +493,132 @@ export default function LandingPage({ onGetStarted }) {
           </button>
         </div>
       </section>
+
+      {/* ── FOOTER ───────────────────────────────────────────────────────── */}
+      <footer style={{ borderTop: "1px solid var(--border)" }}>
+        <div className="max-w-[1120px] mx-auto px-8 py-12">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+            {/* Brand */}
+            <div className="col-span-2 md:col-span-1">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-base font-black tracking-tight">
+                  <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Pinnacle</span>
+                  <span style={{ color: "#818CF8" }} className="font-light">.ai</span>
+                </span>
+              </div>
+              <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                AI discoverability optimization for the next generation of search.
+              </p>
+            </div>
+
+            {/* Product */}
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--text-muted)" }}>Product</p>
+              <ul className="space-y-2.5">
+                {[
+                  { label: "AEO Audits", section: "features" },
+                  { label: "AI Testing", section: "features" },
+                  { label: "Monitoring", section: "features" },
+                  { label: "Pricing", section: "pricing" },
+                ].map(({ label, section }) => (
+                  <li key={label}>
+                    <button
+                      onClick={() => document.getElementById(section)?.scrollIntoView({ behavior: "smooth" })}
+                      className="text-sm transition-colors"
+                      style={{ color: "var(--text-muted)" }}
+                      onMouseEnter={e => e.currentTarget.style.color = "var(--foreground)"}
+                      onMouseLeave={e => e.currentTarget.style.color = "var(--text-muted)"}
+                    >
+                      {label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Company */}
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--text-muted)" }}>Company</p>
+              <ul className="space-y-2.5">
+                {[
+                  { label: "About", page: "about" },
+                  { label: "Blog", page: "blog" },
+                  { label: "Careers", page: "careers" },
+                  { label: "Press", page: "press" },
+                ].map(({ label, page }) => (
+                  <li key={label}>
+                    <button
+                      onClick={() => onNavigate?.(page)}
+                      className="text-sm transition-colors"
+                      style={{ color: "var(--text-muted)" }}
+                      onMouseEnter={e => e.currentTarget.style.color = "var(--foreground)"}
+                      onMouseLeave={e => e.currentTarget.style.color = "var(--text-muted)"}
+                    >
+                      {label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Legal + Contact */}
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--text-muted)" }}>Legal</p>
+              <ul className="space-y-2.5 mb-6">
+                {[
+                  { label: "Privacy Policy", page: "privacy" },
+                  { label: "Terms of Service", page: "terms" },
+                  { label: "Cookie Policy", page: "cookies" },
+                ].map(({ label, page }) => (
+                  <li key={label}>
+                    <button
+                      onClick={() => onNavigate?.(page)}
+                      className="text-sm transition-colors"
+                      style={{ color: "var(--text-muted)" }}
+                      onMouseEnter={e => e.currentTarget.style.color = "var(--foreground)"}
+                      onMouseLeave={e => e.currentTarget.style.color = "var(--text-muted)"}
+                    >
+                      {label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--text-muted)" }}>Contact</p>
+              <ul className="space-y-2.5">
+                <li><a href="mailto:sales@pinnacle.ai" className="text-sm" style={{ color: "var(--text-muted)" }}>sales@pinnacle.ai</a></li>
+                <li><a href="mailto:support@pinnacle.ai" className="text-sm" style={{ color: "var(--text-muted)" }}>support@pinnacle.ai</a></li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom bar */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8" style={{ borderTop: "1px solid var(--border)" }}>
+            <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+              &copy; {new Date().getFullYear()} Pinnacle.ai. All rights reserved.
+            </p>
+            <div className="flex items-center gap-4">
+              {[
+                { label: "Twitter / X", href: "https://twitter.com/pinnacleai" },
+                { label: "LinkedIn", href: "https://linkedin.com/company/pinnacleai" },
+                { label: "GitHub", href: "https://github.com/pinnacleai" },
+              ].map(({ label, href }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-xs transition-colors"
+                  style={{ color: "var(--text-muted)" }}
+                  onMouseEnter={e => e.currentTarget.style.color = "var(--foreground)"}
+                  onMouseLeave={e => e.currentTarget.style.color = "var(--text-muted)"}
+                >
+                  {label}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
