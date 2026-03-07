@@ -109,3 +109,18 @@ async def health():
         "database": db_status,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
+
+
+if __name__ == "__main__":
+    import uvicorn
+    
+    host = os.getenv("HOST", "0.0.0.0")
+    port = int(os.getenv("PORT", 8001))
+    
+    uvicorn.run(
+        "server:app",
+        host=host,
+        port=port,
+        reload=True,
+        log_level="info"
+    )
