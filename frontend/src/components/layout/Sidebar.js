@@ -3,7 +3,6 @@ import { useAuth } from "../../context/AuthContext";
 import Logo from "../ui/Logo";
 import {
   LayoutDashboard,
-  Search,
   FileSearch,
   Eye,
   BarChart3,
@@ -15,6 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
   User,
+  Microscope,
 } from "lucide-react";
 
 const NAV_SECTIONS = [
@@ -28,9 +28,9 @@ const NAV_SECTIONS = [
   {
     label: "Analysis",
     items: [
-      { id: "audits",    label: "Page Audits",     icon: FileSearch },
-      { id: "ai-tests",  label: "AI Citation Tests", icon: Search },
-      { id: "advanced",  label: "Advanced Audit",  icon: Sparkles },
+      { id: "audits",           label: "Page Audits",      icon: FileSearch },
+      { id: "ai-visibility-lab", label: "AI Visibility Lab", icon: Microscope },
+      { id: "advanced",          label: "Advanced Audit",    icon: Sparkles },
     ],
   },
   {

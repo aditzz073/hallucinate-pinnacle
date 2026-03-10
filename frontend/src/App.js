@@ -12,7 +12,7 @@ import FeatureLockedModal from "./components/modals/FeatureLockedModal";
 import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import AuditsPage from "./pages/AuditsPage";
-import AITestsPage from "./pages/AITestsPage";
+import AIVisibilityLabPage from "./pages/AIVisibilityLabPage";
 import MonitoringPage from "./pages/MonitoringPage";
 import ReportsPage from "./pages/ReportsPage";
 import AdvancedAuditPage from "./pages/AdvancedAuditPage";
@@ -34,13 +34,13 @@ import {
 } from "lucide-react";
 
 // Pages rendered within the authenticated sidebar layout
-const APP_PAGES = ["dashboard","audits","ai-tests","monitor","reports","advanced","simulator","compare","executive","profile"];
+const APP_PAGES = ["dashboard","audits","ai-visibility-lab","monitor","reports","advanced","simulator","compare","executive","profile"];
 
 // Mobile bottom nav — 5 key destinations
 const MOBILE_NAV = [
   { id: "dashboard", label: "Home",    icon: LayoutDashboard },
   { id: "audits",    label: "Audits",  icon: FileSearch },
-  { id: "ai-tests",  label: "Tests",   icon: Search },
+  { id: "ai-visibility-lab", label: "AI Lab", icon: Search },
   { id: "monitor",   label: "Monitor", icon: Eye },
   { id: "reports",   label: "Reports", icon: BarChart3 },
 ];
@@ -163,7 +163,7 @@ function AppContent() {
     }
 
     if (activePage === "audits") return <AuditsPage onSignUp={() => navigateToAuth("register")} />;
-    if (activePage === "ai-tests") return <AITestsPage onSignUp={() => navigateToAuth("register")} />;
+    if (activePage === "ai-visibility-lab") return <AIVisibilityLabPage onSignUp={() => navigateToAuth("register")} />;
 
     if (activePage === "dashboard") {
       if (!user) { handleShowFeatureLocked("dashboard"); return <LandingPage onGetStarted={() => navigateToAuth("register")} />; }

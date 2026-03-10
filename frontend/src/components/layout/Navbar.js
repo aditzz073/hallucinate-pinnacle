@@ -5,13 +5,13 @@ import FoundingAccessBadge from "../ui/FoundingAccessBadge";
 import {
   LayoutDashboard, FileSearch, Search, Eye, BarChart3,
   Sparkles, FlaskConical, Swords, Crown, LogOut, ChevronDown,
-  Layers, Beaker, User,
+  Layers, Beaker, User, Microscope,
 } from "lucide-react";
 
 const CORE_NAV = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, requiresAuth: true },
   { id: "audits", label: "Audits", icon: FileSearch, requiresAuth: false },
-  { id: "ai-tests", label: "AI Tests", icon: Search, requiresAuth: false },
+  { id: "ai-visibility-lab", label: "AI Visibility Lab", icon: Microscope, requiresAuth: false },
 ];
 
 const TOOLS_DROPDOWN = [

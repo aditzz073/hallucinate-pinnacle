@@ -118,3 +118,18 @@ export async function getExecutiveSummary() {
   const res = await axios.get(`${API_URL}/api/enterprise/executive-summary`, { headers: authHeaders() });
   return res.data;
 }
+
+// AI Testing Lab endpoints
+export async function runAITestingLab(query, url, engines) {
+  const res = await axios.post(
+    `${API_URL}/api/ai-testing-lab/run`,
+    { query, url, engines },
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function getAIEngines() {
+  const res = await axios.get(`${API_URL}/api/ai-testing-lab/engines`);
+  return res.data;
+}

@@ -16,6 +16,7 @@ from modules.auth.routes import router as auth_router
 from modules.aeoEngine.routes import router as audit_router
 from modules.advancedAudit.routes import router as advanced_audit_router
 from modules.aiTestingEngine.routes import router as ai_test_router
+from modules.aiTestingLab.routes import router as ai_testing_lab_router
 from modules.aiContentCompiler.routes import router as compile_router
 from modules.monitoring.routes import router as monitor_router
 from modules.reports.routes import router as reports_router
@@ -86,6 +87,7 @@ app.include_router(auth_router, prefix="/api")
 app.include_router(audit_router, prefix="/api")
 app.include_router(advanced_audit_router, prefix="/api")
 app.include_router(ai_test_router, prefix="/api")
+app.include_router(ai_testing_lab_router, prefix="/api")
 app.include_router(compile_router, prefix="/api")
 app.include_router(monitor_router, prefix="/api")
 app.include_router(reports_router, prefix="/api")
