@@ -1,56 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import {
-  ArrowRight, Zap, Shield, Search, Eye, FlaskConical, Crown,
+  ArrowRight, Zap, Eye,
   TrendingUp, CheckCircle, BarChart2, Cpu, Mail, Phone, MessageSquare,
+  Microscope,
 } from "lucide-react";
+import StrategySimulatorSection from "../components/landing/StrategySimulatorSection";
+import ENGINE_LOGOS from "../utils/engineLogos";
+import IconContainer from "../components/ui/IconContainer";
 
-const BENTO_FEATURES = [
-  {
-    icon: Zap,
-    title: "AEO Page Audits",
-    desc: "Deterministic scoring across 5 dimensions: authority, structure, content, technical, and freshness.",
-    size: "large", // spans 2 cols
-    accent: "#4F46E5",
-  },
-  {
-    icon: Search,
-    title: "Citation Testing",
-    desc: "Probability scoring + gap analysis for any query.",
-    size: "small",
-    accent: "#7C3AED",
-  },
-  {
-    icon: Eye,
-    title: "Page Monitoring",
-    desc: "Append-only snapshots with deterministic impact classification.",
-    size: "small",
-    accent: "#4F46E5",
-  },
-  {
-    icon: FlaskConical,
-    title: "Strategy Simulator",
-    desc: "Simulate optimizations and see projected citation lift before you ship.",
-    size: "small",
-    accent: "#7C3AED",
-  },
-  {
-    icon: Shield,
-    title: "Advanced Explainability",
-    desc: "Per-category contributing factors, penalties, and historical intelligence.",
-    size: "small",
-    accent: "#6366F1",
-  },
-  {
-    icon: Crown,
-    title: "Enterprise Intelligence",
-    desc: "Competitor comparison and executive summaries for data-driven decisions.",
-    size: "large",
-    accent: "#8B5CF6",
-  },
-];
-
-// Mini dashboard product mockup for hero right column
-function HeroMockup() {
+// ── Dashboard mockup shared by Hero + Showcase ────────────────────────────────
+function DashboardMockup() {
   const bars = [62, 78, 55, 88, 71, 94, 83];
   return (
     <div
@@ -69,15 +28,17 @@ function HeroMockup() {
         <div className="w-3 h-3 rounded-full bg-red-500/60" />
         <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
         <div className="w-3 h-3 rounded-full bg-green-500/60" />
-        <span className="ml-3 text-xs font-mono" style={{ color: "var(--muted)" }}>pinnacle.ai / dashboard</span>
+        <span className="ml-3 text-xs font-mono" style={{ color: "var(--muted)" }}>
+          pinnacle.ai / dashboard
+        </span>
       </div>
 
-      {/* Top scorecard row */}
-      <div className="grid grid-cols-3 gap-px p-4" style={{ gap: "12px" }}>
+      {/* Score cards */}
+      <div className="grid grid-cols-3 p-4" style={{ gap: "12px" }}>
         {[
-          { label: "AEO Score", value: "87", unit: "/100", color: "#4F46E5" },
-          { label: "Citation Prob.", value: "74", unit: "%", color: "#7C3AED" },
-          { label: "Pages Tracked", value: "12", unit: "", color: "#0891B2" },
+          { label: "AI Visibility",   value: "81", unit: "/100", color: "#4F46E5" },
+          { label: "Citation Prob.",  value: "74", unit: "%",    color: "#7C3AED" },
+          { label: "Eng. Readiness",  value: "68", unit: "%",    color: "#0891B2" },
         ].map((m) => (
           <div
             key={m.label}
@@ -86,7 +47,8 @@ function HeroMockup() {
           >
             <p className="text-xs mb-1" style={{ color: "var(--muted)" }}>{m.label}</p>
             <p className="text-2xl font-bold" style={{ color: m.color }}>
-              {m.value}<span className="text-sm font-normal" style={{ color: "var(--muted)" }}>{m.unit}</span>
+              {m.value}
+              <span className="text-sm font-normal" style={{ color: "var(--muted)" }}>{m.unit}</span>
             </p>
           </div>
         ))}
@@ -99,19 +61,20 @@ function HeroMockup() {
           style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}
         >
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-medium" style={{ color: "var(--foreground)" }}>Citation Probability (7d)</p>
+            <p className="text-xs font-medium" style={{ color: "var(--foreground)" }}>Citation Trend (7d)</p>
             <span className="text-xs font-semibold" style={{ color: "#4F46E5" }}>+12%</span>
           </div>
           <div className="flex items-end gap-1.5 h-16">
             {bars.map((h, i) => (
               <div
                 key={i}
-                className="flex-1 rounded-sm transition-all"
+                className="flex-1 rounded-sm"
                 style={{
                   height: `${h}%`,
-                  background: i === bars.length - 1
-                    ? "linear-gradient(to top, #4F46E5, #7C3AED)"
-                    : "rgba(79,70,229,0.3)",
+                  background:
+                    i === bars.length - 1
+                      ? "linear-gradient(to top, #4F46E5, #7C3AED)"
+                      : "rgba(79,70,229,0.3)",
                 }}
               />
             ))}
@@ -119,36 +82,39 @@ function HeroMockup() {
         </div>
       </div>
 
-      {/* Audit row */}
+      {/* Engine readiness bars */}
       <div className="px-4 pb-4 space-y-2">
         {[
-          { url: "blog/ai-seo-guide", score: 94, status: "Excellent" },
-          { url: "docs/getting-started", score: 71, status: "Good" },
-          { url: "pricing", score: 48, status: "Needs Work" },
+          { engine: "ChatGPT",    score: 82, color: "#34d399", logo: ENGINE_LOGOS.chatgpt    },
+          { engine: "Perplexity", score: 71, color: "#22d3ee", logo: ENGINE_LOGOS.perplexity },
+          { engine: "Google SGE", score: 68, color: "#818cf8", logo: ENGINE_LOGOS.google_sge },
+          { engine: "Copilot",    score: 55, color: "#a78bfa", logo: ENGINE_LOGOS.copilot    },
         ].map((row) => (
           <div
-            key={row.url}
-            className="flex items-center justify-between rounded-lg px-3 py-2"
+            key={row.engine}
+            className="flex items-center gap-3 rounded-lg px-3 py-2"
             style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}
           >
-            <span className="text-xs font-mono" style={{ color: "var(--muted)" }}>/{row.url}</span>
-            <div className="flex items-center gap-2">
-              <span
-                className="text-xs px-2 py-0.5 rounded-full font-medium"
-                style={{
-                  background: row.score >= 80 ? "rgba(5,150,105,0.15)" : row.score >= 60 ? "rgba(217,119,6,0.15)" : "rgba(220,38,38,0.15)",
-                  color: row.score >= 80 ? "#10B981" : row.score >= 60 ? "#F59E0B" : "#EF4444",
-                }}
-              >
-                {row.status}
-              </span>
-              <span className="text-xs font-bold" style={{ color: "var(--foreground)" }}>{row.score}</span>
+            <div className="flex items-center gap-1.5 w-24 shrink-0">
+              <div className="bg-white rounded-md p-1 flex items-center justify-center shadow-sm shrink-0">
+                <img src={row.logo} alt={row.engine} className="w-3.5 h-3.5 object-contain" />
+              </div>
+              <span className="text-xs font-medium truncate" style={{ color: "var(--muted)" }}>{row.engine}</span>
             </div>
+            <div className="flex-1 h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.05)" }}>
+              <div
+                className="h-full rounded-full"
+                style={{ width: `${row.score}%`, background: row.color }}
+              />
+            </div>
+            <span className="text-xs font-bold w-8 text-right" style={{ color: row.color }}>
+              {row.score}
+            </span>
           </div>
         ))}
       </div>
 
-      {/* Indigo glow at bottom */}
+      {/* Bottom glow */}
       <div
         className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
         style={{ background: "linear-gradient(to top, rgba(79,70,229,0.08), transparent)" }}
@@ -157,179 +123,641 @@ function HeroMockup() {
   );
 }
 
+// ── 1. Hero Section ───────────────────────────────────────────────────────────
+function HeroSection({ onGetStarted }) {
+  return (
+    <section className="relative min-h-[92vh] flex items-center">
+      {/* Subtle dot grid */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: `linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)`,
+          backgroundSize: "72px 72px",
+        }}
+      />
+      <div
+        className="absolute top-1/3 left-1/4 w-[600px] h-[500px] pointer-events-none"
+        style={{ background: "radial-gradient(ellipse, rgba(79,70,229,0.10) 0%, transparent 70%)" }}
+      />
+      <div
+        className="absolute top-1/4 right-0 w-[480px] h-[480px] pointer-events-none"
+        style={{ background: "radial-gradient(ellipse, rgba(124,58,237,0.08) 0%, transparent 70%)" }}
+      />
+
+      <div className="relative w-full max-w-[1120px] mx-auto px-8 py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+
+          {/* Left: copy */}
+          <div>
+            <div
+              className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-8 text-xs font-medium"
+              style={{
+                background: "rgba(79,70,229,0.12)",
+                border: "1px solid rgba(79,70,229,0.3)",
+                color: "#A5B4FC",
+              }}
+            >
+              <Cpu className="w-3.5 h-3.5" />
+              AI Visibility Platform
+            </div>
+
+            <h1
+              className="font-display text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.05] mb-6"
+              style={{ color: "var(--foreground)", letterSpacing: "-0.03em" }}
+            >
+              Control How AI<br />
+              <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
+                Talks About
+              </span>{" "}
+              Your Brand
+            </h1>
+
+            <p className="text-lg mb-10 max-w-md leading-relaxed" style={{ color: "var(--muted)" }}>
+              Analyze, predict, and optimize how ChatGPT, Gemini, Perplexity, and Copilot cite your content.
+            </p>
+
+            <div className="flex items-center flex-wrap gap-3 mb-10">
+              <button
+                data-testid="hero-get-started"
+                onClick={onGetStarted}
+                className="btn-primary inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold"
+              >
+                Run AI Visibility Audit
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              <button
+                data-testid="hero-learn-more"
+                onClick={onGetStarted}
+                className="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-medium transition-colors"
+                style={{
+                  background: "var(--surface-2)",
+                  border: "1px solid var(--border)",
+                  color: "var(--foreground)",
+                }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
+                onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
+              >
+                Book Demo
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="flex items-center flex-wrap gap-6">
+              {[
+                { label: "Deterministic scoring", icon: CheckCircle },
+                { label: "6 AI engines",           icon: BarChart2 },
+                { label: "Real-time tracking",      icon: TrendingUp },
+              ].map(({ label, icon: Icon }) => (
+                <div key={label} className="flex items-center gap-1.5">
+                  <Icon className="w-3.5 h-3.5" style={{ color: "#818CF8" }} />
+                  <span className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right: dashboard mockup */}
+          <div className="flex justify-end">
+            <div style={{
+              transform: "perspective(1200px) rotateY(-4deg) rotateX(2deg)",
+              filter: "drop-shadow(0 40px 80px rgba(79,70,229,0.25))",
+            }}>
+              <DashboardMockup />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── 2. AI Engine Grid ─────────────────────────────────────────────────────────
+const AI_ENGINES = [
+  { id: "chatgpt",    name: "ChatGPT",    color: "#34d399" },
+  { id: "gemini",     name: "Gemini",     color: "#f59e0b" },
+  { id: "perplexity", name: "Perplexity", color: "#22d3ee" },
+  { id: "copilot",    name: "Copilot",    color: "#818cf8" },
+  { id: "claude",     name: "Claude",     color: "#fb923c" },
+  { id: "grok",       name: "Grok",       color: "#a78bfa" },
+];
+
+function AIEngineGrid() {
+  return (
+    <section className="py-20 px-8" style={{ borderTop: "1px solid var(--border)" }}>
+      <div className="max-w-[1120px] mx-auto">
+        <div className="text-center mb-12">
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#4F46E5" }}>
+            Coverage
+          </p>
+          <h2
+            className="font-display text-3xl lg:text-4xl font-bold mb-4"
+            style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}
+          >
+            Where Your Brand Appears in AI
+          </h2>
+          <p className="text-base max-w-xl mx-auto" style={{ color: "var(--muted)" }}>
+            Pinnacle analyzes your visibility across every major AI engine.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          {AI_ENGINES.map((engine) => (
+            <div
+              key={engine.id}
+              className="rounded-xl px-4 py-5 text-center transition-all duration-200"
+              style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = `${engine.color}40`;
+                e.currentTarget.style.transform = "translateY(-2px)";
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = "var(--border)";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
+            >
+              <IconContainer className="mx-auto mb-3">
+                <img src={ENGINE_LOGOS[engine.id]} alt={engine.name} className="w-6 h-6 object-contain" />
+              </IconContainer>
+              <p className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>
+                {engine.name}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── 3. Search Shift Section ───────────────────────────────────────────────────
+const SHIFT_STEPS = [
+  {
+    number: "01",
+    title: "Millions now ask AI",
+    desc: "Users ask ChatGPT, Perplexity, and Gemini instead of searching Google. AI is the new front page.",
+    color: "#4F46E5",
+  },
+  {
+    number: "02",
+    title: "AI summarizes and cites sources",
+    desc: "AI engines generate answers that summarize information and cite specific pages. Only cited content gets visibility.",
+    color: "#7C3AED",
+  },
+  {
+    number: "03",
+    title: "Uncited brands disappear",
+    desc: "If your brand isn't in AI answers, you're invisible to a growing segment of users. Pinnacle fixes that.",
+    color: "#6366F1",
+  },
+];
+
+const FLOW_STEPS = ["User Query", "AI Generated Answer", "Cited Sources", "Traffic & Visibility"];
+
+function SearchShiftSection() {
+  return (
+    <section className="py-24 px-8">
+      <div className="max-w-[1120px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+
+          {/* Left: story */}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "#4F46E5" }}>
+              The Shift
+            </p>
+            <h2
+              className="font-display text-4xl lg:text-5xl font-bold mb-8"
+              style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}
+            >
+              Search Is<br />Changing Fast
+            </h2>
+            <div className="space-y-8">
+              {SHIFT_STEPS.map((step) => (
+                <div key={step.number} className="flex gap-4">
+                  <div
+                    className="text-2xl font-black shrink-0 w-10 mt-0.5 leading-none"
+                    style={{ color: `${step.color}60` }}
+                  >
+                    {step.number}
+                  </div>
+                  <div>
+                    <h3 className="text-base font-semibold mb-1.5" style={{ color: "var(--foreground)" }}>
+                      {step.title}
+                    </h3>
+                    <p className="text-sm leading-relaxed" style={{ color: "var(--muted)" }}>
+                      {step.desc}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right: flow diagram */}
+          <div className="flex justify-center">
+            <div className="space-y-2 w-full max-w-[300px]">
+              {FLOW_STEPS.map((step, i) => (
+                <div key={step}>
+                  <div
+                    className="rounded-xl px-5 py-4 text-center text-sm font-medium"
+                    style={{
+                      background:
+                        i === 2
+                          ? "linear-gradient(135deg, rgba(79,70,229,0.2) 0%, rgba(124,58,237,0.15) 100%)"
+                          : "var(--surface)",
+                      border:
+                        i === 2 ? "1px solid rgba(79,70,229,0.4)" : "1px solid var(--border)",
+                      color: i === 2 ? "#A5B4FC" : "var(--foreground)",
+                    }}
+                  >
+                    {i === 2 && (
+                      <span
+                        className="text-xs px-2 py-0.5 rounded-full mr-2 font-medium"
+                        style={{ background: "rgba(79,70,229,0.2)", color: "#818CF8" }}
+                      >
+                        Win here
+                      </span>
+                    )}
+                    {step}
+                  </div>
+                  {i < FLOW_STEPS.length - 1 && (
+                    <div className="flex justify-center py-1">
+                      <div className="w-px h-6" style={{ background: "var(--border)" }} />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── 4. Platform Pillars ───────────────────────────────────────────────────────
+const PILLARS = [
+  {
+    icon: Microscope,
+    title: "AI Visibility Intelligence",
+    color: "#4F46E5",
+    items: [
+      "Citation Probability",
+      "Engine Readiness Scores",
+      "GEO Score Analysis",
+      "Citation Gap Report",
+    ],
+  },
+  {
+    icon: Zap,
+    title: "Optimization",
+    color: "#7C3AED",
+    items: [
+      "Strategy Simulator",
+      "Content Recommendations",
+      "AEO Page Audits",
+      "Score Improvement Tracking",
+    ],
+  },
+  {
+    icon: Eye,
+    title: "Monitoring",
+    color: "#0891B2",
+    items: [
+      "AI Mention Monitoring",
+      "Competitor AI Visibility",
+      "Page Change Tracking",
+      "AI Traffic Insights",
+    ],
+  },
+];
+
+function PlatformPillars() {
+  return (
+    <section className="py-24 px-8" style={{ borderTop: "1px solid var(--border)" }}>
+      <div className="max-w-[1120px] mx-auto">
+        <div className="text-center mb-14">
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#4F46E5" }}>
+            Platform
+          </p>
+          <h2
+            className="font-display text-4xl lg:text-5xl font-bold mb-4"
+            style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}
+          >
+            The AI Visibility Platform
+          </h2>
+          <p className="text-base max-w-xl mx-auto" style={{ color: "var(--muted)" }}>
+            Everything you need to understand, optimize, and monitor your AI visibility.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {PILLARS.map((pillar) => {
+            const Icon = pillar.icon;
+            return (
+              <div
+                key={pillar.title}
+                className="rounded-2xl p-7 transition-all duration-200"
+                style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = `${pillar.color}40`}
+                onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
+              >
+                <IconContainer className="mb-5">
+                  <Icon className="w-6 h-6" style={{ color: pillar.color }} />
+                </IconContainer>
+                <h3 className="text-lg font-semibold mb-4" style={{ color: "var(--foreground)" }}>
+                  {pillar.title}
+                </h3>
+                <ul className="space-y-2.5">
+                  {pillar.items.map((item) => (
+                    <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: "var(--muted)" }}>
+                      <CheckCircle className="w-4 h-4 shrink-0" style={{ color: pillar.color }} />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── 5. AI Visibility Lab Preview ──────────────────────────────────────────────
+const LAB_STEPS = [
+  { step: "01", label: "Enter your search query" },
+  { step: "02", label: "Provide your page URL" },
+  { step: "03", label: "Predict AI citations per engine" },
+  { step: "04", label: "Follow recommendations to optimize" },
+];
+
+function AIVisibilityLabPreview({ onNavigate }) {
+  return (
+    <section className="py-24 px-8" style={{ borderTop: "1px solid var(--border)" }}>
+      <div className="max-w-[1120px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+
+          {/* Left: copy */}
+          <div>
+            <div
+              className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6 text-xs font-medium"
+              style={{
+                background: "rgba(124,58,237,0.12)",
+                border: "1px solid rgba(124,58,237,0.3)",
+                color: "#C4B5FD",
+              }}
+            >
+              <Microscope className="w-3.5 h-3.5" />
+              Flagship Feature
+            </div>
+            <h2
+              className="font-display text-4xl lg:text-5xl font-bold mb-4"
+              style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}
+            >
+              AI Visibility Lab
+            </h2>
+            <p className="text-lg mb-8 leading-relaxed" style={{ color: "var(--muted)" }}>
+              Simulate how AI engines answer questions and predict whether your brand gets cited — before you publish.
+            </p>
+
+            <div className="space-y-4 mb-8">
+              {LAB_STEPS.map((s) => (
+                <div key={s.step} className="flex items-center gap-4">
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0"
+                    style={{
+                      background: "rgba(79,70,229,0.15)",
+                      color: "#818CF8",
+                      border: "1px solid rgba(79,70,229,0.25)",
+                    }}
+                  >
+                    {s.step}
+                  </div>
+                  <p className="text-sm font-medium" style={{ color: "var(--foreground)" }}>
+                    {s.label}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => onNavigate?.("ai-visibility-lab")}
+              className="btn-primary inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold"
+            >
+              Open AI Visibility Lab
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Right: mini lab UI preview */}
+          <div>
+            <div
+              className="rounded-2xl overflow-hidden"
+              style={{
+                background: "var(--surface)",
+                border: "1px solid rgba(79,70,229,0.25)",
+                boxShadow: "0 0 60px rgba(79,70,229,0.08)",
+              }}
+            >
+              <div
+                className="flex items-center gap-2 px-4 py-3"
+                style={{ borderBottom: "1px solid var(--border)", background: "var(--surface-2)" }}
+              >
+                <div className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
+                <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50" />
+                <div className="w-2.5 h-2.5 rounded-full bg-green-500/50" />
+                <span className="ml-2 text-xs font-mono" style={{ color: "var(--muted)" }}>
+                  AI Visibility Lab
+                </span>
+              </div>
+
+              <div className="p-5 space-y-4">
+                {/* Mock inputs */}
+                <div
+                  className="rounded-xl p-4 space-y-3"
+                  style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}
+                >
+                  <div
+                    className="h-8 rounded-lg flex items-center px-3"
+                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border)" }}
+                  >
+                    <span className="text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>
+                      best AI visibility platform...
+                    </span>
+                  </div>
+                  <div
+                    className="h-8 rounded-lg flex items-center px-3"
+                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border)" }}
+                  >
+                    <span className="text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>
+                      https://yoursite.com...
+                    </span>
+                  </div>
+                  <div
+                    className="h-9 rounded-lg flex items-center justify-center text-xs font-semibold"
+                    style={{ background: "linear-gradient(135deg, #4F46E5, #7C3AED)", color: "#fff" }}
+                  >
+                    Run Analysis
+                  </div>
+                </div>
+
+                {/* Summary scores */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div
+                    className="rounded-xl p-4 text-center"
+                    style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}
+                  >
+                    <p className="text-xs mb-1" style={{ color: "var(--muted)" }}>Citation Prob.</p>
+                    <p className="text-3xl font-bold" style={{ color: "#34d399" }}>78%</p>
+                  </div>
+                  <div
+                    className="rounded-xl p-4 text-center"
+                    style={{ background: "var(--surface-2)", border: "1px solid rgba(79,70,229,0.3)" }}
+                  >
+                    <p className="text-xs mb-1" style={{ color: "var(--muted)" }}>AI Visibility</p>
+                    <p className="text-3xl font-bold" style={{ color: "#818CF8" }}>81</p>
+                  </div>
+                </div>
+
+                {/* Engine bars preview */}
+                <div
+                  className="rounded-xl p-4 space-y-2.5"
+                  style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}
+                >
+                  <p className="text-xs font-semibold mb-3" style={{ color: "var(--muted)" }}>
+                    Engine Readiness
+                  </p>
+                  {[
+                    { name: "ChatGPT",    score: 82, color: "#34d399", logo: ENGINE_LOGOS.chatgpt    },
+                    { name: "Perplexity", score: 71, color: "#22d3ee", logo: ENGINE_LOGOS.perplexity },
+                    { name: "Google SGE", score: 65, color: "#818cf8", logo: ENGINE_LOGOS.google_sge },
+                    { name: "Copilot",    score: 54, color: "#a78bfa", logo: ENGINE_LOGOS.copilot    },
+                  ].map((e) => (
+                    <div key={e.name} className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 w-24 shrink-0">
+                        <div className="bg-white rounded-md p-1 flex items-center justify-center shadow-sm shrink-0">
+                          <img src={e.logo} alt={e.name} className="w-3.5 h-3.5 object-contain" />
+                        </div>
+                        <span className="text-xs truncate" style={{ color: "var(--muted)" }}>{e.name}</span>
+                      </div>
+                      <div className="flex-1 h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.05)" }}>
+                        <div
+                          className="h-full rounded-full"
+                          style={{ width: `${e.score}%`, background: e.color }}
+                        />
+                      </div>
+                      <span className="text-xs w-6 text-right font-bold" style={{ color: e.color }}>
+                        {e.score}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── 7. Free Audit CTA ─────────────────────────────────────────────────────────
+function FreeAuditCTA({ onGetStarted }) {
+  const [auditUrl, setAuditUrl] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onGetStarted?.();
+  };
+
+  return (
+    <section className="py-24 px-8" style={{ borderTop: "1px solid var(--border)" }}>
+      <div className="max-w-[900px] mx-auto">
+        <div
+          className="rounded-2xl p-10 lg:p-14 text-center"
+          style={{
+            background: "linear-gradient(135deg, rgba(79,70,229,0.08) 0%, rgba(124,58,237,0.05) 100%)",
+            border: "1px solid rgba(79,70,229,0.25)",
+          }}
+        >
+          <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "#818CF8" }}>
+            Get Started Free
+          </p>
+          <h2
+            className="font-display text-4xl lg:text-5xl font-bold mb-4"
+            style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}
+          >
+            Run a Free AI<br />Visibility Audit
+          </h2>
+          <p className="text-base mb-8 max-w-lg mx-auto" style={{ color: "var(--muted)" }}>
+            Enter your website URL and see how AI engines currently perceive your content — no signup required.
+          </p>
+
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto mb-10">
+            <input
+              type="url"
+              value={auditUrl}
+              onChange={(e) => setAuditUrl(e.target.value)}
+              placeholder="https://yoursite.com"
+              className="flex-1 h-12 rounded-xl px-4 text-sm"
+              style={{
+                background: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(79,70,229,0.3)",
+                color: "var(--foreground)",
+                outline: "none",
+              }}
+            />
+            <button
+              type="submit"
+              className="btn-primary h-12 px-6 rounded-xl text-sm font-semibold whitespace-nowrap inline-flex items-center gap-2"
+            >
+              Analyze My Site
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </form>
+
+          {/* Preview cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
+            {[
+              { label: "AI Visibility Score",    value: "—", sub: "Combined score out of 100",   color: "#4F46E5" },
+              { label: "Citation Probability",   value: "—", sub: "Likelihood of being cited",   color: "#7C3AED" },
+              { label: "Top Engine",             value: "—", sub: "Best performing AI engine",   color: "#0891B2" },
+            ].map((card) => (
+              <div
+                key={card.label}
+                className="rounded-xl p-4"
+                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
+              >
+                <p className="text-xs mb-2" style={{ color: "var(--muted)" }}>{card.label}</p>
+                <p className="text-2xl font-bold mb-1" style={{ color: card.color }}>{card.value}</p>
+                <p className="text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>{card.sub}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function LandingPage({ onGetStarted, onNavigate }) {
   return (
     <div className="relative overflow-hidden" style={{ background: "var(--bg)" }} data-testid="landing-page">
 
-      {/* ── HERO — two-column layout ─────────────────────────────────────── */}
-      <section className="relative min-h-[92vh] flex items-center">
-        {/* Subtle grid */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)`,
-            backgroundSize: "72px 72px",
-          }}
-        />
-        {/* Indigo glow left */}
-        <div
-          className="absolute top-1/3 left-1/4 w-[600px] h-[500px] pointer-events-none"
-          style={{
-            background: "radial-gradient(ellipse at center, rgba(79,70,229,0.12) 0%, transparent 70%)",
-          }}
-        />
-        {/* Indigo glow right — behind mockup */}
-        <div
-          className="absolute top-1/4 right-0 w-[480px] h-[480px] pointer-events-none"
-          style={{
-            background: "radial-gradient(ellipse at center, rgba(124,58,237,0.10) 0%, transparent 70%)",
-          }}
-        />
-
-        <div className="relative w-full max-w-[1120px] mx-auto px-8 py-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-
-            {/* Left: Copy */}
-            <div>
-              {/* Badge */}
-              <div
-                className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-8 text-xs font-medium"
-                style={{
-                  background: "rgba(79,70,229,0.12)",
-                  border: "1px solid rgba(79,70,229,0.3)",
-                  color: "#A5B4FC",
-                }}
-              >
-                <Cpu className="w-3.5 h-3.5" />
-                AI Engine Optimization platform
-              </div>
-
-              {/* Headline */}
-              <h1
-                className="font-display text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.0] mb-6"
-                style={{ color: "var(--foreground)", letterSpacing: "-0.03em" }}
-              >
-                Get discovered<br />
-                <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">by AI</span> engines.
-              </h1>
-
-              <p className="text-lg mb-10 max-w-md leading-relaxed" style={{ color: "var(--muted)" }}>
-                Pinnacle analyzes how your content performs in AI-generated answers.
-                Understand your signals, fix your gaps, and get cited.
-              </p>
-
-              {/* Stats row */}
-              <div className="flex items-center gap-6 mb-10">
-                {[
-                  { label: "Deterministic scoring", icon: CheckCircle },
-                  { label: "5 signal dimensions", icon: BarChart2 },
-                  { label: "Real-time tracking", icon: TrendingUp },
-                ].map(({ label, icon: Icon }) => (
-                  <div key={label} className="flex items-center gap-1.5">
-                    <Icon className="w-3.5 h-3.5" style={{ color: "#818CF8" }} />
-                    <span className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>{label}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* CTAs */}
-              <div className="flex items-center gap-3">
-                <button
-                  data-testid="hero-get-started"
-                  onClick={onGetStarted}
-                  className="btn-primary inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold"
-                >
-                  Start for free
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-                <button
-                  data-testid="hero-learn-more"
-                  onClick={onGetStarted}
-                  className="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-medium transition-colors"
-                  style={{
-                    background: "var(--surface-2)",
-                    border: "1px solid var(--border)",
-                    color: "var(--foreground)",
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
-                >
-                  View demo
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Right: Product mockup */}
-            <div className="flex justify-end">
-              <div style={{ transform: "perspective(1200px) rotateY(-4deg) rotateX(2deg)", filter: "drop-shadow(0 40px 80px rgba(79,70,229,0.25))" }}>
-                <HeroMockup />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── BENTO FEATURES ───────────────────────────────────────────────── */}
-      <section className="py-24 px-8" data-section="features">
-        <div className="max-w-[1120px] mx-auto">
-          <div className="mb-14">
-            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#4F46E5" }}>
-              Platform
-            </p>
-            <h2
-              className="font-display text-4xl lg:text-5xl font-bold leading-tight"
-              style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}
-            >
-              Everything your content needs<br />to rank in AI answers.
-            </h2>
-          </div>
-
-          <div className="bento-grid">
-            {BENTO_FEATURES.map((f, i) => {
-              const Icon = f.icon;
-              return (
-                <div
-                  key={i}
-                  className={f.size === "large" ? "bento-large" : "bento-small"}
-                  data-testid={`feature-card-${i}`}
-                  style={{
-                    background: "var(--surface)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "16px",
-                    padding: "28px",
-                    transition: "border-color 0.2s",
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = `${f.accent}40`; e.currentTarget.style.transform = "translateY(-2px)"; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.transform = "translateY(0)"; }}
-                >
-                  <div
-                    className="inline-flex items-center justify-center w-10 h-10 rounded-xl mb-5"
-                    style={{ background: `${f.accent}18`, border: `1px solid ${f.accent}30` }}
-                  >
-                    <Icon className="w-5 h-5" style={{ color: f.accent }} />
-                  </div>
-                  <h3
-                    className="text-base font-semibold mb-2"
-                    style={{ color: "var(--foreground)" }}
-                  >
-                    {f.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed" style={{ color: "var(--muted)" }}>
-                    {f.desc}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+      <HeroSection onGetStarted={onGetStarted} />
+      <AIEngineGrid />
+      <SearchShiftSection />
+      <AIVisibilityLabPreview onNavigate={onNavigate} />
+      <StrategySimulatorSection onNavigate={onNavigate} />
+      <PlatformPillars />
+      <FreeAuditCTA onGetStarted={onGetStarted} />
 
       {/* ── PRICING ──────────────────────────────────────────────────────── */}
-      <section className="py-16 px-8" data-section="pricing" id="pricing">
+      <section className="py-16 px-8" data-section="pricing" id="pricing" style={{ borderTop: "1px solid var(--border)" }}>
         <div className="max-w-[1120px] mx-auto">
-          <div className="mb-10">
+          <div className="mb-10 text-center">
             <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#4F46E5" }}>
               Pricing
             </p>
@@ -378,7 +806,7 @@ export default function LandingPage({ onGetStarted, onNavigate }) {
               }}
             >
               <div
-                className="absolute -top-3 left-6 px-3 py-1 rounded-full text-2xs font-bold tracking-wide"
+                className="absolute -top-3 left-6 px-3 py-1 rounded-full font-bold tracking-wide"
                 style={{ background: "#4F46E5", color: "#fff", fontSize: "10px" }}
               >
                 MOST POPULAR
@@ -472,28 +900,6 @@ export default function LandingPage({ onGetStarted, onNavigate }) {
         </div>
       </section>
 
-      {/* ── BOTTOM CTA ───────────────────────────────────────────────────── */}
-      <section className="py-20 px-8 text-center">
-        <div className="max-w-[600px] mx-auto" style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "24px", padding: "56px 48px", boxShadow: "0 0 80px rgba(79,70,229,0.08)" }}>
-          <h2
-            className="font-display text-4xl lg:text-5xl font-bold mb-4"
-            style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}
-          >
-            Reach the pinnacle<br />of AI discoverability.
-          </h2>
-          <p className="text-base mb-8" style={{ color: "var(--muted)" }}>
-            Start analyzing your AI discoverability in seconds. Free forever.
-          </p>
-          <button
-            onClick={onGetStarted}
-            className="btn-primary inline-flex items-center gap-2 rounded-lg px-8 py-3.5 text-sm font-semibold"
-          >
-            Start optimizing
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-      </section>
-
       {/* ── FOOTER ───────────────────────────────────────────────────────── */}
       <footer style={{ borderTop: "1px solid var(--border)" }}>
         <div className="max-w-[1120px] mx-auto px-8 py-12">
@@ -507,7 +913,7 @@ export default function LandingPage({ onGetStarted, onNavigate }) {
                 </span>
               </div>
               <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
-                AI discoverability optimization for the next generation of search.
+                AI visibility optimization for the next generation of search.
               </p>
             </div>
 
@@ -516,10 +922,10 @@ export default function LandingPage({ onGetStarted, onNavigate }) {
               <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--text-muted)" }}>Product</p>
               <ul className="space-y-2.5">
                 {[
-                  { label: "AEO Audits", section: "features" },
-                  { label: "AI Testing", section: "features" },
-                  { label: "Monitoring", section: "features" },
-                  { label: "Pricing", section: "pricing" },
+                  { label: "AEO Audits",      section: "features" },
+                  { label: "AI Visibility Lab", section: "features" },
+                  { label: "Monitoring",       section: "features" },
+                  { label: "Pricing",          section: "pricing" },
                 ].map(({ label, section }) => (
                   <li key={label}>
                     <button
@@ -541,10 +947,10 @@ export default function LandingPage({ onGetStarted, onNavigate }) {
               <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--text-muted)" }}>Company</p>
               <ul className="space-y-2.5">
                 {[
-                  { label: "About", page: "about" },
-                  { label: "Blog", page: "blog" },
-                  { label: "Careers", page: "careers" },
-                  { label: "Press", page: "press" },
+                  { label: "About",    page: "about" },
+                  { label: "Blog",     page: "blog" },
+                  { label: "Careers",  page: "careers" },
+                  { label: "Press",    page: "press" },
                 ].map(({ label, page }) => (
                   <li key={label}>
                     <button
@@ -568,7 +974,7 @@ export default function LandingPage({ onGetStarted, onNavigate }) {
                 {[
                   { label: "Privacy Policy", page: "privacy" },
                   { label: "Terms of Service", page: "terms" },
-                  { label: "Cookie Policy", page: "cookies" },
+                  { label: "Cookie Policy",  page: "cookies" },
                 ].map(({ label, page }) => (
                   <li key={label}>
                     <button
@@ -599,8 +1005,8 @@ export default function LandingPage({ onGetStarted, onNavigate }) {
             <div className="flex items-center gap-4">
               {[
                 { label: "Twitter / X", href: "https://twitter.com/pinnacleai" },
-                { label: "LinkedIn", href: "https://linkedin.com/company/pinnacleai" },
-                { label: "GitHub", href: "https://github.com/pinnacleai" },
+                { label: "LinkedIn",    href: "https://linkedin.com/company/pinnacleai" },
+                { label: "GitHub",      href: "https://github.com/pinnacleai" },
               ].map(({ label, href }) => (
                 <a
                   key={label}

@@ -21,6 +21,10 @@ import CompetitorPage from "./pages/CompetitorPage";
 import ExecutiveSummaryPage from "./pages/ExecutiveSummaryPage";
 import ProfilePage from "./pages/ProfilePage";
 
+import {
+  LayoutDashboard, FileSearch, Search, BarChart3, Eye,
+} from "lucide-react";
+
 // Lazy-load marketing & legal pages — only fetched when first visited
 const AboutPage        = lazy(() => import("./pages/AboutPage"));
 const BlogPage         = lazy(() => import("./pages/BlogPage"));
@@ -29,9 +33,6 @@ const PressPage        = lazy(() => import("./pages/PressPage"));
 const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
 const TermsPage        = lazy(() => import("./pages/TermsPage"));
 const CookiePolicyPage = lazy(() => import("./pages/CookiePolicyPage"));
-import {
-  LayoutDashboard, FileSearch, Search, BarChart3, Eye,
-} from "lucide-react";
 
 // Pages rendered within the authenticated sidebar layout
 const APP_PAGES = ["dashboard","audits","ai-visibility-lab","monitor","reports","advanced","simulator","compare","executive","profile"];

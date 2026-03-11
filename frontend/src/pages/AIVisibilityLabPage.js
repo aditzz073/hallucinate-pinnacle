@@ -12,6 +12,7 @@ import { useGuestMode } from "../hooks/useGuestMode";
 import GuestBanner from "../components/ui/GuestBanner";
 import GuestLimitModal from "../components/modals/GuestLimitModal";
 import LockedSection from "../components/ui/LockedSection";
+import ENGINE_LOGOS from "../utils/engineLogos";
 
 const ENGINE_ICONS = {
   chatgpt:    Brain,
@@ -526,10 +527,11 @@ export default function AIVisibilityLabPage({ onSignUp }) {
                         <div className="flex items-start justify-between gap-4 mb-4">
                           <div className="flex items-center gap-3 min-w-0">
                             <div
-                              className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-                              style={{ background: ENGINE_BORDER[r.engine_id] }}
+                              className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 overflow-hidden bg-white shadow-sm"
                             >
-                              <Icon className="w-5 h-5 text-indigo-300" />
+                              {ENGINE_LOGOS[r.engine_id]
+                                ? <img src={ENGINE_LOGOS[r.engine_id]} alt={r.engine_name} className="w-5 h-5 object-contain" />
+                                : <Icon className="w-5 h-5 text-indigo-300" />}
                             </div>
                             <div className="min-w-0">
                               <div className="flex items-center gap-2 flex-wrap">
