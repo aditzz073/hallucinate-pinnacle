@@ -156,9 +156,8 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
             data-testid="nav-logo-landing"
           >
             <Logo size="sm" />
-            <span className="text-base font-black tracking-tight">
-              <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Pinnacle</span>
-              <span style={{ color: "#818CF8" }} className="font-light">.ai</span>
+            <span className="font-display font-bold text-sm tracking-tight text-white whitespace-nowrap">
+              Pinnacle<span className="text-indigo-400">.ai</span>
             </span>
           </div>
 
@@ -246,9 +245,8 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
           title="Return to home"
         >
           <Logo size="sm" />
-          <span className="hidden sm:flex items-baseline text-base font-black tracking-tight">
-            <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Pinnacle</span>
-            <span style={{ color: "#818CF8" }} className="font-light">.ai</span>
+          <span className="hidden sm:inline font-display font-bold text-sm tracking-tight text-white whitespace-nowrap">
+            Pinnacle<span className="text-indigo-400">.ai</span>
           </span>
         </div>
 

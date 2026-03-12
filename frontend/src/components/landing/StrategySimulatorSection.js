@@ -73,7 +73,7 @@ export default function StrategySimulatorSection({ onNavigate }) {
             </div>
 
             <button
-              onClick={() => onNavigate?.("strategy-simulator")}
+              onClick={() => onNavigate?.("simulator")}
               className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-medium text-white transition-transform hover:scale-[1.02]"
               style={{
                 background: "linear-gradient(135deg, #4F46E5, #7C3AED)",

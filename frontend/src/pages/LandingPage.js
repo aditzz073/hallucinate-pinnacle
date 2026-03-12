@@ -124,7 +124,7 @@ function DashboardMockup() {
 }
 
 // ── 1. Hero Section ───────────────────────────────────────────────────────────
-function HeroSection({ onGetStarted }) {
+function HeroSection({ onGetStarted, onNavigate }) {
   return (
     <section className="relative min-h-[92vh] flex items-center">
       {/* Subtle dot grid */}
@@ -180,7 +180,7 @@ function HeroSection({ onGetStarted }) {
             <div className="flex items-center flex-wrap gap-3 mb-10">
               <button
                 data-testid="hero-get-started"
-                onClick={onGetStarted}
+                onClick={() => onNavigate("audits")}
                 className="btn-primary inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold"
               >
                 Run AI Visibility Audit
@@ -664,12 +664,12 @@ function AIVisibilityLabPreview({ onNavigate }) {
 }
 
 // ── 7. Free Audit CTA ─────────────────────────────────────────────────────────
-function FreeAuditCTA({ onGetStarted }) {
+function FreeAuditCTA({ onGetStarted, onNavigate }) {
   const [auditUrl, setAuditUrl] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onGetStarted?.();
+    onNavigate?.("audits");
   };
 
   return (
@@ -746,13 +746,13 @@ export default function LandingPage({ onGetStarted, onNavigate }) {
   return (
     <div className="relative overflow-hidden" style={{ background: "var(--bg)" }} data-testid="landing-page">
 
-      <HeroSection onGetStarted={onGetStarted} />
+      <HeroSection onGetStarted={onGetStarted} onNavigate={onNavigate} />
       <AIEngineGrid />
       <SearchShiftSection />
       <AIVisibilityLabPreview onNavigate={onNavigate} />
       <StrategySimulatorSection onNavigate={onNavigate} />
       <PlatformPillars />
-      <FreeAuditCTA onGetStarted={onGetStarted} />
+      <FreeAuditCTA onGetStarted={onGetStarted} onNavigate={onNavigate} />
 
       {/* ── PRICING ──────────────────────────────────────────────────────── */}
       <section className="py-16 px-8" data-section="pricing" id="pricing" style={{ borderTop: "1px solid var(--border)" }}>

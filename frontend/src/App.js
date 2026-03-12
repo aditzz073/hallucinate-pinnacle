@@ -55,6 +55,7 @@ function AppContent() {
   const [lockedFeature, setLockedFeature] = useState("");
   const [navigationHistory, setNavigationHistory] = useState(["landing"]);
   const [historyIndex, setHistoryIndex] = useState(0);
+  const [pendingPage, setPendingPage] = useState(null);
 
   const logout = () => {
     authLogout();
@@ -117,9 +118,15 @@ function AppContent() {
     setHistoryIndex(newHistory.length - 1);
   };
 
+  const navigateToAuthWithRedirect = (authView, redirectPage) => {
+    setPendingPage(redirectPage);
+    navigateToAuth(authView);
+  };
+
   const handleSignInFromModal = () => {
     setShowFeatureLockedModal(false);
     navigateToAuth("login");
+    // pendingPage is already set from renderPage when this fires
   };
 
   if (loading) {
@@ -136,7 +143,7 @@ function AppContent() {
   if (view === "login") {
     return (
       <>
-        <LoginPage onSwitch={() => navigateToAuth("register")} onSuccess={() => { setView("app"); setActivePage("dashboard"); }} />
+        <LoginPage onSwitch={() => navigateToAuth("register")} onSuccess={() => { setView("app"); setActivePage(pendingPage || "dashboard"); setPendingPage(null); }} />
         <HistorySlider history={navigationHistory} currentIndex={historyIndex} onNavigateBack={handleNavigateBack} onNavigateForward={handleNavigateForward} />
       </>
     );
@@ -144,7 +151,7 @@ function AppContent() {
   if (view === "register") {
     return (
       <>
-        <RegisterPage onSwitch={() => navigateToAuth("login")} onSuccess={() => { setView("app"); setActivePage("dashboard"); }} />
+        <RegisterPage onSwitch={() => navigateToAuth("login")} onSuccess={() => { setView("app"); setActivePage(pendingPage || "dashboard"); setPendingPage(null); }} />
         <HistorySlider history={navigationHistory} currentIndex={historyIndex} onNavigateBack={handleNavigateBack} onNavigateForward={handleNavigateForward} />
       </>
     );
@@ -173,7 +180,7 @@ function AppContent() {
 
     const authPages = ["monitor","reports","advanced","simulator","compare","executive","profile"];
     if (authPages.includes(activePage)) {
-      if (!user) { handleShowFeatureLocked(activePage); return <LandingPage onGetStarted={() => navigateToAuth("register")} />; }
+      if (!user) { handleShowFeatureLocked(activePage); setPendingPage(activePage); return <LandingPage onGetStarted={() => navigateToAuthWithRedirect("register", activePage)} onNavigate={handlePageNavigation} />; }
       switch (activePage) {
         case "monitor":   return <MonitoringPage />;
         case "reports":   return <ReportsPage />;
