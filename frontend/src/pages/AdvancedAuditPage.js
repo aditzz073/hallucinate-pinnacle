@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { runAdvancedAudit } from "../api";
 import { getScoreColor } from "../components/ui/ScoreRing";
 import SeverityBadge from "../components/ui/Badges";
-import { Sparkles, ArrowRight, ExternalLink, ChevronDown, ChevronUp, Loader2, Shield, Info } from "lucide-react";
+import { Sparkles, ExternalLink, ChevronDown, ChevronUp, Loader2, Shield, Info } from "lucide-react";
 
 export default function AdvancedAuditPage() {
   const [url, setUrl] = useState("");

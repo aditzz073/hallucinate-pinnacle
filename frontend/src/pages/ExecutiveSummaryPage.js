@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getExecutiveSummary } from "../api";
 import { getScoreColor } from "../components/ui/ScoreRing";
-import { Crown, Loader2, TrendingUp, AlertTriangle, Lightbulb, BarChart3 } from "lucide-react";
+import { Loader2, AlertTriangle, Lightbulb, BarChart3 } from "lucide-react";
 
 export default function ExecutiveSummaryPage() {
   const [data, setData] = useState(null);

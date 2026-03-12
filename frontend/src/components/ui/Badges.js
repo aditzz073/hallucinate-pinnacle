@@ -1,5 +1,4 @@
 import React from "react";
-import { getScoreColor } from "./ScoreRing";
 
 export default function SeverityBadge({ severity }) {
   const config = {
