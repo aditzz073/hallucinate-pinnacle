@@ -66,8 +66,10 @@ export default function Sidebar({ activePage, onNavigate, onLogout }) {
     >
       {/* Logo / Brand */}
       <div
-        className={`h-14 flex items-center shrink-0 ${collapsed ? "justify-center px-0" : "gap-2.5 px-4"}`}
+        className={`h-14 flex items-center shrink-0 cursor-pointer hover:opacity-80 transition-opacity ${collapsed ? "justify-center px-0" : "gap-2.5 px-4"}`}
         style={{ borderBottom: "1px solid var(--border)" }}
+        onClick={() => onNavigate("landing")}
+        title="Go to home"
       >
         <Logo size="sm" />
         {!collapsed && (

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getOverview } from "../api";
+import { changePassword } from "../api";
 import { 
   User, Mail, Crown, Shield, FileSearch, Search, 
   Clock, TrendingUp, Zap, Activity, ChevronDown, ChevronUp,
-  LogOut, Lock, ExternalLink
+  LogOut, Lock, ExternalLink, Eye, EyeOff, Check, X
 } from "lucide-react";
 
 export default function ProfilePage() {
@@ -12,6 +13,11 @@ export default function ProfilePage() {
   const [overview, setOverview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showAdvancedInsights, setShowAdvancedInsights] = useState(false);
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [pwForm, setPwForm] = useState({ current: "", next: "", confirm: "" });
+  const [pwVisibility, setPwVisibility] = useState({ current: false, next: false, confirm: false });
+  const [pwStatus, setPwStatus] = useState(null); // null | "loading" | "success" | "error"
+  const [pwError, setPwError] = useState("");
 
   useEffect(() => {
     getOverview().then(setOverview).catch(() => {}).finally(() => setLoading(false));
@@ -203,19 +209,77 @@ export default function ProfilePage() {
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Change Password (Coming Soon) */}
-          <button 
-            disabled
-            className="glass-card p-6 flex items-center gap-4 opacity-50 cursor-not-allowed"
-          >
-            <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
-              <Lock className="w-5 h-5 text-blue-400" />
-            </div>
-            <div className="flex-1 text-left">
-              <p className="text-sm font-semibold text-white mb-1">Change Password</p>
-              <p className="text-xs text-gray-500">Coming soon</p>
-            </div>
-          </button>
+        {/* Change Password */}
+          <div className="glass-card overflow-hidden">
+            <button
+              onClick={() => { setShowPasswordForm(v => !v); setPwStatus(null); setPwError(""); setPwForm({ current: "", next: "", confirm: "" }); }}
+              className="w-full p-6 flex items-center gap-4 hover:bg-white/5 transition-all duration-200"
+            >
+              <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                <Lock className="w-5 h-5 text-blue-400" />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="text-sm font-semibold text-white mb-1">Change Password</p>
+                <p className="text-xs text-gray-500">{showPasswordForm ? "Cancel" : "Update your account password"}</p>
+              </div>
+              {showPasswordForm ? <X className="w-4 h-4 text-gray-500" /> : <ChevronDown className="w-4 h-4 text-gray-500" />}
+            </button>
+
+            {showPasswordForm && (
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  setPwError("");
+                  if (pwForm.next !== pwForm.confirm) { setPwError("New passwords do not match"); return; }
+                  if (pwForm.next.length < 6) { setPwError("New password must be at least 6 characters"); return; }
+                  setPwStatus("loading");
+                  try {
+                    await changePassword(pwForm.current, pwForm.next);
+                    setPwStatus("success");
+                    setPwForm({ current: "", next: "", confirm: "" });
+                    setTimeout(() => { setShowPasswordForm(false); setPwStatus(null); }, 1800);
+                  } catch (err) {
+                    setPwError(err?.response?.data?.detail || "Failed to change password");
+                    setPwStatus("error");
+                  }
+                }}
+                className="px-6 pb-6 border-t border-white/5 pt-4 space-y-3"
+              >
+                {[{key: "current", label: "Current password"}, {key: "next", label: "New password"}, {key: "confirm", label: "Confirm new password"}].map(({ key, label }) => (
+                  <div key={key} className="relative">
+                    <input
+                      type={pwVisibility[key] ? "text" : "password"}
+                      placeholder={label}
+                      value={pwForm[key]}
+                      onChange={e => setPwForm(f => ({ ...f, [key]: e.target.value }))}
+                      required
+                      className="w-full h-10 rounded-lg px-3 pr-10 text-sm bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/50"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setPwVisibility(v => ({ ...v, [key]: !v[key] }))}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
+                    >
+                      {pwVisibility[key] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                ))}
+
+                {pwError && <p className="text-xs text-red-400">{pwError}</p>}
+
+                <button
+                  type="submit"
+                  disabled={pwStatus === "loading" || pwStatus === "success"}
+                  className="w-full h-10 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all"
+                  style={{ background: pwStatus === "success" ? "rgba(16,185,129,0.2)" : "rgba(79,70,229,0.8)", color: "white", border: pwStatus === "success" ? "1px solid rgba(16,185,129,0.4)" : "none" }}
+                >
+                  {pwStatus === "loading" && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+                  {pwStatus === "success" && <><Check className="w-4 h-4 text-emerald-400" /> Password updated</>}
+                  {(pwStatus === null || pwStatus === "error") && "Update Password"}
+                </button>
+              </form>
+            )}
+          </div>
 
           {/* Sign Out (Destructive Action) */}
           <button 

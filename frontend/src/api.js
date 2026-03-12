@@ -68,6 +68,16 @@ export async function deleteMonitor(pageId) {
   await axios.delete(`${API_URL}/api/monitor/${pageId}`, { headers: authHeaders() });
 }
 
+// Auth endpoints
+export async function changePassword(currentPassword, newPassword) {
+  const res = await axios.post(
+    `${API_URL}/auth/change-password`,
+    { current_password: currentPassword, new_password: newPassword },
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
 // Reports endpoints
 export async function getOverview() {
   const res = await axios.get(`${API_URL}/api/reports/overview`, { headers: authHeaders() });

@@ -94,6 +94,23 @@ async def login_user(email: str, password: str) -> dict:
     }
 
 
+async def change_password(user_id: str, current_password: str, new_password: str) -> None:
+    from bson import ObjectId
+
+    user = await users_collection.find_one({"_id": ObjectId(user_id)})
+    if not user:
+        raise ValueError("User not found")
+
+    if not verify_password(current_password, user["password_hash"]):
+        raise ValueError("Current password is incorrect")
+
+    new_hash = hash_password(new_password)
+    await users_collection.update_one(
+        {"_id": ObjectId(user_id)},
+        {"$set": {"password_hash": new_hash}},
+    )
+
+
 async def get_user_by_id(user_id: str) -> dict:
     from bson import ObjectId
 
