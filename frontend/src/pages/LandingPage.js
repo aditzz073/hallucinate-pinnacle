@@ -206,7 +206,7 @@ function HeroSection({ onGetStarted, onNavigate }) {
             <div className="flex items-center flex-wrap gap-6">
               {[
                 { label: "Deterministic scoring", icon: CheckCircle },
-                { label: "6 AI engines",           icon: BarChart2 },
+                { label: "6+ AI engines",           icon: BarChart2 },
                 { label: "Real-time tracking",      icon: TrendingUp },
               ].map(({ label, icon: Icon }) => (
                 <div key={label} className="flex items-center gap-1.5">

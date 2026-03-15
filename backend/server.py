@@ -36,8 +36,11 @@ logger = logging.getLogger("pinnacle_ai")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Starting Pinnacle.AI...")
-    await setup_indexes()
-    logger.info("Database indexes created.")
+    indexes_ok = await setup_indexes()
+    if indexes_ok:
+        logger.info("Database indexes created.")
+    else:
+        logger.warning("Startup continuing without DB index setup. MongoDB connection is unavailable.")
     yield
     logger.info("Shutting down Pinnacle.AI.")
 
