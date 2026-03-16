@@ -4,13 +4,66 @@ import {
   TrendingUp, CheckCircle, BarChart2, Cpu, Mail, Phone, MessageSquare,
   Microscope,
 } from "lucide-react";
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import StrategySimulatorSection from "../components/landing/StrategySimulatorSection";
 import ENGINE_LOGOS from "../utils/engineLogos";
 import IconContainer from "../components/ui/IconContainer";
 
+const VISIBILITY_TREND_SERIES = [
+  { key: "citation",      label: "Citation Probability", color: "#8B5CF6" },
+  { key: "readiness",     label: "Generative Readiness", color: "#3B82F6" },
+  { key: "summarization", label: "Summarization",        color: "#34D399" },
+  { key: "brand",         label: "Brand Retention",      color: "#F59E0B" },
+  { key: "schema",        label: "Schema Support",       color: "#EF4444" },
+];
+
+const VISIBILITY_TREND_DATA = [
+  { day: "Apr 12", citation: 64, readiness: 84, summarization: 42, brand: 48, schema: 32 },
+  { day: "Apr 13", citation: 66, readiness: 59, summarization: 27, brand: 50, schema: 44 },
+  { day: "Apr 14", citation: 57, readiness: 37, summarization: 23, brand: 15, schema: 9  },
+  { day: "Apr 15", citation: 62, readiness: 17, summarization: 46, brand: 24, schema: 18 },
+  { day: "Apr 16", citation: 65, readiness: 15, summarization: 74, brand: 62, schema: 56 },
+  { day: "Apr 17", citation: 88, readiness: 71, summarization: 53, brand: 58, schema: 52 },
+  { day: "Apr 18", citation: 68, readiness: 60, summarization: 78, brand: 40, schema: 34 },
+];
+
+function VisibilityTrendTooltip({ active, payload, label }) {
+  if (!active || !payload?.length) return null;
+
+  const pointByKey = new Map(payload.map((item) => [item.dataKey, item.value]));
+
+  return (
+    <div
+      className="rounded-lg px-3 py-2"
+      style={{
+        background: "rgba(12,12,38,0.96)",
+        border: "1px solid rgba(99,102,241,0.35)",
+        boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
+      }}
+    >
+      <p className="text-[11px] font-semibold mb-2" style={{ color: "#c7d2fe" }}>{label}</p>
+      <div className="space-y-1">
+        {VISIBILITY_TREND_SERIES.map((series) => (
+          <div key={series.key} className="flex items-center justify-between gap-3 text-[11px]">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full" style={{ background: series.color }} />
+              <span style={{ color: "#a5b4fc" }}>{series.label}</span>
+            </div>
+            <span className="font-semibold" style={{ color: "#f8fafc" }}>
+              {pointByKey.get(series.key)}%
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ── Dashboard mockup shared by Hero + Showcase ────────────────────────────────
 function DashboardMockup() {
-  const bars = [62, 78, 55, 88, 71, 94, 83];
+  const firstCitation = VISIBILITY_TREND_DATA[0]?.citation || 0;
+  const lastCitation = VISIBILITY_TREND_DATA[VISIBILITY_TREND_DATA.length - 1]?.citation || 0;
+  const citationDelta = lastCitation - firstCitation;
   return (
     <div
       className="relative w-full max-w-[480px] rounded-2xl overflow-hidden"
@@ -54,36 +107,65 @@ function DashboardMockup() {
         ))}
       </div>
 
-      {/* Bar chart */}
-      <div className="px-4 pb-4">
+      {/* Line chart */}
+      <div className="px-4 pb-3">
         <div
           className="rounded-xl p-4"
           style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}
         >
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-medium" style={{ color: "var(--foreground)" }}>Citation Trend (7d)</p>
-            <span className="text-xs font-semibold" style={{ color: "#4F46E5" }}>+12%</span>
+            <p className="text-xs font-medium" style={{ color: "var(--foreground)" }}>AI Visibility Trend (7d)</p>
+            <span
+              className="text-xs font-semibold"
+              style={{ color: citationDelta >= 0 ? "#34d399" : "#f87171" }}
+            >
+              {citationDelta >= 0 ? "+" : ""}{citationDelta}%
+            </span>
           </div>
-          <div className="flex items-end gap-1.5 h-16">
-            {bars.map((h, i) => (
-              <div
-                key={i}
-                className="flex-1 rounded-sm"
-                style={{
-                  height: `${h}%`,
-                  background:
-                    i === bars.length - 1
-                      ? "linear-gradient(to top, #4F46E5, #7C3AED)"
-                      : "rgba(79,70,229,0.3)",
-                }}
-              />
+
+          <div className="flex flex-wrap gap-x-3 gap-y-1 mb-2">
+            {VISIBILITY_TREND_SERIES.map((series) => (
+              <span key={series.key} className="text-[10px] flex items-center gap-1" style={{ color: "var(--muted)" }}>
+                <span className="w-1.5 h-1.5 rounded-full" style={{ background: series.color }} />
+                {series.label}
+              </span>
             ))}
+          </div>
+
+          <div className="h-44 -mx-1">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={VISIBILITY_TREND_DATA} margin={{ top: 6, right: 8, left: -22, bottom: 0 }}>
+                <CartesianGrid stroke="rgba(255,255,255,0.06)" vertical={false} />
+                <XAxis
+                  dataKey="day"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: "rgba(255,255,255,0.45)", fontSize: 10 }}
+                />
+                <YAxis hide domain={[0, 100]} />
+                <Tooltip
+                  content={<VisibilityTrendTooltip />}
+                  cursor={{ stroke: "rgba(129,140,248,0.35)", strokeWidth: 1 }}
+                />
+                {VISIBILITY_TREND_SERIES.map((series) => (
+                  <Line
+                    key={series.key}
+                    type="monotone"
+                    dataKey={series.key}
+                    stroke={series.color}
+                    strokeWidth={2.2}
+                    dot={false}
+                    activeDot={{ r: 4, stroke: "#0b1026", strokeWidth: 2, fill: series.color }}
+                  />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>
 
       {/* Engine readiness bars */}
-      <div className="px-4 pb-4 space-y-2">
+      <div className="px-4 pb-4 space-y-1.5">
         {[
           { engine: "ChatGPT",    score: 82, color: "#34d399", logo: ENGINE_LOGOS.chatgpt    },
           { engine: "Perplexity", score: 71, color: "#22d3ee", logo: ENGINE_LOGOS.perplexity },
@@ -92,22 +174,22 @@ function DashboardMockup() {
         ].map((row) => (
           <div
             key={row.engine}
-            className="flex items-center gap-3 rounded-lg px-3 py-2"
+            className="flex items-center gap-2 rounded-lg px-2.5 py-1.5"
             style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}
           >
-            <div className="flex items-center gap-1.5 w-24 shrink-0">
+            <div className="flex items-center gap-1.5 w-20 shrink-0">
               <div className="bg-white rounded-md p-1 flex items-center justify-center shadow-sm shrink-0">
-                <img src={row.logo} alt={row.engine} className="w-3.5 h-3.5 object-contain" />
+                <img src={row.logo} alt={row.engine} className="w-3 h-3 object-contain" />
               </div>
-              <span className="text-xs font-medium truncate" style={{ color: "var(--muted)" }}>{row.engine}</span>
+              <span className="text-[11px] font-medium truncate" style={{ color: "var(--muted)" }}>{row.engine}</span>
             </div>
-            <div className="flex-1 h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.05)" }}>
+            <div className="flex-1 h-1 rounded-full" style={{ background: "rgba(255,255,255,0.05)" }}>
               <div
                 className="h-full rounded-full"
                 style={{ width: `${row.score}%`, background: row.color }}
               />
             </div>
-            <span className="text-xs font-bold w-8 text-right" style={{ color: row.color }}>
+            <span className="text-[11px] font-bold w-7 text-right" style={{ color: row.color }}>
               {row.score}
             </span>
           </div>

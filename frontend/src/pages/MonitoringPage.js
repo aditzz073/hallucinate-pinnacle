@@ -11,6 +11,7 @@ export default function MonitoringPage() {
   const [expandedPage, setExpandedPage] = useState(null);
   const [changes, setChanges] = useState({});
   const [refreshingId, setRefreshingId] = useState(null);
+  const [refreshingAll, setRefreshingAll] = useState(false);
 
   useEffect(() => { loadPages(); }, []);
   const loadPages = async () => { try { setPages(await listMonitors()); } catch {} setListLoading(false); };
@@ -30,6 +31,23 @@ export default function MonitoringPage() {
     try { await refreshMonitor(pageId); loadPages(); if (expandedPage === pageId) loadChanges(pageId); }
     catch (err) { setError(err.response?.data?.detail || "Refresh failed"); }
     setRefreshingId(null);
+  };
+
+  const handleRefreshAll = async () => {
+    if (!pages.length) return;
+    setError("");
+    setRefreshingAll(true);
+
+    const results = await Promise.allSettled(pages.map((page) => refreshMonitor(page.id)));
+    const failedCount = results.filter((r) => r.status === "rejected").length;
+
+    await loadPages();
+    if (expandedPage) loadChanges(expandedPage);
+
+    if (failedCount > 0) {
+      setError(`Refresh completed with ${failedCount} failure${failedCount === 1 ? "" : "s"}.`);
+    }
+    setRefreshingAll(false);
   };
 
   const handleDelete = async (pageId) => {
@@ -58,6 +76,16 @@ export default function MonitoringPage() {
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
           {loading ? "Adding..." : "Add Page"}
         </button>
+        <button
+          type="button"
+          onClick={handleRefreshAll}
+          disabled={listLoading || pages.length === 0 || refreshingAll}
+          className="h-12 px-5 rounded-xl border border-white/10 text-gray-300 hover:bg-white/5 transition-colors flex items-center gap-2 disabled:opacity-50 shrink-0"
+          data-testid="monitor-refresh-all"
+        >
+          <RefreshCw className={`w-4 h-4 ${refreshingAll ? "animate-spin" : ""}`} />
+          {refreshingAll ? "Refreshing..." : "Refresh All"}
+        </button>
       </form>
 
       {error && <div className="rounded-xl bg-red-400/10 border border-red-400/20 px-4 py-3 text-sm text-red-400" data-testid="monitor-error">{error}</div>}
@@ -78,7 +106,7 @@ export default function MonitoringPage() {
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <button onClick={() => toggleExpand(page.id)} className="flex items-center gap-1 px-3 py-1.5 text-xs rounded-lg text-gray-400 hover:bg-white/5 transition-colors" data-testid={`view-changes-${page.id}`}><Activity className="w-3 h-3" />{page.total_changes} changes</button>
-                  <button onClick={() => handleRefresh(page.id)} disabled={refreshingId === page.id} className="p-2 rounded-lg text-gray-400 hover:bg-white/5 transition-colors disabled:opacity-50" data-testid={`refresh-${page.id}`}><RefreshCw className={`w-4 h-4 ${refreshingId === page.id ? "animate-spin" : ""}`} /></button>
+                  <button onClick={() => handleRefresh(page.id)} disabled={refreshingId === page.id || refreshingAll} className="p-2 rounded-lg text-gray-400 hover:bg-white/5 transition-colors disabled:opacity-50" data-testid={`refresh-${page.id}`}><RefreshCw className={`w-4 h-4 ${refreshingId === page.id ? "animate-spin" : ""}`} /></button>
                   <button onClick={() => handleDelete(page.id)} className="p-2 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-400/5 transition-colors" data-testid={`delete-${page.id}`}><Trash2 className="w-4 h-4" /></button>
                 </div>
               </div>

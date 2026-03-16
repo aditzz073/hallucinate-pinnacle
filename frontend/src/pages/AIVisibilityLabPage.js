@@ -316,11 +316,11 @@ export default function AIVisibilityLabPage({ onSignUp }) {
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Best Engine</p>
               {engineResult.overall_stats.best_engine ? (
                 <>
-                  <p className="text-base font-semibold text-white">
-                    {engineResult.overall_stats.best_engine.name}
-                  </p>
-                  <p className="text-3xl font-bold mt-1" style={{ color: getScoreColor(engineResult.overall_stats.best_engine.score) }}>
+                  <p className="text-4xl font-bold" style={{ color: getScoreColor(engineResult.overall_stats.best_engine.score) }}>
                     {engineResult.overall_stats.best_engine.score}
+                  </p>
+                  <p className="text-base font-semibold text-white mt-1">
+                    {engineResult.overall_stats.best_engine.name}
                   </p>
                 </>
               ) : (
@@ -531,11 +531,11 @@ export default function AIVisibilityLabPage({ onSignUp }) {
                   <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Best Engine</p>
                   {engineResult.overall_stats.best_engine ? (
                     <>
-                      <p className="text-base font-semibold text-white mt-0.5">
-                        {engineResult.overall_stats.best_engine.name}
-                      </p>
-                      <p className="text-3xl font-bold mt-1" style={{ color: getScoreColor(engineResult.overall_stats.best_engine.score) }}>
+                      <p className="text-4xl font-bold" style={{ color: getScoreColor(engineResult.overall_stats.best_engine.score) }}>
                         {engineResult.overall_stats.best_engine.score}
+                      </p>
+                      <p className="text-base font-semibold text-white mt-1">
+                        {engineResult.overall_stats.best_engine.name}
                       </p>
                     </>
                   ) : <p className="text-gray-600">,</p>}
