@@ -25,6 +25,36 @@ const TABS = [
   { id: "competitors", label: "Competitors", icon: Users },
 ];
 
+const toTitleCase = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .replace(/\b\w/g, (ch) => ch.toUpperCase());
+
+const deriveBrandFromUrl = (rawUrl) => {
+  if (!rawUrl) return "Unknown";
+  try {
+    const normalized = /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
+    const hostname = new URL(normalized).hostname.replace(/^www\./i, "");
+    const root = hostname.split(".")[0] || hostname;
+    return toTitleCase(root.replace(/[-_]+/g, " "));
+  } catch {
+    return "Unknown";
+  }
+};
+
+const getRecordBrand = (record) => {
+  const explicitBrand =
+    record?.brand ||
+    record?.brand_name ||
+    record?.brandName ||
+    record?.domain_brand;
+
+  if (explicitBrand && String(explicitBrand).trim()) {
+    return String(explicitBrand).trim();
+  }
+  return deriveBrandFromUrl(record?.url);
+};
+
 export default function ReportsPage() {
   const [tab, setTab] = useState("overview");
   const [overview, setOverview] = useState(null);
@@ -134,10 +164,17 @@ function OverviewTab({ data }) {
             <p className="px-5 py-4 text-xs" style={{ color: "var(--muted)" }}>No audits yet.</p>
           ) : (
             <table className="data-table w-full">
-              <thead><tr><th>URL</th><th className="text-right">Score</th></tr></thead>
+              <thead>
+                <tr>
+                  <th>Brand</th>
+                  <th>URL</th>
+                  <th className="text-right">Score</th>
+                </tr>
+              </thead>
               <tbody>
                 {data.recent_audits?.map((a, i) => (
                   <tr key={i}>
+                    <td className="text-xs" style={{ color: "var(--muted)" }}>{getRecordBrand(a)}</td>
                     <td className="truncate max-w-[200px] font-mono text-xs" style={{ color: "var(--muted-foreground)" }}>{a.url}</td>
                     <td className="text-right font-bold" style={{ color: getScoreColor(a.overall_score) }}>{a.overall_score}</td>
                   </tr>
@@ -155,12 +192,23 @@ function OverviewTab({ data }) {
             <p className="px-5 py-4 text-xs" style={{ color: "var(--muted)" }}>No tests yet.</p>
           ) : (
             <table className="data-table w-full">
-              <thead><tr><th>URL</th><th className="text-right">Citation</th></tr></thead>
+              <thead>
+                <tr>
+                  <th>Brand</th>
+                  <th>URL</th>
+                  <th className="text-right">Citation</th>
+                  <th className="text-right">GEO</th>
+                </tr>
+              </thead>
               <tbody>
                 {data.recent_ai_tests?.map((t, i) => (
                   <tr key={i}>
+                    <td className="text-xs" style={{ color: "var(--muted)" }}>{getRecordBrand(t)}</td>
                     <td className="truncate max-w-[200px] font-mono text-xs" style={{ color: "var(--muted-foreground)" }}>{t.url}</td>
                     <td className="text-right font-bold" style={{ color: getScoreColor(t.citation_probability) }}>{t.citation_probability}%</td>
+                    <td className="text-right font-bold" style={{ color: getScoreColor(t.geo_score) }}>
+                      {t.geo_score !== undefined ? `${t.geo_score}%` : "-"}
+                    </td>
                   </tr>
                 ))}
               </tbody>

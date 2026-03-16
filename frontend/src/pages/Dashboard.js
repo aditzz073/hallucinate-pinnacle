@@ -355,16 +355,16 @@ export default function Dashboard({ onNavigate }) {
               <table className="data-table w-full">
                 <thead>
                   <tr>
-                    <th>URL</th>
                     <th>Brand</th>
+                    <th>URL</th>
                     <th className="text-right">Score</th>
                   </tr>
                 </thead>
                 <tbody>
                   {overview.recent_audits?.slice(0, 4).map((a, i) => (
                     <tr key={i}>
-                      <td className="max-w-[170px] truncate font-mono text-xs" style={{ color: "var(--muted-foreground)" }}>{a.url}</td>
                       <td className="text-xs" style={{ color: "var(--muted)" }}>{getRecordBrand(a)}</td>
+                      <td className="max-w-[170px] truncate font-mono text-xs" style={{ color: "var(--muted-foreground)" }}>{a.url}</td>
                       <td className="text-right font-bold text-sm" style={{ color: getScoreColor(a.overall_score) }}>{a.overall_score}</td>
                     </tr>
                   ))}
@@ -391,8 +391,8 @@ export default function Dashboard({ onNavigate }) {
               <table className="data-table w-full">
                 <thead>
                   <tr>
-                    <th>URL</th>
                     <th>Brand</th>
+                    <th>URL</th>
                     <th className="text-right">Citation</th>
                     <th className="text-right">GEO</th>
                   </tr>
@@ -400,8 +400,8 @@ export default function Dashboard({ onNavigate }) {
                 <tbody>
                   {overview.recent_ai_tests?.slice(0, 4).map((t, i) => (
                     <tr key={i}>
-                      <td className="max-w-[140px] truncate font-mono text-xs" style={{ color: "var(--muted-foreground)" }}>{t.url}</td>
                       <td className="text-xs" style={{ color: "var(--muted)" }}>{getRecordBrand(t)}</td>
+                      <td className="max-w-[140px] truncate font-mono text-xs" style={{ color: "var(--muted-foreground)" }}>{t.url}</td>
                       <td className="text-right font-bold text-sm" style={{ color: getScoreColor(t.citation_probability) }}>{t.citation_probability}%</td>
                       <td className="text-right font-bold text-sm" style={{ color: getScoreColor(t.geo_score) }}>
                         {t.geo_score !== undefined ? `${t.geo_score}%` : ","}

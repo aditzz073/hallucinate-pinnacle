@@ -9,6 +9,36 @@ import GuestLimitModal from "../components/modals/GuestLimitModal";
 import LockedSection from "../components/ui/LockedSection";
 import { downloadAuditReport } from "../utils/pdfReports";
 
+const toTitleCase = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .replace(/\b\w/g, (ch) => ch.toUpperCase());
+
+const deriveBrandFromUrl = (rawUrl) => {
+  if (!rawUrl) return "Unknown";
+  try {
+    const normalized = /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
+    const hostname = new URL(normalized).hostname.replace(/^www\./i, "");
+    const root = hostname.split(".")[0] || hostname;
+    return toTitleCase(root.replace(/[-_]+/g, " "));
+  } catch {
+    return "Unknown";
+  }
+};
+
+const getRecordBrand = (record) => {
+  const explicitBrand =
+    record?.brand ||
+    record?.brand_name ||
+    record?.brandName ||
+    record?.domain_brand;
+
+  if (explicitBrand && String(explicitBrand).trim()) {
+    return String(explicitBrand).trim();
+  }
+  return deriveBrandFromUrl(record?.url);
+};
+
 export default function AuditsPage({ onSignUp }) {
   const { user } = useAuth();
   const { isGuest, remainingUses, hasReachedLimit, incrementUsage, showLimitModal, setShowLimitModal } = useGuestMode('audits');
@@ -20,6 +50,7 @@ export default function AuditsPage({ onSignUp }) {
   const [error, setError] = useState("");
   const [listLoading, setListLoading] = useState(true);
   const [downloadingReport, setDownloadingReport] = useState(false);
+  const activeAuditBrand = activeAudit ? getRecordBrand(activeAudit) : "Unknown";
 
   useEffect(() => {
     if (user) {
@@ -147,6 +178,9 @@ export default function AuditsPage({ onSignUp }) {
           <div className="flex items-start justify-between mb-6">
             <div>
               <h3 className="text-lg font-semibold text-white mb-1">Audit Results</h3>
+              <p className="text-xs mb-1" style={{ color: "#A78BFA" }}>
+                Brand: {activeAuditBrand}
+              </p>
               <a href={activeAudit.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 hover:underline flex items-center gap-1">
                 {activeAudit.url} <ExternalLink className="w-3 h-3" />
               </a>

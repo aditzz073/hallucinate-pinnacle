@@ -2,6 +2,36 @@ import React, { useState, useEffect } from "react";
 import { addMonitor, listMonitors, refreshMonitor, getPageChanges, deleteMonitor } from "../api";
 import { Eye, Plus, RefreshCw, Trash2, Loader2, ExternalLink, Activity, ArrowRight } from "lucide-react";
 
+const toTitleCase = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .replace(/\b\w/g, (ch) => ch.toUpperCase());
+
+const deriveBrandFromUrl = (rawUrl) => {
+  if (!rawUrl) return "Unknown";
+  try {
+    const normalized = /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;
+    const hostname = new URL(normalized).hostname.replace(/^www\./i, "");
+    const root = hostname.split(".")[0] || hostname;
+    return toTitleCase(root.replace(/[-_]+/g, " "));
+  } catch {
+    return "Unknown";
+  }
+};
+
+const getRecordBrand = (record) => {
+  const explicitBrand =
+    record?.brand ||
+    record?.brand_name ||
+    record?.brandName ||
+    record?.domain_brand;
+
+  if (explicitBrand && String(explicitBrand).trim()) {
+    return String(explicitBrand).trim();
+  }
+  return deriveBrandFromUrl(record?.url);
+};
+
 export default function MonitoringPage() {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -101,7 +131,7 @@ export default function MonitoringPage() {
                   <Eye className="w-4 h-4 text-brand-blue shrink-0" />
                   <div className="min-w-0">
                     <a href={page.url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-white hover:text-brand-blue flex items-center gap-1 transition-colors"><span className="truncate max-w-md">{page.url}</span><ExternalLink className="w-3 h-3 shrink-0" /></a>
-                    <p className="text-xs text-gray-500">Added: {new Date(page.created_at).toLocaleDateString()} | Last: {page.last_snapshot_at ? new Date(page.last_snapshot_at).toLocaleString() : "N/A"}</p>
+                    <p className="text-xs text-gray-500">Brand: {getRecordBrand(page)} | Added: {new Date(page.created_at).toLocaleDateString()} | Last: {page.last_snapshot_at ? new Date(page.last_snapshot_at).toLocaleString() : "N/A"}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
