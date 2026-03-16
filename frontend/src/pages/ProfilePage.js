@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { getOverview } from "../api";
-import { changePassword } from "../api";
+import { changePassword, generateApiKey } from "../api";
 import { 
   User, Mail, Shield, FileSearch, Search, 
   Clock, TrendingUp, Activity, ChevronDown,
-  LogOut, Lock, ExternalLink, Eye, EyeOff, Check, X
+  LogOut, Lock, ExternalLink, Eye, EyeOff, Check, X, Key, Copy
 } from "lucide-react";
 
 export default function ProfilePage() {
@@ -17,6 +17,31 @@ export default function ProfilePage() {
   const [pwVisibility, setPwVisibility] = useState({ current: false, next: false, confirm: false });
   const [pwStatus, setPwStatus] = useState(null); // null | "loading" | "success" | "error"
   const [pwError, setPwError] = useState("");
+  
+  const [generatingKey, setGeneratingKey] = useState(false);
+  const [generatedKey, setGeneratedKey] = useState(null);
+  const [keyCopied, setKeyCopied] = useState(false);
+
+  const handleGenerateKey = async () => {
+    setGeneratingKey(true);
+    setKeyCopied(false);
+    try {
+      const res = await generateApiKey();
+      setGeneratedKey(res.api_key);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setGeneratingKey(false);
+    }
+  };
+
+  const copyKeyToClipboard = () => {
+    if (generatedKey) {
+      navigator.clipboard.writeText(generatedKey);
+      setKeyCopied(true);
+      setTimeout(() => setKeyCopied(false), 2000);
+    }
+  };
 
   useEffect(() => {
     getOverview().then(setOverview).catch(() => {}).finally(() => setLoading(false));
@@ -218,6 +243,56 @@ export default function ProfilePage() {
                   {(pwStatus === null || pwStatus === "error") && "Update Password"}
                 </button>
               </form>
+            )}
+          </div>
+
+          {/* API Keys (For CLI) */}
+          <div className="glass-card p-6 border-indigo-500/20 hover:border-indigo-500/40 transition-all duration-300">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
+                <Key className="w-5 h-5 text-indigo-400" />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="text-sm font-semibold text-white mb-1">Pinnacle CLI Access</p>
+                <p className="text-xs text-gray-500">Generate an API key to use Pinnacle locally.</p>
+              </div>
+            </div>
+
+            {!generatedKey ? (
+              <button
+                onClick={handleGenerateKey}
+                disabled={generatingKey}
+                className="w-full py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-indigo-600 hover:bg-indigo-500 text-white"
+              >
+                {generatingKey ? (
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>Generate New API Key</>
+                )}
+              </button>
+            ) : (
+              <div className="bg-[#0B0B14] border border-indigo-500/30 rounded-lg p-3">
+                <p className="text-xs text-green-400 mb-2 flex items-center gap-1">
+                  <Check className="w-3 h-3" /> Key generated successfully! 
+                </p>
+                <p className="text-[10px] text-gray-400 mb-2 leading-relaxed">
+                  Copy this key and paste it when running <code className="text-indigo-400 bg-indigo-400/10 px-1 rounded">pinnacle auth</code> in your terminal. You will only see this key once.
+                </p>
+                <div className="flex items-center gap-2">
+                  <input 
+                    type="text" 
+                    readOnly 
+                    value={generatedKey} 
+                    className="flex-1 bg-black/50 border border-white/10 rounded px-2 py-1.5 text-xs text-gray-300 font-mono outline-none"
+                  />
+                  <button 
+                    onClick={copyKeyToClipboard}
+                    className="p-1.5 rounded bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30 transition-colors"
+                  >
+                    {keyCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
             )}
           </div>
 

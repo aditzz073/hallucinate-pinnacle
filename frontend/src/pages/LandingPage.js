@@ -945,7 +945,7 @@ function PinnacleCLISection({ onGetStarted }) {
                 }}
               >
                 <pre className="text-xs sm:text-sm leading-relaxed m-0" style={{ color: "#C4B5FD", fontFamily: "monospace" }}>
-{`npm install -g pinnacle-cli
+{`pip install pinnaclevault
 pinnacle analyze https://yoursite.com/page`}
                 </pre>
               </div>

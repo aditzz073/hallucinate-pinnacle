@@ -27,11 +27,12 @@ def verify_password(password: str, password_hash: str) -> bool:
     return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
 
 
-def create_token(user_id: str, email: str) -> str:
+def create_token(user_id: str, email: str, expiry_hours: int = None) -> str:
+    hours = expiry_hours if expiry_hours is not None else JWT_EXPIRY_HOURS
     payload = {
         "user_id": user_id,
         "email": email,
-        "exp": datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRY_HOURS),
+        "exp": datetime.now(timezone.utc) + timedelta(hours=hours),
         "iat": datetime.now(timezone.utc),
     }
     return jwt.encode(payload, JWT_SECRET, algorithm="HS256")

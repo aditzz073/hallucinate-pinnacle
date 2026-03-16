@@ -31,3 +31,6 @@ class TokenResponse(BaseModel):
 class ChangePasswordRequest(BaseModel):
     current_password: str
     new_password: str = Field(..., min_length=6)
+
+class APIKeyResponse(BaseModel):
+    api_key: str

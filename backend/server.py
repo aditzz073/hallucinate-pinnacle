@@ -22,6 +22,7 @@ from modules.monitoring.routes import router as monitor_router
 from modules.reports.routes import router as reports_router
 from modules.strategySimulator.routes import router as simulate_router
 from modules.enterprise.routes import router as enterprise_router
+from modules.cli.routes import router as cli_router
 
 load_dotenv()
 
@@ -96,6 +97,7 @@ app.include_router(monitor_router, prefix="/api")
 app.include_router(reports_router, prefix="/api")
 app.include_router(simulate_router, prefix="/api")
 app.include_router(enterprise_router, prefix="/api")
+app.include_router(cli_router, prefix="/api")
 
 
 # Health endpoint
