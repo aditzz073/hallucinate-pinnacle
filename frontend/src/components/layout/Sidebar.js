@@ -41,6 +41,12 @@ const NAV_SECTIONS = [
     ],
   },
   {
+    label: "Tools",
+    items: [
+      { id: "cli", label: "CLI Tool", icon: Microscope },
+    ],
+  },
+  {
     label: "Infrastructure",
     items: [
       { id: "monitor",  label: "Monitor Pages", icon: Eye },

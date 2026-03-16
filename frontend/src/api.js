@@ -71,8 +71,17 @@ export async function deleteMonitor(pageId) {
 // Auth endpoints
 export async function changePassword(currentPassword, newPassword) {
   const res = await axios.post(
-    `${API_URL}/auth/change-password`,
+    `${API_URL}/api/auth/change-password`,
     { current_password: currentPassword, new_password: newPassword },
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function generateApiKey() {
+  const res = await axios.post(
+    `${API_URL}/api/auth/api-key`,
+    {},
     { headers: authHeaders() }
   );
   return res.data;

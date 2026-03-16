@@ -17,6 +17,7 @@ const TOOLS_DROPDOWN = [
   { id: "monitor", label: "Monitor Pages", icon: Eye, requiresAuth: true },
   { id: "reports", label: "Reports", icon: BarChart3, requiresAuth: true },
   { id: "advanced", label: "Advanced Audit", icon: Sparkles, requiresAuth: true },
+  { id: "cli", label: "CLI Tool", icon: Microscope, requiresAuth: false },
   { id: "simulator", label: "Strategy Simulator", icon: FlaskConical, requiresAuth: true, isEnterprise: true },
 ];
 

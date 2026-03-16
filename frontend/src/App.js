@@ -13,6 +13,7 @@ import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import AuditsPage from "./pages/AuditsPage";
 import AIVisibilityLabPage from "./pages/AIVisibilityLabPage";
+import CLIPage from "./pages/CLIPage";
 import MonitoringPage from "./pages/MonitoringPage";
 import ReportsPage from "./pages/ReportsPage";
 import AdvancedAuditPage from "./pages/AdvancedAuditPage";
@@ -35,7 +36,7 @@ const TermsPage        = lazy(() => import("./pages/TermsPage"));
 const CookiePolicyPage = lazy(() => import("./pages/CookiePolicyPage"));
 
 // Pages rendered within the authenticated sidebar layout
-const APP_PAGES = ["dashboard","audits","ai-visibility-lab","monitor","reports","advanced","simulator","compare","executive","profile"];
+const APP_PAGES = ["dashboard","audits","ai-visibility-lab","cli","monitor","reports","advanced","simulator","compare","executive","profile"];
 
 // Mobile bottom nav , 5 key destinations
 const MOBILE_NAV = [
@@ -171,6 +172,7 @@ function AppContent() {
 
     if (activePage === "audits") return <AuditsPage onSignUp={() => navigateToAuth("register")} />;
     if (activePage === "ai-visibility-lab") return <AIVisibilityLabPage onSignUp={() => navigateToAuth("register")} />;
+    if (activePage === "cli") return <CLIPage onGetStarted={() => navigateToAuth("register")} />;
 
     if (activePage === "dashboard") {
       if (!user) { handleShowFeatureLocked("dashboard"); return <LandingPage onGetStarted={() => navigateToAuth("register")} />; }
