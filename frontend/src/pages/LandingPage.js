@@ -126,7 +126,7 @@ function DashboardMockup() {
 // ── 1. Hero Section ───────────────────────────────────────────────────────────
 function HeroSection({ onGetStarted, onNavigate }) {
   return (
-    <section className="relative min-h-[92vh] flex items-center">
+    <section className="relative min-h-[92vh] flex items-center pt-8 md:pt-12">
       {/* Subtle dot grid */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -744,7 +744,7 @@ function FreeAuditCTA({ onGetStarted, onNavigate }) {
 
 export default function LandingPage({ onGetStarted, onNavigate }) {
   return (
-    <div className="relative overflow-hidden" style={{ background: "var(--bg)" }} data-testid="landing-page">
+    <div className="relative overflow-hidden" style={{ background: "transparent" }} data-testid="landing-page">
 
       <HeroSection onGetStarted={onGetStarted} onNavigate={onNavigate} />
       <AIEngineGrid />

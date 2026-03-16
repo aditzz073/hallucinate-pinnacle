@@ -198,6 +198,7 @@ function AppContent() {
 
   // Authenticated app shell: sidebar + content area (no top navbar, no footer)
   const isAppPage = user && APP_PAGES.includes(activePage);
+  const isLandingPage = activePage === "landing";
 
   if (isAppPage) {
     return (
@@ -271,20 +272,31 @@ function AppContent() {
 
   // Marketing / public shell: top navbar + content + footer
   return (
-    <div className="min-h-screen text-white antialiased" style={{ background: "#08081A" }}>
-      <AppBackground />
+    <div
+      className="min-h-screen text-white antialiased"
+      style={{
+        background: isLandingPage
+          ? "radial-gradient(1200px 700px at 72% 18%, rgba(79,70,229,0.28), transparent 60%), radial-gradient(900px 620px at 22% 10%, rgba(124,58,237,0.22), transparent 65%), #070716"
+          : "#08081A",
+      }}
+    >
+      {!isLandingPage && <AppBackground />}
       <Navbar
         activePage={activePage}
         onNavigate={handlePageNavigation}
-        isLanding={activePage === "landing" && !user}
+        isLanding={isLandingPage && !user}
         onGetStarted={() => navigateToAuth(user ? "dashboard" : "login")}
         onShowFeatureLocked={handleShowFeatureLocked}
         onLogout={logout}
       />
-      <main className="relative z-10 pt-24 pb-12 px-4 lg:px-0">
-        <div className="max-w-6xl mx-auto">
-          {renderPage()}
-        </div>
+      <main className={`relative z-10 ${isLandingPage ? "pt-0 pb-0 px-0" : "pt-24 pb-12 px-4 lg:px-0"}`}>
+        {isLandingPage ? (
+          renderPage()
+        ) : (
+          <div className="max-w-6xl mx-auto">
+            {renderPage()}
+          </div>
+        )}
       </main>
       {activePage !== "landing" && <Footer onNavigate={setActivePage} />}
 
