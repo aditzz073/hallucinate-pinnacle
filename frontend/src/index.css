@@ -519,6 +519,66 @@ body {
   border: 1px solid rgba(239,68,68,0.2);
 }
 
+/* =========================
+   AUTH SHOWCASE
+   ========================= */
+
+.auth-showcase-bg {
+  background: linear-gradient(160deg, #0c0d1f 0%, #10132b 55%, #11162b 100%);
+}
+
+.auth-showcase-grid {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 64px 64px;
+  opacity: 0.2;
+}
+
+.auth-showcase-vignette {
+  background:
+    radial-gradient(circle at 15% 15%, rgba(124,58,237,0.18), transparent 40%),
+    radial-gradient(circle at 85% 30%, rgba(34,211,238,0.1), transparent 44%),
+    radial-gradient(circle at 70% 85%, rgba(79,70,229,0.14), transparent 40%);
+}
+
+.auth-graph-card {
+  position: absolute;
+  border-radius: 16px;
+  padding: 12px;
+  transform: rotate(var(--rot, 0deg));
+  background: linear-gradient(180deg, rgba(19,20,40,0.94), rgba(14,16,33,0.95));
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.36), 0 0 0 1px rgba(129,140,248,0.05);
+  animation: auth-float-card 12s ease-in-out infinite;
+}
+
+.auth-graph-path {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation: auth-path-breathe 4.8s ease-in-out infinite;
+}
+
+.auth-graph-fill {
+  animation: auth-fill-breathe 5.6s ease-in-out infinite;
+}
+
+@keyframes auth-float-card {
+  0% { transform: translateY(0px) rotate(var(--rot, 0deg)); }
+  50% { transform: translateY(-5px) rotate(var(--rot, 0deg)); }
+  100% { transform: translateY(0px) rotate(var(--rot, 0deg)); }
+}
+
+@keyframes auth-path-breathe {
+  0%, 100% { opacity: 0.78; }
+  50% { opacity: 1; }
+}
+
+@keyframes auth-fill-breathe {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.52; }
+}
+
 .status-chip-info {
   background: rgba(79,70,229,0.12);
   color: #818CF8;

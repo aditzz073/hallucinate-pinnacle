@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import Logo from "../ui/Logo";
 import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
+import AuthGraphShowcase from "./AuthGraphShowcase";
 
 export default function RegisterPage({ onSwitch, onSuccess }) {
   const { register } = useAuth();
@@ -30,63 +31,121 @@ export default function RegisterPage({ onSwitch, onSuccess }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative" style={{ background: "var(--bg)" }} data-testid="register-page">
-      <div className="w-full max-w-md px-4">
-        <div className="metric-card p-8 space-y-8" style={{ maxWidth: "440px", margin: "0 auto" }}>
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-6">
-              <Logo size="md" />
-              <span className="text-xl font-semibold text-white">Pinnacle</span>
-              <span className="text-xl font-semibold text-gray-400">.ai</span>
-            </div>
-            <h1 className="text-2xl font-thin text-white mb-1">Create your account</h1>
-            <p className="text-sm text-gray-400">Start optimizing your AI discoverability</p>
-          </div>
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2" style={{ background: "var(--bg)" }} data-testid="register-page">
+      <div className="relative flex items-center justify-center px-6 py-10">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "radial-gradient(circle at 25% 15%, rgba(124,58,237,0.12), transparent 45%), radial-gradient(circle at 75% 85%, rgba(79,70,229,0.08), transparent 50%)",
+          }}
+        />
 
-          <form onSubmit={handleSubmit} className="space-y-5" data-testid="register-form">
-            {error && (
-              <div className="rounded-xl bg-red-400/10 border border-red-400/20 px-4 py-3 text-sm text-red-400" data-testid="register-error">{error}</div>
-            )}
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-gray-400">Nickname <span className="text-gray-600">(optional)</span></label>
-              <input 
-                data-testid="register-nickname-input" 
-                type="text" 
-                value={nickname} 
-                onChange={(e) => setNickname(e.target.value)} 
-                className="glass-input w-full h-12 px-4 text-sm" 
-                placeholder="How should we call you?" 
+        <div className="w-full max-w-[520px]">
+          <div
+            className="rounded-[30px] border px-8 py-9 sm:px-10 sm:py-10"
+            style={{
+              background: "linear-gradient(180deg, rgba(17,18,35,0.9) 0%, rgba(12,13,28,0.95) 100%)",
+              borderColor: "rgba(255,255,255,0.1)",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.45)",
+            }}
+          >
+            <div className="text-center mb-8">
+              <div className="flex items-center justify-center mb-5">
+                <Logo size="md" />
+              </div>
+              <h1 className="text-5xl font-bold leading-tight mb-2" style={{ color: "#F3F4FF", letterSpacing: "-0.02em" }}>Create your free account</h1>
+              <p className="text-base" style={{ color: "#9EA3C6" }}>
+                Start optimizing AI visibility with Pinnacle.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              className="w-full h-12 rounded-full border flex items-center justify-center gap-3 text-base font-medium mb-7"
+              style={{ borderColor: "rgba(255,255,255,0.15)", color: "#F3F4FF", background: "rgba(255,255,255,0.02)" }}
+            >
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white text-black text-sm font-bold">G</span>
+              Continue with Google
+            </button>
+
+            <div className="flex items-center gap-4 mb-7">
+              <div className="h-px flex-1" style={{ background: "rgba(255,255,255,0.12)" }} />
+              <span className="text-sm" style={{ color: "#9EA3C6" }}>or</span>
+              <div className="h-px flex-1" style={{ background: "rgba(255,255,255,0.12)" }} />
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4" data-testid="register-form">
+              {error && (
+                <div className="rounded-xl bg-red-400/10 border border-red-400/20 px-4 py-3 text-sm text-red-400" data-testid="register-error">{error}</div>
+              )}
+
+              <input
+                data-testid="register-nickname-input"
+                type="text"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                className="w-full h-12 rounded-2xl px-4 text-base"
+                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.2)", color: "#F3F4FF" }}
+                placeholder="Nickname (optional)"
                 maxLength={50}
               />
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-gray-400">Email</label>
-              <input data-testid="register-email-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="glass-input w-full h-12 px-4 text-sm" placeholder="you@company.com" required />
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-gray-400">Password</label>
+
+              <input
+                data-testid="register-email-input"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full h-12 rounded-2xl px-4 text-base"
+                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.2)", color: "#F3F4FF" }}
+                placeholder="Enter email address"
+                required
+              />
+
               <div className="relative">
-                <input data-testid="register-password-input" type={showPw ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} className="glass-input w-full h-12 px-4 pr-12 text-sm" placeholder="Min 6 characters" required />
+                <input
+                  data-testid="register-password-input"
+                  type={showPw ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full h-12 rounded-2xl px-4 pr-12 text-base"
+                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.2)", color: "#F3F4FF" }}
+                  placeholder="Create password"
+                  required
+                />
                 <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors" data-testid="register-toggle-password">
                   {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-gray-400">Confirm Password</label>
-              <input data-testid="register-confirm-password-input" type="password" value={confirmPw} onChange={(e) => setConfirmPw(e.target.value)} className="glass-input w-full h-12 px-4 text-sm" placeholder="Re-enter password" required />
-            </div>
-            <button data-testid="register-submit-button" type="submit" disabled={loading} className="w-full h-12 rounded-full bg-white text-black font-medium flex items-center justify-center gap-2 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
-              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Create Account <ArrowRight className="w-4 h-4" /></>}
-            </button>
-          </form>
 
-          <p className="text-sm text-gray-500 text-center">
-            Already have an account?{" "}
-            <button data-testid="register-switch-to-login" onClick={onSwitch} className="font-medium transition-opacity hover:opacity-70" style={{ color: "#818CF8" }}>Sign in</button>
-          </p>
+              <input
+                data-testid="register-confirm-password-input"
+                type="password"
+                value={confirmPw}
+                onChange={(e) => setConfirmPw(e.target.value)}
+                className="w-full h-12 rounded-2xl px-4 text-base"
+                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.2)", color: "#F3F4FF" }}
+                placeholder="Confirm password"
+                required
+              />
+
+              <button data-testid="register-submit-button" type="submit" disabled={loading} className="w-full h-12 rounded-full bg-white text-black font-semibold flex items-center justify-center gap-2 hover:scale-[1.01] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Create Account <ArrowRight className="w-4 h-4" /></>}
+              </button>
+            </form>
+
+            <p className="text-xs text-center mt-6" style={{ color: "#8A90B0" }}>
+              By continuing, you agree to Pinnacle's Terms of Service and Privacy Policy.
+            </p>
+
+            <p className="text-sm text-center mt-8" style={{ color: "#9EA3C6" }}>
+              Already have an account?{" "}
+              <button data-testid="register-switch-to-login" onClick={onSwitch} className="font-medium transition-opacity hover:opacity-70" style={{ color: "#A5B4FC" }}>Sign in</button>
+            </p>
+          </div>
         </div>
       </div>
+
+      <AuthGraphShowcase />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import Logo from "../ui/Logo";
 import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
+import AuthGraphShowcase from "./AuthGraphShowcase";
 
 export default function LoginPage({ onSwitch, onSuccess }) {
   const { login } = useAuth();
@@ -26,49 +27,74 @@ export default function LoginPage({ onSwitch, onSuccess }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative" style={{ background: "var(--bg)" }} data-testid="login-page">
-      <div className="w-full max-w-md px-4">
-        <div className="metric-card p-8 space-y-8" style={{ maxWidth: "440px", margin: "0 auto" }}>
-          <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-6">
-              <Logo size="md" />
-              <span className="text-xl font-semibold text-white">Pinnacle</span>
-              <span className="text-xl font-semibold text-gray-400">.ai</span>
-            </div>
-            <h1 className="text-2xl font-thin text-white mb-1">Welcome back</h1>
-            <p className="text-sm text-gray-400">Sign in to your dashboard</p>
-          </div>
+    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2" style={{ background: "var(--bg)" }} data-testid="login-page">
+      <div className="relative flex items-center justify-center px-6 py-10">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "radial-gradient(circle at 20% 10%, rgba(124,58,237,0.12), transparent 45%), radial-gradient(circle at 60% 70%, rgba(79,70,229,0.08), transparent 50%)",
+          }}
+        />
 
-          <form onSubmit={handleSubmit} className="space-y-5" data-testid="login-form">
-            {error && (
-              <div className="rounded-xl bg-red-400/10 border border-red-400/20 px-4 py-3 text-sm text-red-400" data-testid="login-error">
-                {error}
+        <div className="w-full max-w-[520px]">
+          <div
+            className="rounded-[30px] border px-8 py-9 sm:px-10 sm:py-10"
+            style={{
+              background: "linear-gradient(180deg, rgba(17,18,35,0.9) 0%, rgba(12,13,28,0.95) 100%)",
+              borderColor: "rgba(255,255,255,0.1)",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.45)",
+            }}
+          >
+            <div className="text-center mb-8">
+              <div className="flex items-center justify-center mb-5">
+                <Logo size="md" />
               </div>
-            )}
+              <h1 className="text-5xl font-bold leading-tight mb-2" style={{ color: "#F3F4FF", letterSpacing: "-0.02em" }}>Welcome back</h1>
+              <p className="text-base" style={{ color: "#9EA3C6" }}>Sign in to your Pinnacle dashboard</p>
+            </div>
 
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-gray-400">Email</label>
+            <button
+              type="button"
+              className="w-full h-12 rounded-full border flex items-center justify-center gap-3 text-base font-medium mb-7"
+              style={{ borderColor: "rgba(255,255,255,0.15)", color: "#F3F4FF", background: "rgba(255,255,255,0.02)" }}
+            >
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white text-black text-sm font-bold">G</span>
+              Continue with Google
+            </button>
+
+            <div className="flex items-center gap-4 mb-7">
+              <div className="h-px flex-1" style={{ background: "rgba(255,255,255,0.12)" }} />
+              <span className="text-sm" style={{ color: "#9EA3C6" }}>or</span>
+              <div className="h-px flex-1" style={{ background: "rgba(255,255,255,0.12)" }} />
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-5" data-testid="login-form">
+              {error && (
+                <div className="rounded-xl bg-red-400/10 border border-red-400/20 px-4 py-3 text-sm text-red-400" data-testid="login-error">
+                  {error}
+                </div>
+              )}
+
               <input
                 data-testid="login-email-input"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="glass-input w-full h-12 px-4 text-sm"
-                placeholder="you@company.com"
+                className="w-full h-12 rounded-2xl px-4 text-base"
+                style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.2)", color: "#F3F4FF" }}
+                placeholder="Enter email address"
                 required
               />
-            </div>
 
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-gray-400">Password</label>
               <div className="relative">
                 <input
                   data-testid="login-password-input"
                   type={showPw ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="glass-input w-full h-12 px-4 pr-12 text-sm"
-                  placeholder="Enter your password"
+                  className="w-full h-12 rounded-2xl px-4 pr-12 text-base"
+                  style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.2)", color: "#F3F4FF" }}
+                  placeholder="Enter password"
                   required
                 />
                 <button
@@ -80,34 +106,37 @@ export default function LoginPage({ onSwitch, onSuccess }) {
                   {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-            </div>
 
-            <button
-              data-testid="login-submit-button"
-              type="submit"
-              disabled={loading}
-              className="btn-primary w-full h-12 rounded-lg font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <>Sign In <ArrowRight className="w-4 h-4" /></>
-              )}
-            </button>
-          </form>
+              <button
+                data-testid="login-submit-button"
+                type="submit"
+                disabled={loading}
+                className="w-full h-12 rounded-full bg-white text-black font-semibold flex items-center justify-center gap-2 hover:scale-[1.01] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Sign In <ArrowRight className="w-4 h-4" /></>}
+              </button>
+            </form>
 
-          <p className="text-sm text-gray-500 text-center">
-            Don't have an account?{" "}
-            <button
-              data-testid="login-switch-to-register"
-              onClick={onSwitch}
-              className="font-medium transition-opacity hover:opacity-70" style={{ color: "#818CF8" }}
-            >
-              Create one
-            </button>
-          </p>
+            <p className="text-xs text-center mt-6" style={{ color: "#8A90B0" }}>
+              By continuing, you agree to Pinnacle's Terms of Service and Privacy Policy.
+            </p>
+
+            <p className="text-sm text-center mt-8" style={{ color: "#9EA3C6" }}>
+              Don't have an account?{" "}
+              <button
+                data-testid="login-switch-to-register"
+                onClick={onSwitch}
+                className="font-medium transition-opacity hover:opacity-70"
+                style={{ color: "#A5B4FC" }}
+              >
+                Create one
+              </button>
+            </p>
+          </div>
         </div>
       </div>
+
+      <AuthGraphShowcase />
     </div>
   );
 }
