@@ -5,13 +5,14 @@ import {
   Search, ExternalLink, Loader2, AlertTriangle, Lightbulb,
   Sparkles, Brain, FileText, Building2, ChevronDown, ChevronUp,
   Target, Zap, Award, Lock, CheckCircle, XCircle, Info,
-  Globe, Microscope,
+  Globe, Microscope, Download,
 } from "lucide-react";
 import { useGuestMode } from "../hooks/useGuestMode";
 import GuestBanner from "../components/ui/GuestBanner";
 import GuestLimitModal from "../components/modals/GuestLimitModal";
 import LockedSection from "../components/ui/LockedSection";
 import ENGINE_LOGOS from "../utils/engineLogos";
+import { downloadAIVisibilityLabReport } from "../utils/pdfReports";
 
 const ENGINE_ICONS = {
   chatgpt:    Brain,
@@ -132,6 +133,7 @@ export default function AIVisibilityLabPage({ onSignUp }) {
   const [activeTab, setActiveTab]           = useState("citation");
   const [showGeoDetails, setShowGeoDetails] = useState(false);
   const [expandedEngines, setExpandedEngines] = useState({});
+  const [downloadingReport, setDownloadingReport] = useState(false);
 
   const toggleExpand = (id) =>
     setExpandedEngines((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -175,6 +177,24 @@ export default function AIVisibilityLabPage({ onSignUp }) {
   };
 
   const hasResults = citationResult && engineResult;
+
+  const handleDownloadReport = () => {
+    if (!citationResult || !engineResult) return;
+
+    setDownloadingReport(true);
+    try {
+      downloadAIVisibilityLabReport({
+        query,
+        url,
+        visibilityScore,
+        citationResult,
+        engineResult,
+      });
+    } catch {
+      setError("Failed to generate PDF report. Please try again.");
+    }
+    setDownloadingReport(false);
+  };
 
   return (
     <div className="space-y-8" data-testid="ai-visibility-lab-page">
@@ -232,20 +252,32 @@ export default function AIVisibilityLabPage({ onSignUp }) {
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary h-12 px-8 rounded-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading
-                ? <Loader2 className="w-4 h-4 animate-spin" />
-                : <Microscope className="w-4 h-4" />}
-              {loading
-                ? "Analyzing..."
-                : isGuest && hasReachedLimit
-                  ? "Sign In to Continue"
-                  : "Run Analysis"}
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-primary h-12 px-8 rounded-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading
+                  ? <Loader2 className="w-4 h-4 animate-spin" />
+                  : <Microscope className="w-4 h-4" />}
+                {loading
+                  ? "Analyzing..."
+                  : isGuest && hasReachedLimit
+                    ? "Sign In to Continue"
+                    : "Run Analysis"}
+              </button>
+              <button
+                type="button"
+                onClick={handleDownloadReport}
+                disabled={!hasResults || downloadingReport}
+                className="btn-secondary h-12 px-5 rounded-xl flex items-center gap-2 disabled:opacity-50"
+                data-testid="ai-visibility-download-pdf"
+              >
+                <Download className="w-4 h-4" />
+                {downloadingReport ? "Generating PDF..." : "Download PDF Report"}
+              </button>
+            </div>
             {isGuest && hasReachedLimit && (
               <p className="text-sm text-amber-400 flex items-center gap-2">
                 <Lock className="w-4 h-4" />

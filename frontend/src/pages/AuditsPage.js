@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { runAudit, listAudits } from "../api";
 import { getScoreColor } from "../components/ui/ScoreRing";
-import { FileSearch, Loader2, ExternalLink, AlertTriangle, Lock } from "lucide-react";
+import { FileSearch, Loader2, ExternalLink, AlertTriangle, Lock, Download } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useGuestMode } from "../hooks/useGuestMode";
 import GuestBanner from "../components/ui/GuestBanner";
 import GuestLimitModal from "../components/modals/GuestLimitModal";
 import LockedSection from "../components/ui/LockedSection";
+import { downloadAuditReport } from "../utils/pdfReports";
 
 export default function AuditsPage({ onSignUp }) {
   const { user } = useAuth();
@@ -18,6 +19,7 @@ export default function AuditsPage({ onSignUp }) {
   const [activeAudit, setActiveAudit] = useState(null);
   const [error, setError] = useState("");
   const [listLoading, setListLoading] = useState(true);
+  const [downloadingReport, setDownloadingReport] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -59,6 +61,18 @@ export default function AuditsPage({ onSignUp }) {
     setLoading(false);
   };
 
+  const handleDownloadReport = () => {
+    if (!activeAudit) return;
+
+    setDownloadingReport(true);
+    try {
+      downloadAuditReport({ result: activeAudit });
+    } catch {
+      setError("Failed to generate PDF report. Please try again.");
+    }
+    setDownloadingReport(false);
+  };
+
   return (
     <div className="space-y-8" data-testid="audits-page">
       {/* Page Header */}
@@ -92,6 +106,16 @@ export default function AuditsPage({ onSignUp }) {
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileSearch className="w-4 h-4" />}
             {loading ? "Auditing..." : (isGuest && hasReachedLimit ? "Sign In to Continue" : "Run Audit")}
+          </button>
+          <button
+            type="button"
+            onClick={handleDownloadReport}
+            disabled={!activeAudit || downloadingReport}
+            className="btn-secondary h-12 px-5 rounded-xl flex items-center gap-2 disabled:opacity-50"
+            data-testid="audit-download-pdf"
+          >
+            <Download className="w-4 h-4" />
+            {downloadingReport ? "Generating PDF..." : "Download PDF Report"}
           </button>
         </form>
         {isGuest && hasReachedLimit && (

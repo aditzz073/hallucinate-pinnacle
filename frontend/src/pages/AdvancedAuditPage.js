@@ -2,13 +2,15 @@ import React, { useState } from "react";
 import { runAdvancedAudit } from "../api";
 import { getScoreColor } from "../components/ui/ScoreRing";
 import SeverityBadge from "../components/ui/Badges";
-import { Sparkles, ExternalLink, ChevronDown, ChevronUp, Loader2, Shield, Info } from "lucide-react";
+import { Sparkles, ExternalLink, ChevronDown, ChevronUp, Loader2, Shield, Info, Download } from "lucide-react";
+import { downloadAdvancedAuditReport } from "../utils/pdfReports";
 
 export default function AdvancedAuditPage() {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
+  const [downloadingReport, setDownloadingReport] = useState(false);
 
   const handleAudit = async (e) => {
     e.preventDefault();
@@ -22,6 +24,18 @@ export default function AdvancedAuditPage() {
       setError(err.response?.data?.detail || "Advanced audit failed");
     }
     setLoading(false);
+  };
+
+  const handleDownloadReport = () => {
+    if (!result) return;
+
+    setDownloadingReport(true);
+    try {
+      downloadAdvancedAuditReport({ result });
+    } catch {
+      setError("Failed to generate PDF report. Please try again.");
+    }
+    setDownloadingReport(false);
   };
 
   return (
@@ -49,6 +63,16 @@ export default function AdvancedAuditPage() {
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
           {loading ? "Analyzing..." : "Deep Audit"}
+        </button>
+        <button
+          type="button"
+          onClick={handleDownloadReport}
+          disabled={!result || downloadingReport}
+          className="btn-secondary h-12 px-5 rounded-xl flex items-center gap-2 disabled:opacity-50 shrink-0"
+          data-testid="advanced-audit-download-pdf"
+        >
+          <Download className="w-4 h-4" />
+          {downloadingReport ? "Generating PDF..." : "Download PDF Report"}
         </button>
       </form>
 

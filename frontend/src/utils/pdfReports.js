@@ -1,0 +1,774 @@
+import { jsPDF } from "jspdf";
+
+const COLORS = {
+  primary: [79, 70, 229],
+  primarySoft: [238, 236, 255],
+  accent: [124, 58, 237],
+  text: [20, 23, 28],
+  muted: [94, 104, 120],
+  border: [224, 229, 240],
+  surface: [248, 250, 255],
+  white: [255, 255, 255],
+  good: [16, 185, 129],
+  warn: [245, 158, 11],
+  bad: [239, 68, 68],
+};
+
+const PAGE = {
+  width: 210,
+  height: 297,
+  marginX: 14,
+  headerBandHeight: 28,
+  contentTop: 36,
+  contentBottom: 276,
+  footerY: 286,
+};
+
+const TYPO = {
+  title: 17,
+  section: 11.5,
+  body: 9.5,
+  small: 8.3,
+  metric: 18,
+};
+
+let logoDataUrlPromise = null;
+
+function rgbText(doc, color) {
+  doc.setTextColor(color[0], color[1], color[2]);
+}
+
+function rgbFill(doc, color) {
+  doc.setFillColor(color[0], color[1], color[2]);
+}
+
+function rgbDraw(doc, color) {
+  doc.setDrawColor(color[0], color[1], color[2]);
+}
+
+function safeText(value) {
+  return String(value ?? "N/A");
+}
+
+function hardWrap(text, tokenMax = 24) {
+  return safeText(text)
+    .split(/\s+/)
+    .map((token) => {
+      if (token.length <= tokenMax) return token;
+      const chunks = token.match(new RegExp(`.{1,${tokenMax}}`, "g")) || [token];
+      return chunks.join(" ");
+    })
+    .join(" ");
+}
+
+function splitLines(doc, text, width, size = TYPO.body, style = "normal") {
+  doc.setFont("helvetica", style);
+  doc.setFontSize(size);
+  return doc.splitTextToSize(hardWrap(text), width);
+}
+
+function scoreBand(score) {
+  const n = Number(score || 0);
+  if (n >= 80) return { label: "Strong Visibility", color: COLORS.good };
+  if (n >= 60) return { label: "Moderate Visibility", color: COLORS.warn };
+  if (n >= 40) return { label: "Building Visibility", color: COLORS.warn };
+  return { label: "Low Visibility", color: COLORS.bad };
+}
+
+function safeNumber(value) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : null;
+}
+
+function formatPercent(value) {
+  const n = safeNumber(value);
+  return n === null ? "N/A" : `${Math.round(n)}%`;
+}
+
+function formatScore(value) {
+  const n = safeNumber(value);
+  return n === null ? "N/A" : `${Math.round(n)}`;
+}
+
+function uniqueItems(items, limit = 10) {
+  return Array.from(new Set((items || []).filter(Boolean))).slice(0, limit);
+}
+
+function convertToBlackWhiteDataUrl(blob) {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        URL.revokeObjectURL(url);
+        resolve(null);
+        return;
+      }
+
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const { data } = imageData;
+
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const lum = (0.2126 * r) + (0.7152 * g) + (0.0722 * b);
+        const bw = lum > 145 ? 255 : 0;
+        data[i] = bw;
+        data[i + 1] = bw;
+        data[i + 2] = bw;
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+      const bwDataUrl = canvas.toDataURL("image/png");
+      URL.revokeObjectURL(url);
+      resolve(bwDataUrl);
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(null);
+    };
+
+    img.src = url;
+  });
+}
+
+async function getLogoDataUrl() {
+  if (!logoDataUrlPromise) {
+    logoDataUrlPromise = fetch("/logo.png")
+      .then((res) => (res.ok ? res.blob() : null))
+      .then((blob) => (blob ? convertToBlackWhiteDataUrl(blob) : null))
+      .then((bw) => (bw ? bw : null))
+      .catch(() => null);
+  }
+  return logoDataUrlPromise;
+}
+
+function drawHeader(state) {
+  const { doc, meta, logoData } = state;
+
+  rgbFill(doc, COLORS.surface);
+  doc.rect(0, 0, PAGE.width, PAGE.headerBandHeight, "F");
+  rgbDraw(doc, COLORS.border);
+  doc.line(PAGE.marginX, PAGE.headerBandHeight, PAGE.width - PAGE.marginX, PAGE.headerBandHeight);
+
+  rgbFill(doc, COLORS.white);
+  rgbDraw(doc, COLORS.border);
+  doc.roundedRect(PAGE.marginX, 8.5, 62, 12, 2, 2, "FD");
+  if (logoData) {
+    doc.addImage(logoData, "PNG", PAGE.marginX + 2, 10.2, 17, 8, undefined, "FAST");
+  } else {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8.8);
+    rgbText(doc, COLORS.text);
+    doc.text("PI", PAGE.marginX + 10.5, 15.2, { align: "center" });
+  }
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10.2);
+  rgbText(doc, COLORS.text);
+  doc.text("Pinnacle AI", PAGE.marginX + 22, 15.2);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7.7);
+  rgbText(doc, COLORS.muted);
+  doc.text("pinnacle.ai", PAGE.marginX + 22, 19);
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(TYPO.title);
+  rgbText(doc, COLORS.text);
+  doc.text(meta.reportTitle, PAGE.width - PAGE.marginX, 13.2, { align: "right" });
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(TYPO.small);
+  rgbText(doc, COLORS.muted);
+  doc.text("Generated by Pinnacle", PAGE.width - PAGE.marginX, 18.2, { align: "right" });
+  doc.text(`Date: ${meta.generatedAt}`, PAGE.width - PAGE.marginX, 22.2, { align: "right" });
+}
+
+function drawFooter(state) {
+  const { doc, page } = state;
+  rgbDraw(doc, COLORS.border);
+  doc.line(PAGE.marginX, PAGE.footerY, PAGE.width - PAGE.marginX, PAGE.footerY);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(TYPO.small);
+  rgbText(doc, COLORS.muted);
+  doc.text("Pinnacle AI Visibility Platform", PAGE.marginX, PAGE.footerY + 5.5);
+  doc.text(`Generated by pinnacle.ai | Page ${page}`, PAGE.width - PAGE.marginX, PAGE.footerY + 5.5, { align: "right" });
+}
+
+async function createState(reportTitle, analyzedUrl) {
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const state = {
+    doc,
+    y: PAGE.contentTop,
+    page: 1,
+    sectionCount: 0,
+    logoData: await getLogoDataUrl(),
+    meta: {
+      reportTitle,
+      analyzedUrl: safeText(analyzedUrl),
+      generatedAt: new Date().toLocaleString(),
+    },
+  };
+
+  drawHeader(state);
+  drawFooter(state);
+  return state;
+}
+
+function addPage(state) {
+  state.doc.addPage();
+  state.page += 1;
+  state.y = PAGE.contentTop;
+  drawHeader(state);
+  drawFooter(state);
+}
+
+function ensureSpace(state, needed = 8) {
+  if (state.y + needed > PAGE.contentBottom) addPage(state);
+}
+
+function beginSection(state, title) {
+  if (state.sectionCount > 0) state.y += 8;
+  ensureSpace(state, 12);
+
+  state.doc.setFont("helvetica", "bold");
+  state.doc.setFontSize(TYPO.section);
+  rgbText(state.doc, COLORS.primary);
+  state.doc.text(String(title).toUpperCase(), PAGE.marginX, state.y);
+  state.y += 2.8;
+
+  rgbDraw(state.doc, COLORS.border);
+  state.doc.line(PAGE.marginX, state.y, PAGE.width - PAGE.marginX, state.y);
+  state.y += 6;
+  state.sectionCount += 1;
+}
+
+function drawExecutiveSummary(state, { url, overallScore, issues, queryContext }) {
+  beginSection(state, "Executive Summary");
+
+  const issueLines = (issues || []).length
+    ? (issues || []).slice(0, 3).flatMap((item) => splitLines(state.doc, `- ${item}`, 112, TYPO.body, "normal"))
+    : ["- No high-severity issues detected."];
+  const urlLines = splitLines(state.doc, url || "N/A", 112, TYPO.body, "normal");
+  const queryLines = queryContext
+    ? splitLines(state.doc, queryContext, 112, TYPO.body, "normal")
+    : [];
+
+  const leftContentHeight =
+    (6.2 + (urlLines.length * 4.2)) +
+    (queryLines.length ? (7 + (queryLines.length * 4.2)) : 0) +
+    (7 + (issueLines.length * 4.2));
+  const boxHeight = Math.max(52, 12 + leftContentHeight);
+  ensureSpace(state, boxHeight + 4);
+
+  rgbFill(state.doc, COLORS.primarySoft);
+  rgbDraw(state.doc, [214, 209, 255]);
+  state.doc.roundedRect(PAGE.marginX, state.y, 182, boxHeight, 2, 2, "FD");
+
+  const leftX = PAGE.marginX + 4;
+  const scoreX = PAGE.marginX + 132;
+  const scoreW = 46;
+
+  state.doc.setFont("helvetica", "bold");
+  state.doc.setFontSize(TYPO.small);
+  rgbText(state.doc, COLORS.muted);
+  state.doc.text("URL Analyzed", leftX, state.y + 6.2);
+
+  state.doc.setFont("helvetica", "normal");
+  state.doc.setFontSize(TYPO.body);
+  rgbText(state.doc, COLORS.text);
+  let cursorY = state.y + 10.2;
+  urlLines.forEach((line) => {
+    state.doc.text(line, leftX, cursorY);
+    cursorY += 4.2;
+  });
+
+  if (queryLines.length) {
+    state.doc.setFont("helvetica", "bold");
+    state.doc.setFontSize(TYPO.small);
+    rgbText(state.doc, COLORS.muted);
+    state.doc.text("Query Context", leftX, cursorY + 3);
+
+    state.doc.setFont("helvetica", "normal");
+    state.doc.setFontSize(TYPO.body);
+    rgbText(state.doc, COLORS.text);
+    cursorY += 7;
+    queryLines.forEach((line) => {
+      state.doc.text(line, leftX, cursorY);
+      cursorY += 4.2;
+    });
+  }
+
+  state.doc.setFont("helvetica", "bold");
+  state.doc.setFontSize(TYPO.small);
+  rgbText(state.doc, COLORS.muted);
+  state.doc.text("Primary Issues", leftX, cursorY + 3);
+
+  state.doc.setFont("helvetica", "normal");
+  state.doc.setFontSize(TYPO.body);
+  rgbText(state.doc, COLORS.text);
+  let issueY = cursorY + 7;
+  issueLines.forEach((line) => {
+    state.doc.text(line, leftX, issueY);
+    issueY += 4.2;
+  });
+
+  rgbFill(state.doc, COLORS.white);
+  rgbDraw(state.doc, COLORS.border);
+  state.doc.roundedRect(scoreX, state.y + 4, scoreW, boxHeight - 8, 2, 2, "FD");
+
+  const score = Number.isFinite(Number(overallScore)) ? Math.round(Number(overallScore)) : 0;
+  const band = scoreBand(score);
+
+  state.doc.setFont("helvetica", "bold");
+  state.doc.setFontSize(TYPO.metric);
+  rgbText(state.doc, COLORS.primary);
+  state.doc.text(String(score), scoreX + scoreW / 2, state.y + 20, { align: "center" });
+
+  state.doc.setFont("helvetica", "normal");
+  state.doc.setFontSize(TYPO.small);
+  rgbText(state.doc, COLORS.muted);
+  state.doc.text("AI Visibility Score", scoreX + scoreW / 2, state.y + 26, { align: "center" });
+  state.doc.text(`${score} / 100`, scoreX + scoreW / 2, state.y + 30.5, { align: "center" });
+
+  state.doc.setFont("helvetica", "bold");
+  state.doc.setFontSize(9.4);
+  rgbText(state.doc, band.color);
+  state.doc.text(band.label, scoreX + scoreW / 2, state.y + 37, { align: "center" });
+
+  state.y += boxHeight + 4;
+}
+
+function drawMetricGrid(state, metrics) {
+  beginSection(state, "Key Metrics");
+
+  const cardW = 88;
+  const cardH = 26;
+  const gap = 6;
+
+  ensureSpace(state, 2 * cardH + gap + 2);
+
+  metrics.slice(0, 4).forEach((metric, i) => {
+    const row = Math.floor(i / 2);
+    const col = i % 2;
+    const x = PAGE.marginX + (col * (cardW + gap));
+    const y = state.y + (row * (cardH + gap));
+
+    rgbFill(state.doc, COLORS.white);
+    rgbDraw(state.doc, COLORS.border);
+    state.doc.roundedRect(x, y, cardW, cardH, 2, 2, "FD");
+
+    state.doc.setFont("helvetica", "bold");
+    state.doc.setFontSize(TYPO.small);
+    rgbText(state.doc, COLORS.muted);
+    state.doc.text(metric.label, x + 4, y + 6.2);
+
+    state.doc.setFont("helvetica", "bold");
+    state.doc.setFontSize(13.2);
+    rgbText(state.doc, COLORS.text);
+    state.doc.text(metric.value, x + 4, y + 14.6);
+
+    if (metric.note) {
+      state.doc.setFont("helvetica", "normal");
+      state.doc.setFontSize(7.8);
+      rgbText(state.doc, COLORS.muted);
+      state.doc.text(metric.note, x + 4, y + 20.1);
+    }
+  });
+
+  state.y += (2 * cardH) + gap + 2;
+}
+
+function drawTable(state, headers, rows, widths) {
+  const totalW = widths.reduce((sum, w) => sum + w, 0);
+  const headerH = 8;
+
+  ensureSpace(state, headerH + 8);
+  rgbFill(state.doc, COLORS.surface);
+  rgbDraw(state.doc, COLORS.border);
+  state.doc.rect(PAGE.marginX, state.y, totalW, headerH, "FD");
+
+  state.doc.setFont("helvetica", "bold");
+  state.doc.setFontSize(8.5);
+  rgbText(state.doc, COLORS.muted);
+
+  let hx = PAGE.marginX + 2;
+  headers.forEach((header, idx) => {
+    state.doc.text(header, hx, state.y + 5.4);
+    hx += widths[idx];
+  });
+
+  state.y += headerH;
+
+  rows.forEach((row) => {
+    const cellLines = row.map((cell, idx) => splitLines(state.doc, cell, widths[idx] - 4, 8.7, "normal"));
+    const rowLines = Math.max(...cellLines.map((lines) => lines.length), 1);
+    const rowH = Math.max(7, 3.8 + (rowLines * 3.9));
+
+    ensureSpace(state, rowH + 1);
+    rgbDraw(state.doc, COLORS.border);
+    state.doc.line(PAGE.marginX, state.y, PAGE.marginX + totalW, state.y);
+
+    state.doc.setFont("helvetica", "normal");
+    state.doc.setFontSize(8.7);
+    rgbText(state.doc, COLORS.text);
+
+    let cx = PAGE.marginX + 2;
+    cellLines.forEach((lines, idx) => {
+      let ly = state.y + 4.4;
+      lines.forEach((line) => {
+        state.doc.text(line, cx, ly);
+        ly += 3.9;
+      });
+      cx += widths[idx];
+    });
+
+    state.y += rowH;
+  });
+
+  rgbDraw(state.doc, COLORS.border);
+  state.doc.rect(PAGE.marginX, state.y - (rows.reduce((h, row) => {
+    const cellLines = row.map((cell, idx) => splitLines(state.doc, cell, widths[idx] - 4, 8.7, "normal"));
+    const rowLines = Math.max(...cellLines.map((lines) => lines.length), 1);
+    return h + Math.max(7, 3.8 + (rowLines * 3.9));
+  }, 0) + headerH), totalW, rows.reduce((h, row) => {
+    const cellLines = row.map((cell, idx) => splitLines(state.doc, cell, widths[idx] - 4, 8.7, "normal"));
+    const rowLines = Math.max(...cellLines.map((lines) => lines.length), 1);
+    return h + Math.max(7, 3.8 + (rowLines * 3.9));
+  }, 0) + headerH);
+
+  state.y += 4;
+}
+
+function drawParameterBreakdown(state, parameters) {
+  beginSection(state, "Parameter Breakdown");
+
+  const rows = parameters.map((p) => {
+    const factors = p.factors?.length ? p.factors.slice(0, 2).join("; ") : "None";
+    const penalties = p.penalties?.length ? p.penalties.slice(0, 2).join("; ") : "None";
+    const detail = `${p.explanation}\nFactors: ${factors}\nPenalties: ${penalties}`;
+    return [p.name, `${formatScore(p.score)} / 100`, detail];
+  });
+
+  drawTable(state, ["Parameter", "Score", "Details"], rows, [32, 24, 126]);
+}
+
+function drawSignalsDetected(state, positive, issues) {
+  beginSection(state, "Signals Detected");
+
+  const left = uniqueItems(positive, 10);
+  const right = uniqueItems(issues, 10);
+  const rows = Math.max(left.length, right.length, 1);
+  const tableRows = [];
+
+  for (let i = 0; i < rows; i += 1) {
+    tableRows.push([
+      left[i] ? `+ ${left[i]}` : "-",
+      right[i] ? `! ${right[i]}` : "-",
+    ]);
+  }
+
+  drawTable(state, ["Positive Signals", "Issues Detected"], tableRows, [91, 91]);
+}
+
+function drawRecommendations(state, recommendations) {
+  beginSection(state, "Recommendations");
+
+  const items = (recommendations || []).slice(0, 8);
+  if (items.length === 0) {
+    const lines = splitLines(state.doc, "No high-priority recommendations generated for this report.", 182, TYPO.body, "normal");
+    lines.forEach((line) => {
+      ensureSpace(state, 4.5);
+      state.doc.setFont("helvetica", "normal");
+      state.doc.setFontSize(TYPO.body);
+      rgbText(state.doc, COLORS.muted);
+      state.doc.text(line, PAGE.marginX, state.y);
+      state.y += 4.5;
+    });
+    return;
+  }
+
+  items.forEach((item) => {
+    const actionLines = splitLines(state.doc, item.action, 172, 8.8, "normal");
+    const whyLines = splitLines(state.doc, item.why, 172, 8.5, "normal");
+    const cardH = 14 + (actionLines.length * 4) + (whyLines.length * 3.9);
+
+    ensureSpace(state, cardH + 3);
+    rgbFill(state.doc, COLORS.white);
+    rgbDraw(state.doc, COLORS.border);
+    state.doc.roundedRect(PAGE.marginX, state.y, 182, cardH, 2, 2, "FD");
+
+    state.doc.setFont("helvetica", "bold");
+    state.doc.setFontSize(8.3);
+    rgbText(state.doc, COLORS.primary);
+    state.doc.text(`Engine: ${safeText(item.engine)}`, PAGE.marginX + 4, state.y + 5.2);
+
+    state.doc.setFont("helvetica", "bold");
+    state.doc.setFontSize(8.6);
+    rgbText(state.doc, COLORS.text);
+    state.doc.text("Recommendation", PAGE.marginX + 4, state.y + 10);
+
+    let ay = state.y + 14;
+    state.doc.setFont("helvetica", "normal");
+    state.doc.setFontSize(8.8);
+    rgbText(state.doc, COLORS.text);
+    actionLines.forEach((line) => {
+      state.doc.text(line, PAGE.marginX + 4, ay);
+      ay += 4;
+    });
+
+    state.doc.setFont("helvetica", "bold");
+    state.doc.setFontSize(8.4);
+    rgbText(state.doc, COLORS.muted);
+    state.doc.text("Why this matters", PAGE.marginX + 4, ay + 1.2);
+    ay += 5.2;
+
+    state.doc.setFont("helvetica", "normal");
+    state.doc.setFontSize(8.5);
+    rgbText(state.doc, COLORS.muted);
+    whyLines.forEach((line) => {
+      state.doc.text(line, PAGE.marginX + 4, ay);
+      ay += 3.9;
+    });
+
+    state.y += cardH + 3;
+  });
+}
+
+function categoryExplanation(name, score) {
+  const base = `${name} signal quality is ${score >= 70 ? "strong" : score >= 50 ? "moderate" : "weak"}.`;
+  if (/structure|schema/i.test(name)) return `${base} Improve machine-readable structure and heading clarity.`;
+  if (/trust/i.test(name)) return `${base} Strengthen author and organization credibility signals.`;
+  if (/media/i.test(name)) return `${base} Improve media context and semantic support around assets.`;
+  if (/technical/i.test(name)) return `${base} Maintain crawlability and index-ready technical health.`;
+  return base;
+}
+
+export async function downloadAuditReport({ result }) {
+  const breakdown = result?.breakdown || {};
+  const dimensions = Object.entries(breakdown).map(([name, score]) => ({
+    name: name.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+    score: Number(score || 0),
+    explanation: categoryExplanation(name, Number(score || 0)),
+    factors: Number(score || 0) >= 70 ? ["Current implementation performs strongly"] : [],
+    penalties: Number(score || 0) < 60 ? ["This dimension is lowering overall visibility"] : [],
+  }));
+
+  const score = Number(result?.overall_score || 0);
+  const issues = dimensions.filter((d) => d.score < 60).map((d) => `${d.name} score below target`);
+  const best = dimensions.slice().sort((a, b) => b.score - a.score)[0];
+  const avg = dimensions.length ? Math.round(dimensions.reduce((sum, d) => sum + d.score, 0) / dimensions.length) : 0;
+
+  const state = await createState("Audit Report", result?.url || "N/A");
+
+  drawExecutiveSummary(state, {
+    url: result?.url,
+    overallScore: score,
+    issues: issues.length ? issues.slice(0, 3) : ["No critical issues detected in current audit snapshot"],
+  });
+
+  drawMetricGrid(state, [
+    { label: "AI Visibility Score", value: `${formatScore(score)} / 100` },
+    { label: "Average Dimension", value: `${avg} / 100` },
+    { label: "Top Dimension", value: best ? `${best.name} (${best.score})` : "N/A" },
+    { label: "Dimensions < 60", value: `${dimensions.filter((d) => d.score < 60).length}` },
+  ]);
+
+  drawParameterBreakdown(state, dimensions);
+
+  drawSignalsDetected(
+    state,
+    dimensions.filter((d) => d.score >= 70).map((d) => `${d.name} is performing strongly`),
+    dimensions.filter((d) => d.score < 60).map((d) => `${d.name} needs optimization`) 
+  );
+
+  drawRecommendations(
+    state,
+    dimensions
+      .filter((d) => d.score < 70)
+      .map((d) => ({
+        engine: "All AI Engines",
+        action: `Improve ${d.name} from ${d.score}/100 to increase citation and retrieval confidence.`,
+        why: `AI systems evaluate ${d.name.toLowerCase()} quality when deciding whether content is reliable and extractable.`,
+      }))
+  );
+
+  state.doc.save(`audit-report-${Date.now()}.pdf`);
+}
+
+export async function downloadAdvancedAuditReport({ result }) {
+  const explainability = result?.explainability || {};
+  const parameters = Object.entries(explainability).map(([name, data]) => ({
+    name: name.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+    score: Number(data?.score || 0),
+    explanation:
+      data?.penalties?.[0]?.reason ||
+      data?.contributing_factors?.[0]?.reason ||
+      categoryExplanation(name, Number(data?.score || 0)),
+    factors: (data?.contributing_factors || []).map((f) => `${f.reason} (+${f.contribution})`).slice(0, 3),
+    penalties: (data?.penalties || []).map((p) => `${p.reason} (-${p.penalty})`).slice(0, 3),
+  }));
+
+  const historical = Array.isArray(result?.historical_intelligence) ? result.historical_intelligence : [];
+  const score = Number(result?.overall_score || 0);
+  const weakAreas = parameters.filter((p) => p.score < 60).map((p) => `${p.name} score is low (${p.score}/100)`);
+
+  const state = await createState("Advanced Audit Report", result?.url || "N/A");
+
+  drawExecutiveSummary(state, {
+    url: result?.url,
+    overallScore: score,
+    issues: uniqueItems([...weakAreas, ...historical.slice(0, 2).map((h) => h.issue)], 3),
+  });
+
+  drawMetricGrid(state, [
+    { label: "AI Visibility Score", value: `${formatScore(score)} / 100` },
+    { label: "Scoring Version", value: safeText(result?.audit_integrity?.scoring_version) },
+    { label: "Signals Evaluated", value: formatScore(result?.audit_integrity?.total_signals_evaluated) },
+    { label: "Historical Entries", value: `${historical.length}` },
+  ]);
+
+  drawParameterBreakdown(state, parameters);
+
+  drawSignalsDetected(
+    state,
+    uniqueItems(parameters.flatMap((p) => p.factors)),
+    uniqueItems(parameters.flatMap((p) => p.penalties))
+  );
+
+  drawRecommendations(
+    state,
+    parameters
+      .filter((p) => p.score < 75)
+      .map((p) => ({
+        engine: "All AI Engines",
+        action: `Increase ${p.name} quality by addressing the top penalties and reinforcing authority signals.`,
+        why: `Improving ${p.name.toLowerCase()} raises trust and answer quality in generated outputs.`,
+      }))
+  );
+
+  state.doc.save(`advanced-audit-report-${Date.now()}.pdf`);
+}
+
+export async function downloadAIVisibilityLabReport({
+  query,
+  url,
+  visibilityScore,
+  citationResult,
+  engineResult,
+}) {
+  const score = Number(visibilityScore || 0);
+  const engineRows = Array.isArray(engineResult?.results) ? engineResult.results : [];
+
+  const readiness =
+    citationResult?.generative_readiness_score ??
+    citationResult?.geo_scores_json?.generative_readiness ??
+    0;
+  const summarization = citationResult?.summarization_resilience ?? 0;
+  const brandRetention = citationResult?.brand_retention_probability ?? 0;
+  const schemaSupport = citationResult?.breakdown?.schema_support ?? 0;
+
+  const parameterRows = [
+    {
+      name: "Citation Probability",
+      score: Number(citationResult?.citation_probability || 0),
+      explanation: "Likelihood that the page is selected as a cited source in AI responses.",
+      factors: [],
+      penalties: Number(citationResult?.citation_probability || 0) < 50 ? ["Low citation confidence"] : [],
+    },
+    {
+      name: "Generative Readiness",
+      score: Number(readiness || 0),
+      explanation: "How easily AI systems can extract and compose reliable answers from the page.",
+      factors: [],
+      penalties: Number(readiness || 0) < 50 ? ["Weak extractability signals"] : [],
+    },
+    {
+      name: "Summarization",
+      score: Number(summarization || 0),
+      explanation: "How consistently key meaning survives summarization by language models.",
+      factors: [],
+      penalties: Number(summarization || 0) < 50 ? ["Low summarization resilience"] : [],
+    },
+    {
+      name: "Brand Retention",
+      score: Number(brandRetention || 0),
+      explanation: "How often brand identity is preserved in generated answers.",
+      factors: [],
+      penalties: Number(brandRetention || 0) < 50 ? ["Brand presence not retained"] : [],
+    },
+    {
+      name: "Schema Support",
+      score: Number(schemaSupport || 0),
+      explanation: "Availability and quality of machine-readable schema markup.",
+      factors: [],
+      penalties: Number(schemaSupport || 0) < 50 ? ["Schema support is insufficient"] : [],
+    },
+  ];
+
+  const primaryIssues = uniqueItems([
+    Number(citationResult?.citation_probability || 0) < 50 ? "Low citation probability" : null,
+    Number(readiness || 0) < 50 ? "Weak generative readiness" : null,
+    ...engineRows.flatMap((row) => (Array.isArray(row.weaknesses) ? row.weaknesses.slice(0, 1) : [])),
+  ], 3);
+
+  const state = await createState("AI Visibility Lab Report", url || "N/A");
+
+  drawExecutiveSummary(state, {
+    url,
+    overallScore: score,
+    queryContext: query,
+    issues: primaryIssues,
+  });
+
+  drawMetricGrid(state, [
+    { label: "AI Visibility Score", value: `${formatScore(score)} / 100` },
+    { label: "Citation Probability", value: formatPercent(citationResult?.citation_probability) },
+    { label: "Best Engine", value: safeText(engineResult?.overall_stats?.best_engine?.name) },
+    { label: "Best Engine Score", value: formatScore(engineResult?.overall_stats?.best_engine?.score) },
+  ]);
+
+  drawParameterBreakdown(state, parameterRows);
+
+  beginSection(state, "Detailed Analysis");
+  const engineTableRows = engineRows.map((row) => [
+    row.engine_name || row.engine_id || "N/A",
+    `${formatScore(row.readiness_score)} / 100`,
+    row.grade || "N/A",
+    row.position_estimate?.bucket || "N/A",
+  ]);
+  drawTable(state, ["Engine", "Readiness", "Grade", "Position"], engineTableRows, [58, 34, 30, 60]);
+
+  drawSignalsDetected(
+    state,
+    uniqueItems(engineRows.flatMap((row) => (Array.isArray(row.strengths) ? row.strengths : []))),
+    uniqueItems(engineRows.flatMap((row) => (Array.isArray(row.weaknesses) ? row.weaknesses : [])))
+  );
+
+  drawRecommendations(
+    state,
+    uniqueItems(
+      engineRows.flatMap((row) =>
+        (Array.isArray(row.improvements) ? row.improvements.slice(0, 3) : []).map((item) => ({
+          engine: row.engine_name || row.engine_id || "AI Engine",
+          action: item,
+          why: `This improves content compatibility with ${row.engine_name || row.engine_id} retrieval and response ranking signals.`,
+        }))
+      ),
+      10
+    )
+  );
+
+  state.doc.save(`ai-visibility-lab-report-${Date.now()}.pdf`);
+}
