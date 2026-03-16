@@ -69,9 +69,9 @@ function AdvancedResult({ result }) {
       {/* Score + Integrity */}
       <div className="flex items-start justify-between glass-card p-6">
         <div>
-          <span className="text-5xl font-thin" style={{ color: getScoreColor(result.overall_score) }}>{result.overall_score}</span>
-          <span className="text-gray-400 text-sm ml-2">/100 AEO Score</span>
-          <a href={result.url} target="_blank" rel="noopener noreferrer" className="block text-sm text-brand-blue mt-2 hover:underline flex items-center gap-1">
+          <span className="text-4xl font-bold" style={{ color: getScoreColor(result.overall_score) }}>{result.overall_score}</span>
+          <span className="text-xs text-gray-600 ml-2">/100 AEO Score</span>
+          <a href={result.url} target="_blank" rel="noopener noreferrer" className="block text-xs text-blue-400 mt-2 hover:underline flex items-center gap-1">
             {result.url} <ExternalLink className="w-3 h-3" />
           </a>
         </div>
@@ -100,7 +100,7 @@ function AdvancedResult({ result }) {
       {/* Historical Intelligence */}
       {result.historical_intelligence?.length > 0 && (
         <div className="glass-card p-6">
-          <h3 className="font-semibold text-sm mb-4 flex items-center gap-2"><Info className="w-4 h-4 text-brand-blue" /> Historical Intelligence</h3>
+          <h3 className="font-semibold text-sm mb-4 flex items-center gap-2"><Info className="w-4 h-4 text-blue-400" /> Historical Intelligence</h3>
           <div className="space-y-2">
             {result.historical_intelligence.slice(0, 5).map((rec, i) => (
               <div key={i} className="flex items-start gap-3 bg-muted/50 rounded-md px-4 py-3 text-xs" data-testid={`hist-rec-${i}`}>
@@ -129,7 +129,7 @@ function ExplainCard({ category, data, expanded, onToggle }) {
         <div className="flex items-center gap-3">
           <span className="font-semibold text-xl" style={{ color: getScoreColor(data.score) }}>{data.score}</span>
           <span className="text-sm font-medium capitalize">{category}</span>
-          <span className="text-[10px] font-mono text-gray-400">{data.contributing_factors?.length || 0} factors, {data.penalties?.length || 0} penalties</span>
+          <span className="text-xs text-gray-600">{data.contributing_factors?.length || 0} factors, {data.penalties?.length || 0} penalties</span>
         </div>
         {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
       </button>
@@ -137,10 +137,10 @@ function ExplainCard({ category, data, expanded, onToggle }) {
         <div className="border-t border-white/5 px-5 py-4 space-y-4">
           {data.contributing_factors?.length > 0 && (
             <div>
-              <p className="text-xs font-mono text-emerald-400 uppercase tracking-wider mb-2">Contributing Factors</p>
+              <p className="text-xs text-emerald-400 uppercase tracking-wider mb-2">Contributing Factors</p>
               {data.contributing_factors.map((f, i) => (
                 <div key={i} className="flex items-center gap-2 text-xs py-1">
-                  <span className="text-emerald-400 font-mono">+{f.contribution}</span>
+                  <span className="text-emerald-400">+{f.contribution}</span>
                   <span className="text-gray-400">{f.reason}</span>
                 </div>
               ))}
@@ -148,10 +148,10 @@ function ExplainCard({ category, data, expanded, onToggle }) {
           )}
           {data.penalties?.length > 0 && (
             <div>
-              <p className="text-xs font-mono text-red-400 uppercase tracking-wider mb-2">Penalties</p>
+              <p className="text-xs text-red-400 uppercase tracking-wider mb-2">Penalties</p>
               {data.penalties.map((p, i) => (
                 <div key={i} className="flex items-center gap-2 text-xs py-1">
-                  <span className="text-red-400 font-mono">-{p.penalty}</span>
+                  <span className="text-red-400">-{p.penalty}</span>
                   <span className="text-gray-400">{p.reason}</span>
                 </div>
               ))}
@@ -159,9 +159,9 @@ function ExplainCard({ category, data, expanded, onToggle }) {
           )}
           {data.evidence?.length > 0 && (
             <div>
-              <p className="text-xs font-mono text-gray-400/60 uppercase tracking-wider mb-2">Evidence</p>
+              <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Evidence</p>
               {data.evidence.map((e, i) => (
-                <p key={i} className="text-xs text-gray-400 py-0.5 font-mono">{e}</p>
+                <p key={i} className="text-xs text-gray-400 py-0.5">{e}</p>
               ))}
             </div>
           )}

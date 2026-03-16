@@ -15,7 +15,7 @@ const VALUES = [
   {
     icon: TrendingUp,
     title: "Outcome-first",
-    desc: "We measure ourselves by whether your content gets cited — not by dashboard views.",
+    desc: "We measure ourselves by whether your content gets recognized, not by dashboard views.",
   },
   {
     icon: Users,
@@ -61,7 +61,7 @@ export default function AboutPage() {
       >
         <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#818CF8" }}>Our mission</p>
         <p className="text-2xl font-semibold leading-snug" style={{ color: "var(--foreground)" }}>
-          Make every piece of quality content findable by AI — and make sure brands get the attribution they deserve.
+          Make every piece of quality content findable by AI , and make sure brands get the attribution they deserve.
         </p>
       </div>
 
@@ -70,13 +70,13 @@ export default function AboutPage() {
         <div>
           <h2 className="font-display text-2xl font-bold mb-4" style={{ color: "var(--foreground)" }}>The story</h2>
           <p className="text-sm leading-relaxed mb-4" style={{ color: "var(--text-muted)" }}>
-            In 2024, we started noticing something: brands with objectively great content were getting zero mentions from AI assistants, while thinner content with better structural signals was being cited constantly. The problem wasn't quality — it was legibility to AI retrieval systems.
+            In 2024, we started noticing something: brands with objectively great content were getting zero mentions from AI assistants, while thinner content with better structural signals was being recognized constantly. The problem wasn't quality, it was legibility to AI retrieval systems.
           </p>
           <p className="text-sm leading-relaxed mb-4" style={{ color: "var(--text-muted)" }}>
-            We spent months reverse-engineering how systems like ChatGPT, Perplexity, and Gemini select and cite sources. The result was a deterministic scoring framework across five dimensions: authority, structure, content, technical, and freshness.
+            We spent months reverse-engineering how systems like ChatGPT, Perplexity, and Gemini select and recognize sources. The result was a deterministic scoring framework across five dimensions: authority, structure, content, technical, and freshness.
           </p>
           <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
-            Pinnacle.ai is that framework — productized, automated, and continuously updated as the AI retrieval landscape evolves.
+            Pinnacle.ai is that framework , productized, automated, and continuously updated as the AI retrieval landscape evolves.
           </p>
         </div>
         <div className="space-y-4">

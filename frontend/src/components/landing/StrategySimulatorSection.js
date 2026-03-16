@@ -49,7 +49,7 @@ export default function StrategySimulatorSection({ onNavigate }) {
             </h2>
 
             <p className="text-lg mb-8 leading-relaxed" style={{ color: "var(--muted)" }}>
-              Simulate optimization strategies before publishing and predict how changes impact AI visibility.
+              Simulate optimization strategies and predict how changes impact AI visibility.
             </p>
 
             <div className="space-y-4 mb-8">
@@ -117,13 +117,13 @@ export default function StrategySimulatorSection({ onNavigate }) {
                   style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}
                 >
                   <div>
-                    <p className="text-xs mb-1.5 font-medium" style={{ color: "var(--muted)" }}>Content Change</p>
+                    <p className="text-xs mb-1.5 font-medium" style={{ color: "var(--muted)" }}>Enter the URL</p>
                     <div
                       className="h-8 rounded-lg flex items-center px-3"
                       style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border)" }}
                     >
                       <span className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
-                        Add structured FAQ schema
+                        https://yoursite.com...
                       </span>
                     </div>
                   </div>
@@ -134,7 +134,7 @@ export default function StrategySimulatorSection({ onNavigate }) {
                       style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border)" }}
                     >
                       <span className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
-                        best running shoes under 10000
+                        Best Macbook for professionals
                       </span>
                     </div>
                   </div>

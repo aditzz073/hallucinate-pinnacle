@@ -54,7 +54,7 @@ body {
    (Replace glassmorphism with layered solid surfaces)
    ========================= */
 
-/* Base card — no blur, solid surface */
+/* Base card , no blur, solid surface */
 .card {
   background: var(--surface-2);
   border: 1px solid var(--border);
@@ -196,7 +196,7 @@ body {
    BUTTON SYSTEM
    ========================= */
 
-/* Primary — branded indigo */
+/* Primary , branded indigo */
 .btn-primary {
   background: var(--primary);
   color: #fff;

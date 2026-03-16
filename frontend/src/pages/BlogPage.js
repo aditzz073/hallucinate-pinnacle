@@ -2,10 +2,10 @@ import React from "react";
 import { ArrowRight, Rss } from "lucide-react";
 
 const COMING_SOON_TOPICS = [
-  "How LLMs decide what to cite: a technical deep-dive",
+  "How LLMs decide what to recognize: a technical deep-dive",
   "AEO vs SEO: what actually transfers and what doesn't",
   "The five dimensions of AI discoverability, explained",
-  "Case study: 3x citation lift in 60 days",
+  "Case study: 3x recognition lift in 60 days",
   "Building an AEO content calendar from scratch",
   "Freshness signals: how often do you need to update content?",
 ];
@@ -43,7 +43,7 @@ export default function BlogPage() {
           First posts dropping soon
         </h2>
         <p className="text-sm mb-6" style={{ color: "var(--text-muted)" }}>
-          Subscribe to get notified when we publish. No spam — just signal.
+          Subscribe to get notified when we publish. No spam , just signal.
         </p>
         <form
           className="flex items-center gap-3 max-w-sm mx-auto"

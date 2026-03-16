@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import Logo from "../ui/Logo";
-import FoundingAccessBadge from "../ui/FoundingAccessBadge";
 import {
   LayoutDashboard, FileSearch, Eye, BarChart3,
   Sparkles, FlaskConical, Swords, Crown, LogOut, ChevronDown,
@@ -296,9 +295,6 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
         {/* User Section */}
         {user && (
           <div className="flex items-center gap-2 pl-4 border-l border-white/10 ml-3">
-            {/* Founding Access Badge - Only for privileged users */}
-            {user.is_privileged && <FoundingAccessBadge />}
-            
             <button
               data-testid="nav-profile"
               onClick={() => onNavigate("profile")}

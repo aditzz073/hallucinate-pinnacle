@@ -3,7 +3,7 @@ import { Download, Mail } from "lucide-react";
 
 const COVERAGE = [
   { outlet: "TechCrunch", headline: "Pinnacle.ai raises seed round to tackle LLM search optimization", date: "Jan 2025" },
-  { outlet: "Search Engine Land", headline: "AEO is the new SEO — meet the startups scoring your AI visibility", date: "Feb 2025" },
+  { outlet: "Search Engine Land", headline: "AEO is the new SEO , meet the startups scoring your AI visibility", date: "Feb 2025" },
   { outlet: "Marketing Brew", headline: "How brands are measuring their presence in AI-generated answers", date: "Mar 2025" },
 ];
 

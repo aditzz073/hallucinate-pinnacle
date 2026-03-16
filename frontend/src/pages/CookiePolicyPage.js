@@ -13,7 +13,7 @@ Strictly necessary: These cookies are required for the Service to function. They
 
 Functional: These cookies remember your preferences (such as theme settings) so you don't have to reconfigure them on every visit.
 
-Analytics: We use privacy-respecting analytics cookies to understand aggregate usage patterns — which features are most used, where users drop off, and how to improve the product. These do not track you individually across the web.
+Analytics: We use privacy-respecting analytics cookies to understand aggregate usage patterns , which features are most used, where users drop off, and how to improve the product. These do not track you individually across the web.
 
 Performance: These cookies help us identify and diagnose performance issues by measuring page-load timing and error rates.`,
   },
@@ -28,7 +28,7 @@ These third parties have their own privacy policies governing their use of cooki
   },
   {
     title: "4. Cookie duration",
-    body: `Session cookies expire when you close your browser. Persistent cookies remain on your device for a defined period — typically 12 months — or until you delete them. You can see which cookies are active and their expiry dates in your browser's developer tools.`,
+    body: `Session cookies expire when you close your browser. Persistent cookies remain on your device for a defined period , typically 12 months , or until you delete them. You can see which cookies are active and their expiry dates in your browser's developer tools.`,
   },
   {
     title: "5. Managing cookies",

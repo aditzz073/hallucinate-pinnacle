@@ -7,11 +7,11 @@ export default function Logo({ size = "md" }) {
 
   return (
     <img
-      src="/logo.png"
+      src="/logo-white.png"
       alt="Pinnacle"
       width={w}
       height={h}
-      style={{ objectFit: "contain", display: "block", borderRadius: 6, filter: "invert(1)" }}
+      style={{ objectFit: "contain", display: "block" }}
     />
   );
 }

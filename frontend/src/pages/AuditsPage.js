@@ -10,14 +10,7 @@ import LockedSection from "../components/ui/LockedSection";
 
 export default function AuditsPage({ onSignUp }) {
   const { user } = useAuth();
-  
-  // Skip guest mode entirely for privileged users
-  const isPrivileged = user?.is_privileged || false;
   const { isGuest, remainingUses, hasReachedLimit, incrementUsage, showLimitModal, setShowLimitModal } = useGuestMode('audits');
-  
-  // Privileged users are never treated as guests
-  const effectiveIsGuest = isPrivileged ? false : isGuest;
-  const effectiveHasReachedLimit = isPrivileged ? false : hasReachedLimit;
   
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -43,14 +36,12 @@ export default function AuditsPage({ onSignUp }) {
     e.preventDefault();
     if (!url.trim()) return;
 
-    // If guest has reached limit (but not privileged), show modal immediately
-    if (effectiveIsGuest && effectiveHasReachedLimit) {
+    if (isGuest && hasReachedLimit) {
       setShowLimitModal(true);
       return;
     }
 
-    // Check guest limit before making API call (skip for privileged)
-    if (effectiveIsGuest && !incrementUsage()) {
+    if (isGuest && !incrementUsage()) {
       return; // Modal will show automatically
     }
 
@@ -78,8 +69,7 @@ export default function AuditsPage({ onSignUp }) {
         <p className="text-sm" style={{ color: "var(--text-muted)" }}>Analyze any URL for AI Engine Optimization signals.</p>
       </div>
 
-      {/* Guest Mode Banner - Hide for privileged users */}
-      {effectiveIsGuest && <GuestBanner remainingUses={remainingUses} onSignUp={onSignUp || (() => {})} />}
+      {isGuest && <GuestBanner remainingUses={remainingUses} onSignUp={onSignUp || (() => {})} />}
 
       {/* Form */}
       <div className="glass-card p-6">
@@ -92,7 +82,7 @@ export default function AuditsPage({ onSignUp }) {
             placeholder="https://example.com/page"
             className="glass-input flex-1 h-12 px-4 text-sm"
             required
-            disabled={effectiveIsGuest && effectiveHasReachedLimit}
+            disabled={isGuest && hasReachedLimit}
           />
           <button
             data-testid="audit-submit"
@@ -101,10 +91,10 @@ export default function AuditsPage({ onSignUp }) {
             className="btn-primary h-12 px-6 rounded-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileSearch className="w-4 h-4" />}
-            {loading ? "Auditing..." : (effectiveIsGuest && effectiveHasReachedLimit ? "Sign In to Continue" : "Run Audit")}
+            {loading ? "Auditing..." : (isGuest && hasReachedLimit ? "Sign In to Continue" : "Run Audit")}
           </button>
         </form>
-        {effectiveIsGuest && effectiveHasReachedLimit && (
+        {isGuest && hasReachedLimit && (
           <p className="mt-3 text-sm text-amber-400 flex items-center gap-2">
             <Lock className="w-4 h-4" />
             You've used all 2 free audits. Click the button above to create an account.
@@ -112,15 +102,12 @@ export default function AuditsPage({ onSignUp }) {
         )}
       </div>
 
-      {/* Guest Limit Modal - Don't show for privileged users */}
-      {!isPrivileged && (
-        <GuestLimitModal
-          isOpen={showLimitModal}
-          onClose={() => setShowLimitModal(false)}
-          onSignUp={onSignUp || (() => {})}
-          feature="audits"
-        />
-      )}
+      <GuestLimitModal
+        isOpen={showLimitModal}
+        onClose={() => setShowLimitModal(false)}
+        onSignUp={onSignUp || (() => {})}
+        feature="audits"
+      />
 
       {error && (
         <div className="glass-card border-red-500/20 p-4">
@@ -131,8 +118,7 @@ export default function AuditsPage({ onSignUp }) {
         </div>
       )}
 
-      {/* Hide results when guest reaches limit (but not for privileged) */}
-      {activeAudit && !(effectiveIsGuest && effectiveHasReachedLimit) && (
+      {activeAudit && !(isGuest && hasReachedLimit) && (
         <div className="glass-card p-6" data-testid="audit-result">
           <div className="flex items-start justify-between mb-6">
             <div>
@@ -160,8 +146,7 @@ export default function AuditsPage({ onSignUp }) {
         </div>
       )}
 
-      {/* Locked Sections for Guests only - never show for privileged users */}
-      {effectiveIsGuest && activeAudit && !effectiveHasReachedLimit && (
+      {isGuest && activeAudit && !hasReachedLimit && (
         <div className="space-y-4">
           <LockedSection
             title="Strategy Simulator"

@@ -3,8 +3,8 @@ import { useAuth } from "../context/AuthContext";
 import { getOverview } from "../api";
 import { changePassword } from "../api";
 import { 
-  User, Mail, Crown, Shield, FileSearch, Search, 
-  Clock, TrendingUp, Zap, Activity, ChevronDown, ChevronUp,
+  User, Mail, Shield, FileSearch, Search, 
+  Clock, TrendingUp, Activity, ChevronDown,
   LogOut, Lock, ExternalLink, Eye, EyeOff, Check, X
 } from "lucide-react";
 
@@ -12,7 +12,6 @@ export default function ProfilePage() {
   const { user } = useAuth();
   const [overview, setOverview] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showAdvancedInsights, setShowAdvancedInsights] = useState(false);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [pwForm, setPwForm] = useState({ current: "", next: "", confirm: "" });
   const [pwVisibility, setPwVisibility] = useState({ current: false, next: false, confirm: false });
@@ -24,7 +23,6 @@ export default function ProfilePage() {
   }, []);
 
   const stats = overview?.summary || {};
-  const isPrivileged = user?.is_privileged || false;
   
   // Get user initials for avatar
   const getInitials = () => {
@@ -35,9 +33,6 @@ export default function ProfilePage() {
 
   // Determine role display
   const getRoleInfo = () => {
-    if (isPrivileged) {
-      return { text: "Founding Access", color: "from-emerald-400 to-green-400", icon: Crown };
-    }
     if (user) {
       return { text: "Pro User", color: "from-blue-400 to-cyan-400", icon: Shield };
     }
@@ -58,11 +53,6 @@ export default function ProfilePage() {
             <div className="w-28 h-28 rounded-full bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border-2 border-white/10 flex items-center justify-center backdrop-blur-sm shadow-2xl">
               <span className="text-4xl font-bold text-white">{getInitials()}</span>
             </div>
-            {isPrivileged && (
-              <div className="absolute -bottom-2 -right-2 flex items-center gap-1 px-2 py-1 rounded-full bg-gradient-to-r from-emerald-500/20 to-green-500/20 border border-emerald-500/40 backdrop-blur-xl">
-                <Crown className="w-3 h-3 text-emerald-400" />
-              </div>
-            )}
           </div>
 
           {/* User Info */}
@@ -71,12 +61,6 @@ export default function ProfilePage() {
               <h1 className="font-display text-3xl font-bold text-white">
                 {user?.nickname || user?.email?.split("@")[0] || "User"}
               </h1>
-              {isPrivileged && (
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gradient-to-r from-emerald-500/10 to-green-500/10 border border-emerald-500/30">
-                  <Crown className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="text-xs font-semibold text-emerald-400 tracking-wide">FOUNDING</span>
-                </div>
-              )}
             </div>
             
             <p className="text-gray-400 mb-4 flex items-center justify-center lg:justify-start gap-2">
@@ -156,50 +140,6 @@ export default function ProfilePage() {
           </div>
         )}
       </div>
-
-      {/* 🔒 ADVANCED INSIGHTS (Privileged Only) */}
-      {isPrivileged && (
-        <div className="glass-card p-6 border-emerald-500/20">
-          <button
-            onClick={() => setShowAdvancedInsights(!showAdvancedInsights)}
-            className="w-full flex items-center justify-between text-left group"
-          >
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-500/20 to-green-500/20 border border-emerald-500/30">
-                <Zap className="w-5 h-5 text-emerald-400" />
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold text-white group-hover:text-emerald-400 transition-colors">
-                  Advanced System Insights
-                </h2>
-                <p className="text-xs text-gray-500">Founding member analytics</p>
-              </div>
-            </div>
-            {showAdvancedInsights ? (
-              <ChevronUp className="w-5 h-5 text-gray-400 group-hover:text-emerald-400 transition-colors" />
-            ) : (
-              <ChevronDown className="w-5 h-5 text-gray-400 group-hover:text-emerald-400 transition-colors" />
-            )}
-          </button>
-
-          {showAdvancedInsights && (
-            <div className="mt-6 pt-6 border-t border-white/10 grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
-              {[
-                { label: "Avg Render Time", value: "1.2s", desc: "Hybrid crawling performance" },
-                { label: "Headless Usage", value: "23%", desc: "Fallback rate" },
-                { label: "Scoring Engine", value: "v2.1.0", desc: "Production version" },
-                { label: "Feature Flags", value: "All Enabled", desc: "Full system access" },
-              ].map((item, i) => (
-                <div key={i} className="p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/20 transition-colors">
-                  <p className="text-xs text-gray-500 mb-1">{item.label}</p>
-                  <p className="text-xl font-bold text-emerald-400 mb-1">{item.value}</p>
-                  <p className="text-xs text-gray-600">{item.desc}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
 
       {/* 3️⃣ ACTIONS SECTION */}
       <div>

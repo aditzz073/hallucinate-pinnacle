@@ -51,15 +51,81 @@ const DEFAULT_ENGINES = [
   { id: "copilot",    name: "Microsoft Copilot",  description: "Prefers clear product/service data with schema" },
 ];
 
+function normalizeWeakness(text) {
+  return String(text || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function extractWeaknessConcept(text) {
+  const raw = String(text || "").trim();
+  const primary = raw.split(/\s[—-]\s/)[0] || raw;
+
+  let concept = primary
+    .replace(/\([^)]*\)/g, " ")
+    .replace(/^weak\s+/i, "")
+    .replace(/^low\s+/i, "")
+    .replace(/^lack of\s+/i, "")
+    .replace(/^missing\s+/i, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!concept) concept = primary.trim();
+  return concept;
+}
+
+function formatWeaknessConcept(text) {
+  const t = String(text || "").trim();
+  if (!t) return "";
+  return t.charAt(0).toUpperCase() + t.slice(1);
+}
+
+function summarizeWeaknesses(engineResults = []) {
+  const totalEngines = engineResults.length;
+  if (totalEngines === 0) {
+    return { totalEngines, common: [], repeated: [] };
+  }
+
+  const weaknessMap = new Map();
+
+  engineResults.forEach((engine) => {
+    const weaknesses = Array.isArray(engine?.weaknesses) ? engine.weaknesses : [];
+    const seenInEngine = new Set();
+
+    weaknesses.forEach((raw) => {
+      const concept = extractWeaknessConcept(raw);
+      const normalized = normalizeWeakness(concept);
+      if (!normalized || seenInEngine.has(normalized)) return;
+      seenInEngine.add(normalized);
+
+      if (!weaknessMap.has(normalized)) {
+        weaknessMap.set(normalized, { label: formatWeaknessConcept(concept), count: 0 });
+      }
+      weaknessMap.get(normalized).count += 1;
+    });
+  });
+
+  const entries = Array.from(weaknessMap.values());
+  const common = entries
+    .filter((item) => item.count === totalEngines)
+    .map((item) => item.label);
+
+  const repeated = entries
+    .filter((item) => item.count > 1 && item.count < totalEngines)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 3)
+    .map((item) => ({ label: item.label, count: item.count }));
+
+  return { totalEngines, common, repeated };
+}
+
 export default function AITestingLabPage({ onSignUp }) {
   const { user } = useAuth();
-  const isPrivileged = user?.is_privileged || false;
   const {
     isGuest, remainingUses, hasReachedLimit, incrementUsage, showLimitModal, setShowLimitModal,
   } = useGuestMode("ai_testing_lab");
-
-  const effectiveIsGuest         = isPrivileged ? false : isGuest;
-  const effectiveHasReachedLimit = isPrivileged ? false : hasReachedLimit;
 
   const [query, setQuery]                   = useState("");
   const [url, setUrl]                       = useState("");
@@ -87,8 +153,8 @@ export default function AITestingLabPage({ onSignUp }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!url.trim() || !query.trim() || selectedEngines.length === 0) return;
-    if (effectiveIsGuest && effectiveHasReachedLimit) { setShowLimitModal(true); return; }
-    if (effectiveIsGuest && !incrementUsage()) return;
+    if (isGuest && hasReachedLimit) { setShowLimitModal(true); return; }
+    if (isGuest && !incrementUsage()) return;
 
     setError("");
     setLoading(true);
@@ -120,7 +186,7 @@ export default function AITestingLabPage({ onSignUp }) {
         </p>
       </div>
 
-      {effectiveIsGuest && (
+      {isGuest && (
         <GuestBanner remainingUses={remainingUses} onSignUp={onSignUp || (() => {})} />
       )}
 
@@ -141,7 +207,7 @@ export default function AITestingLabPage({ onSignUp }) {
                   key={engine.id}
                   type="button"
                   onClick={() => toggleEngine(engine.id)}
-                  disabled={effectiveIsGuest && effectiveHasReachedLimit}
+                  disabled={isGuest && hasReachedLimit}
                   className={`p-3 rounded-xl border text-left transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
                     selected
                       ? "border-indigo-500/40 bg-indigo-500/10 text-white"
@@ -185,7 +251,7 @@ export default function AITestingLabPage({ onSignUp }) {
               required
               minLength={3}
               maxLength={200}
-              disabled={effectiveIsGuest && effectiveHasReachedLimit}
+              disabled={isGuest && hasReachedLimit}
             />
           </div>
           <div className="flex gap-4">
@@ -200,7 +266,7 @@ export default function AITestingLabPage({ onSignUp }) {
                 placeholder="https://example.com/page"
                 className="glass-input w-full h-12 px-4 text-sm"
                 required
-                disabled={effectiveIsGuest && effectiveHasReachedLimit}
+                disabled={isGuest && hasReachedLimit}
               />
             </div>
             <div className="flex items-end">
@@ -214,7 +280,7 @@ export default function AITestingLabPage({ onSignUp }) {
                   : <BarChart2 className="w-4 h-4" />}
                 {loading
                   ? "Analyzing..."
-                  : effectiveIsGuest && effectiveHasReachedLimit
+                  : isGuest && hasReachedLimit
                     ? "Sign In to Continue"
                     : "Analyze"}
               </button>
@@ -284,7 +350,7 @@ export default function AITestingLabPage({ onSignUp }) {
                   </p>
                 </>
               ) : (
-                <p className="text-gray-600">—</p>
+                <p className="text-gray-600">,</p>
               )}
             </div>
 
@@ -484,6 +550,50 @@ export default function AITestingLabPage({ onSignUp }) {
                 </div>
               );
             })}
+
+            {(() => {
+              const weaknessSummary = summarizeWeaknesses(result.results || []);
+              const hasCommon = weaknessSummary.common.length > 0;
+
+              return (
+                <div
+                  className="glass-card p-5"
+                  style={{ borderColor: "rgba(248,113,113,0.25)" }}
+                  data-testid="common-weakness-section"
+                >
+                  <div className="flex items-center gap-2 mb-3">
+                    <XCircle className="w-4 h-4 text-red-400" />
+                    <h3 className="text-sm font-semibold text-white">Common Weakness</h3>
+                  </div>
+
+                  {hasCommon ? (
+                    <ul className="space-y-1.5">
+                      {weaknessSummary.common.map((weakness, i) => (
+                        <li key={`${weakness}-${i}`} className="flex items-start gap-2 text-xs text-red-300">
+                          <XCircle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-red-400" />
+                          <span>{weakness}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div className="space-y-2">
+                      <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                        No single weakness appears across all {weaknessSummary.totalEngines} selected engines.
+                      </p>
+                      {weaknessSummary.repeated.length > 0 && (
+                        <ul className="space-y-1">
+                          {weaknessSummary.repeated.map((item, i) => (
+                            <li key={`${item.label}-${i}`} className="text-xs text-gray-400">
+                              {item.label} ({item.count}/{weaknessSummary.totalEngines} engines)
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           </div>
 
           {/* Page information */}
@@ -504,7 +614,7 @@ export default function AITestingLabPage({ onSignUp }) {
               <div>
                 <p className="text-xs text-gray-600">Word Count</p>
                 <p className="text-sm font-medium text-white">
-                  {result.page_info?.word_count?.toLocaleString() || "—"}
+                  {result.page_info?.word_count?.toLocaleString() || ","}
                 </p>
               </div>
               <div>

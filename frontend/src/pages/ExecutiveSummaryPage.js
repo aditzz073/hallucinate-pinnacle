@@ -57,7 +57,7 @@ export default function ExecutiveSummaryPage() {
           </div>
           {h.score > 0 && (
             <div className="text-right">
-              <p className="text-4xl font-light" style={{ color: getScoreColor(h.score) }}>{h.score}</p>
+              <p className="text-4xl font-bold" style={{ color: getScoreColor(h.score) }}>{h.score}</p>
               <p className="text-xs text-gray-500">Health Score</p>
             </div>
           )}
@@ -88,7 +88,7 @@ export default function ExecutiveSummaryPage() {
           { label: "Negative", value: cov.negative_changes },
         ].map((s) => (
           <div key={s.label} className="glass-card p-4 text-center">
-            <p className="text-2xl font-light text-white">{s.value}</p>
+            <p className="text-2xl font-bold text-white">{s.value}</p>
             <p className="text-xs text-gray-500 mt-1">{s.label}</p>
           </div>
         ))}

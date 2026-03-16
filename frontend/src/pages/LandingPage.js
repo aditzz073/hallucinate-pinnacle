@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {
-  ArrowRight, Zap, Eye,
+  ArrowRight, ArrowDown, Eye, Settings2,
   TrendingUp, CheckCircle, BarChart2, Cpu, Mail, Phone, MessageSquare,
   Microscope,
 } from "lucide-react";
@@ -174,7 +174,7 @@ function HeroSection({ onGetStarted, onNavigate }) {
             </h1>
 
             <p className="text-lg mb-10 max-w-md leading-relaxed" style={{ color: "var(--muted)" }}>
-              Analyze, predict, and optimize how ChatGPT, Gemini, Perplexity, and Copilot cite your content.
+              Analyze, predict, and optimize how ChatGPT, Gemini, Perplexity, and Copilot recognize your content.
             </p>
 
             <div className="flex items-center flex-wrap gap-3 mb-10">
@@ -300,19 +300,19 @@ const SHIFT_STEPS = [
   },
   {
     number: "02",
-    title: "AI summarizes and cites sources",
-    desc: "AI engines generate answers that summarize information and cite specific pages. Only cited content gets visibility.",
+    title: "AI summarizes and recognizes sources",
+    desc: "AI engines generate answers that summarize information and recognize specific pages. Only recognized content gets visibility.",
     color: "#7C3AED",
   },
   {
     number: "03",
-    title: "Uncited brands disappear",
+    title: "Unrecognized brands disappear",
     desc: "If your brand isn't in AI answers, you're invisible to a growing segment of users. Pinnacle fixes that.",
     color: "#6366F1",
   },
 ];
 
-const FLOW_STEPS = ["User Query", "AI Generated Answer", "Cited Sources", "Traffic & Visibility"];
+const FLOW_STEPS = ["User Query", "AI Generated Answer", "Recognised Sources", "Traffic & Visibility"];
 
 function SearchShiftSection() {
   return (
@@ -370,19 +370,32 @@ function SearchShiftSection() {
                       color: i === 2 ? "#A5B4FC" : "var(--foreground)",
                     }}
                   >
-                    {i === 2 && (
-                      <span
-                        className="text-xs px-2 py-0.5 rounded-full mr-2 font-medium"
-                        style={{ background: "rgba(79,70,229,0.2)", color: "#818CF8" }}
-                      >
-                        Win here
-                      </span>
-                    )}
-                    {step}
+                    {i === 2 ? (
+                      <>
+                        <span
+                          className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full mb-1.5 font-medium"
+                          style={{ background: "rgba(79,70,229,0.2)", color: "#818CF8" }}
+                        >
+                          <img src="/logo-white.png" alt="Pinnacle logo" className="w-3 h-3 object-contain" />
+                          Pinnacle makes you win here
+                        </span>
+                        <div>{step}</div>
+                      </>
+                    ) : step}
                   </div>
                   {i < FLOW_STEPS.length - 1 && (
-                    <div className="flex justify-center py-1">
-                      <div className="w-px h-6" style={{ background: "var(--border)" }} />
+                    <div className="flex flex-col items-center py-1" aria-hidden="true">
+                      <div className="w-px h-3" style={{ background: "var(--border)" }} />
+                      <div
+                        className="w-5 h-5 rounded-full flex items-center justify-center"
+                        style={{
+                          background: "rgba(79,70,229,0.14)",
+                          border: "1px solid rgba(79,70,229,0.35)",
+                        }}
+                      >
+                        <ArrowDown className="w-3 h-3" style={{ color: "#818CF8" }} />
+                      </div>
+                      <div className="w-px h-3" style={{ background: "var(--border)" }} />
                     </div>
                   )}
                 </div>
@@ -404,19 +417,19 @@ const PILLARS = [
     items: [
       "Citation Probability",
       "Engine Readiness Scores",
-      "GEO Score Analysis",
+      "SEO/GEO Score Analysis",
       "Citation Gap Report",
     ],
   },
   {
-    icon: Zap,
+    icon: Settings2,
     title: "Optimization",
     color: "#7C3AED",
     items: [
       "Strategy Simulator",
-      "Content Recommendations",
       "AEO Page Audits",
       "Score Improvement Tracking",
+      "Content Recommendations - v2",
     ],
   },
   {
@@ -426,8 +439,8 @@ const PILLARS = [
     items: [
       "AI Mention Monitoring",
       "Competitor AI Visibility",
-      "Page Change Tracking",
-      "AI Traffic Insights",
+      "Page Change Tracking - v2",
+      "AI Traffic Insights - v2",
     ],
   },
 ];
@@ -489,7 +502,7 @@ function PlatformPillars() {
 const LAB_STEPS = [
   { step: "01", label: "Enter your search query" },
   { step: "02", label: "Provide your page URL" },
-  { step: "03", label: "Predict AI citations per engine" },
+  { step: "03", label: "Predict AI recognition by engine" },
   { step: "04", label: "Follow recommendations to optimize" },
 ];
 
@@ -519,7 +532,7 @@ function AIVisibilityLabPreview({ onNavigate }) {
               AI Visibility Lab
             </h2>
             <p className="text-lg mb-8 leading-relaxed" style={{ color: "var(--muted)" }}>
-              Simulate how AI engines answer questions and predict whether your brand gets cited — before you publish.
+              Simulate how AI engines answer questions and predict whether your brand gets recognized.
             </p>
 
             <div className="space-y-4 mb-8">
@@ -584,7 +597,7 @@ function AIVisibilityLabPreview({ onNavigate }) {
                     style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border)" }}
                   >
                     <span className="text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>
-                      best AI visibility platform...
+                      Best AI visibility platform...
                     </span>
                   </div>
                   <div
@@ -692,7 +705,7 @@ function FreeAuditCTA({ onGetStarted, onNavigate }) {
             Run a Free AI<br />Visibility Audit
           </h2>
           <p className="text-base mb-8 max-w-lg mx-auto" style={{ color: "var(--muted)" }}>
-            Enter your website URL and see how AI engines currently perceive your content — no signup required.
+            Enter your website URL and see how AI engines currently perceive your content , no signup required.
           </p>
 
           <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto mb-10">
@@ -721,9 +734,9 @@ function FreeAuditCTA({ onGetStarted, onNavigate }) {
           {/* Preview cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
             {[
-              { label: "AI Visibility Score",    value: "—", sub: "Combined score out of 100",   color: "#4F46E5" },
-              { label: "Citation Probability",   value: "—", sub: "Likelihood of being cited",   color: "#7C3AED" },
-              { label: "Top Engine",             value: "—", sub: "Best performing AI engine",   color: "#0891B2" },
+              { label: "AI Visibility Score",    value: "78", sub: "Combined score out of 100",   color: "#4F46E5" },
+              { label: "Citation Probability",   value: "64%", sub: "Likelihood of being cited",   color: "#7C3AED" },
+              { label: "Top Engine",             value: "ChatGPT", sub: "Best performing AI engine",   color: "#0891B2" },
             ].map((card) => (
               <div
                 key={card.label}
@@ -775,8 +788,7 @@ export default function LandingPage({ onGetStarted, onNavigate }) {
               <h3 className="text-base font-semibold mb-0.5" style={{ color: "var(--foreground)" }}>Starter</h3>
               <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>For individuals exploring AEO.</p>
               <div className="mb-4">
-                <span className="text-4xl font-bold" style={{ color: "var(--foreground)" }}>$0</span>
-                <span className="text-sm ml-1" style={{ color: "var(--muted)" }}>/month</span>
+                <span className="text-4xl font-bold" style={{ color: "var(--foreground)" }}>Free</span>
               </div>
               <ul className="space-y-2 mb-6">
                 {["5 audits/month", "10 AI tests/month", "Basic analytics"].map(item => (
@@ -797,7 +809,7 @@ export default function LandingPage({ onGetStarted, onNavigate }) {
               </button>
             </div>
 
-            {/* Pro — featured */}
+            {/* Pro , featured */}
             <div
               className="rounded-2xl p-6 relative"
               style={{
@@ -825,7 +837,7 @@ export default function LandingPage({ onGetStarted, onNavigate }) {
                   </li>
                 ))}
               </ul>
-              <button onClick={onGetStarted} className="btn-primary w-full rounded-lg py-2.5 text-sm font-semibold">
+              <button onClick={onGetStarted} className="btn-primary w-full justify-center rounded-lg py-2.5 text-sm font-semibold">
                 Start free trial
               </button>
             </div>

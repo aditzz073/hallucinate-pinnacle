@@ -118,7 +118,7 @@ function OverviewTab({ data }) {
               className="text-2xl font-bold mb-1"
               style={{ color: st.isScore ? getScoreColor(st.value) : "var(--foreground)" }}
             >
-              {st.value ?? "—"}
+              {st.value ?? ","}
             </p>
             <p className="text-xs" style={{ color: "var(--muted)" }}>{st.label}</p>
           </div>

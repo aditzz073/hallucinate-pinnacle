@@ -46,6 +46,36 @@ const generateCopilotInsight = (overview) => {
   return `Top tier at ${Math.round(avgScore)}%. AI engines consistently discover your content. Fine-tune brand attribution to lock in every mention.`;
 };
 
+const toTitleCase = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .replace(/\b\w/g, (ch) => ch.toUpperCase());
+
+const deriveBrandFromUrl = (url) => {
+  if (!url) return "Unknown";
+  try {
+    const normalized = /^https?:\/\//i.test(url) ? url : `https://${url}`;
+    const host = new URL(normalized).hostname.replace(/^www\./i, "");
+    const root = host.split(".")[0] || host;
+    return toTitleCase(root.replace(/[-_]+/g, " "));
+  } catch {
+    return "Unknown";
+  }
+};
+
+const getRecordBrand = (record) => {
+  const explicitBrand =
+    record?.brand ||
+    record?.brand_name ||
+    record?.brandName ||
+    record?.domain_brand;
+
+  if (explicitBrand && String(explicitBrand).trim()) {
+    return String(explicitBrand).trim();
+  }
+  return deriveBrandFromUrl(record?.url);
+};
+
 const getPriorityActions = (overview) => {
   const recentTest = overview?.recent_ai_tests?.[0];
   if (!recentTest?.geo_insights_json?.improvement_suggestions) return [];
@@ -326,13 +356,15 @@ export default function Dashboard({ onNavigate }) {
                 <thead>
                   <tr>
                     <th>URL</th>
+                    <th>Brand</th>
                     <th className="text-right">Score</th>
                   </tr>
                 </thead>
                 <tbody>
                   {overview.recent_audits?.slice(0, 4).map((a, i) => (
                     <tr key={i}>
-                      <td className="max-w-[200px] truncate font-mono text-xs" style={{ color: "var(--muted-foreground)" }}>{a.url}</td>
+                      <td className="max-w-[170px] truncate font-mono text-xs" style={{ color: "var(--muted-foreground)" }}>{a.url}</td>
+                      <td className="text-xs" style={{ color: "var(--muted)" }}>{getRecordBrand(a)}</td>
                       <td className="text-right font-bold text-sm" style={{ color: getScoreColor(a.overall_score) }}>{a.overall_score}</td>
                     </tr>
                   ))}
@@ -360,6 +392,7 @@ export default function Dashboard({ onNavigate }) {
                 <thead>
                   <tr>
                     <th>URL</th>
+                    <th>Brand</th>
                     <th className="text-right">Citation</th>
                     <th className="text-right">GEO</th>
                   </tr>
@@ -367,10 +400,11 @@ export default function Dashboard({ onNavigate }) {
                 <tbody>
                   {overview.recent_ai_tests?.slice(0, 4).map((t, i) => (
                     <tr key={i}>
-                      <td className="max-w-[160px] truncate font-mono text-xs" style={{ color: "var(--muted-foreground)" }}>{t.url}</td>
+                      <td className="max-w-[140px] truncate font-mono text-xs" style={{ color: "var(--muted-foreground)" }}>{t.url}</td>
+                      <td className="text-xs" style={{ color: "var(--muted)" }}>{getRecordBrand(t)}</td>
                       <td className="text-right font-bold text-sm" style={{ color: getScoreColor(t.citation_probability) }}>{t.citation_probability}%</td>
                       <td className="text-right font-bold text-sm" style={{ color: getScoreColor(t.geo_score) }}>
-                        {t.geo_score !== undefined ? `${t.geo_score}%` : "—"}
+                        {t.geo_score !== undefined ? `${t.geo_score}%` : ","}
                       </td>
                     </tr>
                   ))}

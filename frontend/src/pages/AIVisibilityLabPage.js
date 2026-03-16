@@ -7,7 +7,6 @@ import {
   Target, Zap, Award, Lock, CheckCircle, XCircle, Info,
   Globe, Microscope,
 } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
 import { useGuestMode } from "../hooks/useGuestMode";
 import GuestBanner from "../components/ui/GuestBanner";
 import GuestLimitModal from "../components/modals/GuestLimitModal";
@@ -48,16 +47,81 @@ const POSITION_CLASS = {
 
 const ALL_ENGINES = ["chatgpt", "perplexity", "google_sge", "copilot"];
 
+function normalizeWeakness(text) {
+  return String(text || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function extractWeaknessConcept(text) {
+  const raw = String(text || "").trim();
+  const primary = raw.split(/\s[—-]\s/)[0] || raw;
+
+  let concept = primary
+    .replace(/\([^)]*\)/g, " ")
+    .replace(/^weak\s+/i, "")
+    .replace(/^low\s+/i, "")
+    .replace(/^lack of\s+/i, "")
+    .replace(/^missing\s+/i, "")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!concept) concept = primary.trim();
+  return concept;
+}
+
+function formatWeaknessConcept(text) {
+  const t = String(text || "").trim();
+  if (!t) return "";
+  return t.charAt(0).toUpperCase() + t.slice(1);
+}
+
+function summarizeWeaknesses(engineResults = []) {
+  const totalEngines = engineResults.length;
+  if (totalEngines === 0) {
+    return { totalEngines, common: [], repeated: [] };
+  }
+
+  const weaknessMap = new Map();
+
+  engineResults.forEach((engine) => {
+    const weaknesses = Array.isArray(engine?.weaknesses) ? engine.weaknesses : [];
+    const seenInEngine = new Set();
+
+    weaknesses.forEach((raw) => {
+      const concept = extractWeaknessConcept(raw);
+      const normalized = normalizeWeakness(concept);
+      if (!normalized || seenInEngine.has(normalized)) return;
+      seenInEngine.add(normalized);
+
+      if (!weaknessMap.has(normalized)) {
+        weaknessMap.set(normalized, { label: formatWeaknessConcept(concept), count: 0 });
+      }
+      weaknessMap.get(normalized).count += 1;
+    });
+  });
+
+  const entries = Array.from(weaknessMap.values());
+  const common = entries
+    .filter((item) => item.count === totalEngines)
+    .map((item) => item.label);
+
+  const repeated = entries
+    .filter((item) => item.count > 1 && item.count < totalEngines)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 3)
+    .map((item) => ({ label: item.label, count: item.count }));
+
+  return { totalEngines, common, repeated };
+}
+
 export default function AIVisibilityLabPage({ onSignUp }) {
-  const { user } = useAuth();
-  const isPrivileged = user?.is_privileged || false;
   const {
     isGuest, remainingUses, hasReachedLimit, incrementUsage,
     showLimitModal, setShowLimitModal,
   } = useGuestMode("ai_visibility_lab");
-
-  const effectiveIsGuest         = isPrivileged ? false : isGuest;
-  const effectiveHasReachedLimit = isPrivileged ? false : hasReachedLimit;
 
   const [query, setQuery]                   = useState("");
   const [url, setUrl]                       = useState("");
@@ -83,11 +147,11 @@ export default function AIVisibilityLabPage({ onSignUp }) {
     e.preventDefault();
     if (!url.trim() || !query.trim()) return;
 
-    if (effectiveIsGuest && effectiveHasReachedLimit) {
+    if (isGuest && hasReachedLimit) {
       setShowLimitModal(true);
       return;
     }
-    if (effectiveIsGuest && !incrementUsage()) return;
+    if (isGuest && !incrementUsage()) return;
 
     setError("");
     setLoading(true);
@@ -128,7 +192,7 @@ export default function AIVisibilityLabPage({ onSignUp }) {
         </p>
       </div>
 
-      {effectiveIsGuest && (
+      {isGuest && (
         <GuestBanner remainingUses={remainingUses} onSignUp={onSignUp || (() => {})} />
       )}
 
@@ -149,7 +213,7 @@ export default function AIVisibilityLabPage({ onSignUp }) {
                 required
                 minLength={3}
                 maxLength={200}
-                disabled={effectiveIsGuest && effectiveHasReachedLimit}
+                disabled={isGuest && hasReachedLimit}
               />
             </div>
             <div>
@@ -163,7 +227,7 @@ export default function AIVisibilityLabPage({ onSignUp }) {
                 placeholder="https://example.com/page"
                 className="glass-input w-full h-12 px-4 text-sm"
                 required
-                disabled={effectiveIsGuest && effectiveHasReachedLimit}
+                disabled={isGuest && hasReachedLimit}
               />
             </div>
           </div>
@@ -178,7 +242,7 @@ export default function AIVisibilityLabPage({ onSignUp }) {
                 : <Microscope className="w-4 h-4" />}
               {loading
                 ? "Analyzing..."
-                : effectiveIsGuest && effectiveHasReachedLimit
+                : isGuest && hasReachedLimit
                   ? "Sign In to Continue"
                   : "Run Analysis"}
             </button>
@@ -229,7 +293,7 @@ export default function AIVisibilityLabPage({ onSignUp }) {
       )}
 
       {/* Results */}
-      {hasResults && !loading && !(effectiveIsGuest && effectiveHasReachedLimit) && (
+      {hasResults && !loading && !(isGuest && hasReachedLimit) && (
         <div className="space-y-6">
 
           {/* Summary Cards */}
@@ -260,7 +324,7 @@ export default function AIVisibilityLabPage({ onSignUp }) {
                   </p>
                 </>
               ) : (
-                <p className="text-gray-600 mt-4">—</p>
+                <p className="text-gray-600 mt-4">,</p>
               )}
             </div>
             <div className="glass-card p-5 text-center">
@@ -474,7 +538,7 @@ export default function AIVisibilityLabPage({ onSignUp }) {
                         {engineResult.overall_stats.best_engine.score}
                       </p>
                     </>
-                  ) : <p className="text-gray-600">—</p>}
+                  ) : <p className="text-gray-600">,</p>}
                 </div>
                 <div className="glass-card p-5 text-center">
                   <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Query Relevance</p>
@@ -655,6 +719,50 @@ export default function AIVisibilityLabPage({ onSignUp }) {
                     </div>
                   );
                 })}
+
+                {(() => {
+                  const weaknessSummary = summarizeWeaknesses(engineResult.results || []);
+                  const hasCommon = weaknessSummary.common.length > 0;
+
+                  return (
+                    <div
+                      className="glass-card p-5"
+                      style={{ borderColor: "rgba(248,113,113,0.25)" }}
+                      data-testid="common-weakness-section"
+                    >
+                      <div className="flex items-center gap-2 mb-3">
+                        <XCircle className="w-4 h-4 text-red-400" />
+                        <h3 className="text-sm font-semibold text-white">Common Weakness</h3>
+                      </div>
+
+                      {hasCommon ? (
+                        <ul className="space-y-1.5">
+                          {weaknessSummary.common.map((weakness, i) => (
+                            <li key={`${weakness}-${i}`} className="flex items-start gap-2 text-xs text-red-300">
+                              <XCircle className="w-3.5 h-3.5 shrink-0 mt-0.5 text-red-400" />
+                              <span>{weakness}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <div className="space-y-2">
+                          <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                            No single weakness appears across all {weaknessSummary.totalEngines} selected engines.
+                          </p>
+                          {weaknessSummary.repeated.length > 0 && (
+                            <ul className="space-y-1">
+                              {weaknessSummary.repeated.map((item, i) => (
+                                <li key={`${item.label}-${i}`} className="text-xs text-gray-400">
+                                  {item.label} ({item.count}/{weaknessSummary.totalEngines} engines)
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Page info */}
@@ -675,7 +783,7 @@ export default function AIVisibilityLabPage({ onSignUp }) {
                   <div>
                     <p className="text-xs text-gray-600">Word Count</p>
                     <p className="text-sm font-medium text-white">
-                      {engineResult.page_info?.word_count?.toLocaleString() || "—"}
+                      {engineResult.page_info?.word_count?.toLocaleString() || ","}
                     </p>
                   </div>
                   <div>
@@ -701,7 +809,7 @@ export default function AIVisibilityLabPage({ onSignUp }) {
           )}
 
           {/* Locked sections for guests */}
-          {effectiveIsGuest && !effectiveHasReachedLimit && (
+          {isGuest && !hasReachedLimit && (
             <div className="space-y-4">
               <LockedSection
                 title="Deep Competitive Analysis"

@@ -25,7 +25,7 @@ import {
   LayoutDashboard, FileSearch, Search, BarChart3, Eye,
 } from "lucide-react";
 
-// Lazy-load marketing & legal pages — only fetched when first visited
+// Lazy-load marketing & legal pages , only fetched when first visited
 const AboutPage        = lazy(() => import("./pages/AboutPage"));
 const BlogPage         = lazy(() => import("./pages/BlogPage"));
 const CareersPage      = lazy(() => import("./pages/CareersPage"));
@@ -37,7 +37,7 @@ const CookiePolicyPage = lazy(() => import("./pages/CookiePolicyPage"));
 // Pages rendered within the authenticated sidebar layout
 const APP_PAGES = ["dashboard","audits","ai-visibility-lab","monitor","reports","advanced","simulator","compare","executive","profile"];
 
-// Mobile bottom nav — 5 key destinations
+// Mobile bottom nav , 5 key destinations
 const MOBILE_NAV = [
   { id: "dashboard", label: "Home",    icon: LayoutDashboard },
   { id: "audits",    label: "Audits",  icon: FileSearch },
@@ -100,7 +100,6 @@ function AppContent() {
   };
 
   const handleShowFeatureLocked = (feature) => {
-    if (user?.is_privileged) return;
     const featureNames = {
       'dashboard': 'Dashboard', 'monitor': 'Monitor Pages',
       'reports': 'Reports', 'advanced': 'Advanced Audit', 'simulator': 'Strategy Simulator',
@@ -203,7 +202,7 @@ function AppContent() {
   if (isAppPage) {
     return (
       <div className="flex min-h-screen" style={{ background: "var(--bg)" }}>
-        {/* Sidebar — hidden on mobile (< md) */}
+        {/* Sidebar , hidden on mobile (< md) */}
         <div className="hidden md:block">
           <Sidebar
             activePage={activePage}
@@ -212,7 +211,7 @@ function AppContent() {
           />
         </div>
 
-        {/* Main content — offset by sidebar on md+ */}
+        {/* Main content , offset by sidebar on md+ */}
         <main
           className="flex-1 pb-20 md:pb-0"
           style={{ marginLeft: "0" }}

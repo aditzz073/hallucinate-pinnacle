@@ -114,7 +114,7 @@ export default function CareersPage() {
           >
             Send us a note
           </a>{" "}
-          — we're always interested in exceptional people.
+          , we're always interested in exceptional people.
         </p>
       </div>
     </div>

@@ -14,14 +14,7 @@ import LockedSection from "../components/ui/LockedSection";
 
 export default function AITestsPage({ onSignUp }) {
   const { user } = useAuth();
-  
-  // Skip guest mode entirely for privileged users
-  const isPrivileged = user?.is_privileged || false;
   const { isGuest, remainingUses, hasReachedLimit, incrementUsage, showLimitModal, setShowLimitModal } = useGuestMode('ai_tests');
-  
-  // Privileged users are never treated as guests
-  const effectiveIsGuest = isPrivileged ? false : isGuest;
-  const effectiveHasReachedLimit = isPrivileged ? false : hasReachedLimit;
 
   const [url, setUrl] = useState("");
   const [query, setQuery] = useState("");
@@ -49,14 +42,12 @@ export default function AITestsPage({ onSignUp }) {
     e.preventDefault();
     if (!url.trim() || !query.trim()) return;
 
-    // If guest has reached limit (but not privileged), show modal immediately
-    if (effectiveIsGuest && effectiveHasReachedLimit) {
+    if (isGuest && hasReachedLimit) {
       setShowLimitModal(true);
       return;
     }
 
-    // Check guest limit before making API call (skip for privileged)
-    if (effectiveIsGuest && !incrementUsage()) {
+    if (isGuest && !incrementUsage()) {
       return;
     }
 
@@ -85,7 +76,7 @@ export default function AITestsPage({ onSignUp }) {
       </div>
 
       {/* Guest Mode Banner */}
-      {effectiveIsGuest && <GuestBanner remainingUses={remainingUses} onSignUp={onSignUp || (() => {})} />}
+      {isGuest && <GuestBanner remainingUses={remainingUses} onSignUp={onSignUp || (() => {})} />}
 
       {/* Form */}
       <div className="glass-card p-6">
@@ -100,7 +91,7 @@ export default function AITestsPage({ onSignUp }) {
               placeholder="https://example.com/page" 
               className="glass-input w-full h-12 px-4 text-sm" 
               required 
-              disabled={effectiveIsGuest && effectiveHasReachedLimit}
+              disabled={isGuest && hasReachedLimit}
             />
           </div>
           <div className="flex gap-4">
@@ -114,7 +105,7 @@ export default function AITestsPage({ onSignUp }) {
                 placeholder="e.g., best CRM software" 
                 className="glass-input w-full h-12 px-4 text-sm" 
                 required 
-                disabled={effectiveIsGuest && effectiveHasReachedLimit}
+                disabled={isGuest && hasReachedLimit}
               />
             </div>
             <div className="flex items-end">
@@ -125,7 +116,7 @@ export default function AITestsPage({ onSignUp }) {
                 className="btn-primary h-12 px-6 rounded-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-                {loading ? "Analyzing..." : (effectiveIsGuest && effectiveHasReachedLimit ? "Sign In to Continue" : "Run Test")}
+                {loading ? "Analyzing..." : (isGuest && hasReachedLimit ? "Sign In to Continue" : "Run Test")}
               </button>
             </div>
           </div>
@@ -161,7 +152,7 @@ export default function AITestsPage({ onSignUp }) {
       )}
 
       {/* Hide results when guest reaches limit */}
-      {activeResult && !(effectiveIsGuest && effectiveHasReachedLimit) && (
+      {activeResult && !(isGuest && hasReachedLimit) && (
         <div className="space-y-4" data-testid="ai-test-result">
           {/* Main Scores */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -297,7 +288,7 @@ export default function AITestsPage({ onSignUp }) {
       )}
 
       {/* Locked Sections for Guests - hide when limit reached */}
-      {effectiveIsGuest && activeResult && !effectiveHasReachedLimit && (
+      {isGuest && activeResult && !hasReachedLimit && (
         <div className="space-y-4">
           <LockedSection
             title="Deep Competitive Analysis"

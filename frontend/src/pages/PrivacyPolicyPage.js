@@ -19,7 +19,7 @@ We also collect usage data automatically when you interact with Pinnacle.ai, inc
   },
   {
     title: "3. Information sharing",
-    body: `We do not sell, trade, or rent your personal information to third parties. We may share information with third-party vendors and service providers that perform services on our behalf — such as hosting, analytics, and email delivery — solely to the extent necessary to provide those services.
+    body: `We do not sell, trade, or rent your personal information to third parties. We may share information with third-party vendors and service providers that perform services on our behalf , such as hosting, analytics, and email delivery , solely to the extent necessary to provide those services.
 
 We may disclose information if we believe disclosure is in accordance with, or required by, any applicable law or legal process, or if we believe your actions are inconsistent with our user agreements or policies.`,
   },
