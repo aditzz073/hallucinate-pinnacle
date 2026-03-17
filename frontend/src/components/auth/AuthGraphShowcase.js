@@ -26,7 +26,7 @@ function buildPath(seed, phase, width = 170, height = 60, points = 9) {
   for (let i = 0; i < points; i += 1) {
     const progress = i / (points - 1);
     const wave = Math.sin((progress * Math.PI * 2) + phase + (seed * 0.6)) * waveAmp;
-    const jitter = (seededRandom(seed + (i * 7.13) + (phase * 10)) - 0.5) * 0.08;
+    const jitter = (seededRandom(seed + (i * 7.13)) - 0.5) * 0.04;
     const raw = base + (progress * trend) + wave + jitter;
     const normalized = Math.min(0.95, Math.max(0.05, raw));
     const y = Math.round(8 + ((1 - normalized) * (height - 16)));
@@ -42,7 +42,7 @@ function makeSeries(phase = 0) {
     id: i,
     path: buildPath((i + 1) * 10.7, phase),
     color: SERIES_COLORS[i % SERIES_COLORS.length],
-    value: 58 + Math.round(seededRandom((i + 1) * 31.7 + phase) * 31),
+    value: Math.max(52, Math.min(89, 64 + (i * 2) + Math.round(Math.sin(phase + (i * 0.9)) * 5))),
     ...layout,
   }));
 }
@@ -53,8 +53,8 @@ export default function AuthGraphShowcase() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setPhase((p) => p + 0.42);
-    }, 1500);
+      setPhase((p) => p + 0.18);
+    }, 900);
     return () => clearInterval(interval);
   }, []);
 
@@ -92,7 +92,7 @@ export default function AuthGraphShowcase() {
               fill={`url(#authGradient-${card.id})`}
               opacity="0.45"
               className="auth-graph-fill"
-              style={{ transition: "d 1.2s ease-in-out" }}
+              style={{ transition: "d 0.9s ease-in-out" }}
             />
             <path
               d={card.path}
@@ -100,7 +100,7 @@ export default function AuthGraphShowcase() {
               strokeWidth="2"
               fill="none"
               className="auth-graph-path"
-              style={{ transition: "d 1.2s ease-in-out" }}
+              style={{ transition: "d 0.9s ease-in-out" }}
             />
           </svg>
 

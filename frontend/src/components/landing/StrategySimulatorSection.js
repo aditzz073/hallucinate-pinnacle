@@ -1,6 +1,9 @@
 import React from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Target } from "lucide-react";
 import ENGINE_LOGOS from "../../utils/engineLogos";
+import SectionWrapper from "../../hoc/SectionWrapper";
+import { slideInLeft, slideInRight } from "../../utils/motion";
 
 const SIM_STEPS = [
   { step: "01", label: "Analyze your current AI visibility score" },
@@ -17,8 +20,10 @@ const ENGINE_DELTAS = [
 ];
 
 export default function StrategySimulatorSection({ onNavigate }) {
+  const reduceMotion = useReducedMotion();
+
   return (
-    <section
+    <SectionWrapper
       className="py-24 px-8"
       style={{ borderTop: "1px solid var(--border)" }}
     >
@@ -26,9 +31,7 @@ export default function StrategySimulatorSection({ onNavigate }) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
           {/* ── Left: copy ─────────────────────────────────────────────── */}
-          <div
-            style={{ animation: "fadeUp 300ms ease both" }}
-          >
+          <motion.div variants={slideInLeft}>
             <div
               className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6 text-xs font-medium"
               style={{
@@ -72,22 +75,25 @@ export default function StrategySimulatorSection({ onNavigate }) {
               ))}
             </div>
 
-            <button
+            <motion.button
               onClick={() => onNavigate?.("simulator")}
               className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-medium text-white transition-transform hover:scale-[1.02]"
               style={{
                 background: "linear-gradient(135deg, #4F46E5, #7C3AED)",
               }}
+              whileHover={reduceMotion ? undefined : { y: -2 }}
+              whileTap={reduceMotion ? undefined : { scale: 0.97 }}
+              transition={{ duration: 0.15, ease: "easeOut" }}
             >
               Open Strategy Simulator
               <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
 
           {/* ── Right: UI mockup ───────────────────────────────────────── */}
-          <div
+          <motion.div
             className="transition-transform duration-300 hover:scale-[1.02]"
-            style={{ animation: "fadeUp 300ms ease 80ms both" }}
+            variants={slideInRight}
           >
             <div
               className="rounded-2xl overflow-hidden"
@@ -202,17 +208,10 @@ export default function StrategySimulatorSection({ onNavigate }) {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
         </div>
       </div>
-
-      <style>{`
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
-    </section>
+    </SectionWrapper>
   );
 }

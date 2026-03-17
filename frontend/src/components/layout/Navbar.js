@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { useAuth } from "../../context/AuthContext";
 import Logo from "../ui/Logo";
 import {
@@ -97,6 +98,7 @@ function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate, onShow
 export default function Navbar({ activePage, onNavigate, isLanding = false, onGetStarted, onShowFeatureLocked, onLogout }) {
   const { user } = useAuth();
   const [scrolled, setScrolled] = useState(false);
+  const reduceMotion = useReducedMotion();
 
   // Add scroll listener for glass effect
   useEffect(() => {
@@ -139,19 +141,22 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
   // Landing page navbar - show full nav for guests to access Audits and AI Tests
   if (isLanding) {
     return (
-      <header 
-        className="fixed top-0 left-0 right-0 z-50 flex justify-center py-4 px-4 transition-all duration-1000 ease-in-out"
+      <motion.header
+        className="fixed top-0 left-0 right-0 z-50 flex justify-center py-4 px-4 transition-all duration-300 ease-out"
         data-testid="navbar"
         style={{ transform: 'translateZ(0)' }}
+        initial={reduceMotion ? false : { opacity: 0, y: -8 }}
+        animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
       >
-        <nav className={`flex items-center gap-1 rounded-full border px-6 py-2.5 transition-all duration-1000 ease-in-out ${
+        <nav className={`flex items-center gap-1 rounded-full border px-6 py-2.5 transition-all duration-300 ease-out ${
           scrolled 
             ? 'bg-black/70 backdrop-blur-xl border-white/25 shadow-2xl' 
             : 'bg-black/30 backdrop-blur-lg border-white/15 shadow-lg'
-        }`}>
+        }`} style={{ opacity: scrolled ? 1 : 0.94 }}>
           {/* Logo */}
           <div 
-            className="flex items-center gap-2 pr-4 border-r border-white/10 mr-3 cursor-pointer hover:opacity-80 transition-all duration-1000 ease-in-out"
+            className="flex items-center gap-2 pr-4 border-r border-white/10 mr-3 cursor-pointer hover:opacity-85 transition-all duration-200 ease-out"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             data-testid="nav-logo-landing"
           >
@@ -222,24 +227,27 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
             </button>
           </div>
         </nav>
-      </header>
+      </motion.header>
     );
   }
 
   return (
-    <header 
-      className="fixed top-0 left-0 right-0 z-50 flex justify-center py-4 px-4 transition-all duration-1000 ease-in-out"
+    <motion.header
+      className="fixed top-0 left-0 right-0 z-50 flex justify-center py-4 px-4 transition-all duration-300 ease-out"
       data-testid="navbar"
       style={{ transform: 'translateZ(0)' }}
+      initial={reduceMotion ? false : { opacity: 0, y: -8 }}
+      animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
     >
-      <nav className={`flex items-center gap-1 rounded-full border px-6 py-2.5 transition-all duration-1000 ease-in-out ${
+      <nav className={`flex items-center gap-1 rounded-full border px-6 py-2.5 transition-all duration-300 ease-out ${
         scrolled 
           ? 'bg-black/70 backdrop-blur-xl border-white/25 shadow-2xl' 
           : 'bg-black/30 backdrop-blur-lg border-white/15 shadow-lg'
-      }`}>
+      }`} style={{ opacity: scrolled ? 1 : 0.94 }}>
         {/* Logo */}
         <div 
-          className="flex items-center gap-2 pr-4 border-r border-white/10 mr-3 cursor-pointer hover:opacity-80 transition-all duration-1000 ease-in-out"
+          className="flex items-center gap-2 pr-4 border-r border-white/10 mr-3 cursor-pointer hover:opacity-85 transition-all duration-200 ease-out"
           onClick={handleLogoClick}
           data-testid="nav-logo-app"
           title="Return to home"
@@ -319,6 +327,6 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
           </div>
         )}
       </nav>
-    </header>
+    </motion.header>
   );
 }

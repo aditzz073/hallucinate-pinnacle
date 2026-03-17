@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight, ArrowDown, Eye, Settings2,
   TrendingUp, CheckCircle, BarChart2, Cpu, Mail, Phone, MessageSquare,
@@ -8,6 +9,8 @@ import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tool
 import StrategySimulatorSection from "../components/landing/StrategySimulatorSection";
 import ENGINE_LOGOS from "../utils/engineLogos";
 import IconContainer from "../components/ui/IconContainer";
+import SectionWrapper from "../hoc/SectionWrapper";
+import { fadeIn, fadeUp, slideInLeft, slideInRight } from "../utils/motion";
 
 const VISIBILITY_TREND_SERIES = [
   { key: "citation",      label: "Citation Probability", color: "#8B5CF6" },
@@ -26,6 +29,40 @@ const VISIBILITY_TREND_DATA = [
   { day: "Apr 17", citation: 88, readiness: 71, summarization: 53, brand: 58, schema: 52 },
   { day: "Apr 18", citation: 68, readiness: 60, summarization: 78, brand: 40, schema: 34 },
 ];
+
+function CountUpNumber({ value, duration = 800 }) {
+  const reduceMotion = useReducedMotion();
+  const target = Number(value);
+  const [display, setDisplay] = useState(reduceMotion ? target : 0);
+
+  useEffect(() => {
+    if (!Number.isFinite(target)) {
+      setDisplay(value);
+      return undefined;
+    }
+
+    if (reduceMotion) {
+      setDisplay(target);
+      return undefined;
+    }
+
+    let rafId;
+    const start = performance.now();
+
+    const tick = (now) => {
+      const progress = Math.min(1, (now - start) / duration);
+      const eased = 1 - ((1 - progress) ** 3);
+      const next = Math.round(target * eased);
+      setDisplay(next);
+      if (progress < 1) rafId = requestAnimationFrame(tick);
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [target, duration, reduceMotion, value]);
+
+  return <>{display}</>;
+}
 
 function VisibilityTrendTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
@@ -61,6 +98,7 @@ function VisibilityTrendTooltip({ active, payload, label }) {
 
 // ── Dashboard mockup shared by Hero + Showcase ────────────────────────────────
 function DashboardMockup() {
+  const reduceMotion = useReducedMotion();
   const firstCitation = VISIBILITY_TREND_DATA[0]?.citation || 0;
   const lastCitation = VISIBILITY_TREND_DATA[VISIBILITY_TREND_DATA.length - 1]?.citation || 0;
   const citationDelta = lastCitation - firstCitation;
@@ -89,21 +127,23 @@ function DashboardMockup() {
       {/* Score cards */}
       <div className="grid grid-cols-3 p-4" style={{ gap: "12px" }}>
         {[
-          { label: "AI Visibility",   value: "81", unit: "/100", color: "#4F46E5" },
-          { label: "Citation Prob.",  value: "74", unit: "%",    color: "#7C3AED" },
-          { label: "Eng. Readiness",  value: "68", unit: "%",    color: "#0891B2" },
+          { label: "AI Visibility",   value: 81, unit: "/100", color: "#4F46E5" },
+          { label: "Citation Prob.",  value: 74, unit: "%",    color: "#7C3AED" },
+          { label: "Eng. Readiness",  value: 68, unit: "%",    color: "#0891B2" },
         ].map((m) => (
-          <div
+          <motion.div
             key={m.label}
             className="rounded-xl p-3"
             style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}
+            whileHover={reduceMotion ? undefined : { y: -2, scale: 1.005 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
           >
             <p className="text-xs mb-1" style={{ color: "var(--muted)" }}>{m.label}</p>
             <p className="text-2xl font-bold" style={{ color: m.color }}>
-              {m.value}
+              <CountUpNumber value={m.value} duration={800} />
               <span className="text-sm font-normal" style={{ color: "var(--muted)" }}>{m.unit}</span>
             </p>
-          </div>
+          </motion.div>
         ))}
       </div>
 
@@ -207,68 +247,86 @@ function DashboardMockup() {
 
 // ── 1. Hero Section ───────────────────────────────────────────────────────────
 function HeroSection({ onGetStarted, onNavigate }) {
+  const reduceMotion = useReducedMotion();
+
   return (
-    <section className="relative min-h-[92vh] flex items-center pt-8 md:pt-12">
-      {/* Subtle dot grid */}
+    <SectionWrapper className="relative min-h-[92vh] flex items-center pt-8 md:pt-12">
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)`,
-          backgroundSize: "72px 72px",
+          backgroundImage: `linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px)`,
+          backgroundSize: "84px 84px",
         }}
       />
       <div
-        className="absolute top-1/3 left-1/4 w-[600px] h-[500px] pointer-events-none"
-        style={{ background: "radial-gradient(ellipse, rgba(79,70,229,0.10) 0%, transparent 70%)" }}
-      />
-      <div
-        className="absolute top-1/4 right-0 w-[480px] h-[480px] pointer-events-none"
-        style={{ background: "radial-gradient(ellipse, rgba(124,58,237,0.08) 0%, transparent 70%)" }}
+        className="absolute top-8 right-0 w-[440px] h-[420px] pointer-events-none"
+        style={{ background: "radial-gradient(ellipse, rgba(79,70,229,0.08) 0%, transparent 72%)" }}
       />
 
       <div className="relative w-full max-w-[1120px] mx-auto px-8 py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
           {/* Left: copy */}
-          <div>
-            <div
+          <motion.div variants={slideInLeft}>
+            <motion.div
               className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-8 text-xs font-medium"
               style={{
                 background: "rgba(79,70,229,0.12)",
                 border: "1px solid rgba(79,70,229,0.3)",
                 color: "#A5B4FC",
               }}
+              variants={fadeIn}
             >
               <Cpu className="w-3.5 h-3.5" />
               AI Visibility Platform
-            </div>
+            </motion.div>
 
-            <h1
+            <motion.h1
               className="font-display text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.05] mb-6"
               style={{ color: "var(--foreground)", letterSpacing: "-0.03em" }}
+              initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+              whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ delay: 0.1, duration: 0.6, ease: "easeOut" }}
             >
               Control How AI<br />
               <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
                 Talks About
               </span>{" "}
               Your Brand
-            </h1>
+            </motion.h1>
 
-            <p className="text-lg mb-10 max-w-md leading-relaxed" style={{ color: "var(--muted)" }}>
+            <motion.p
+              className="text-lg mb-10 max-w-md leading-relaxed"
+              style={{ color: "var(--muted)" }}
+              initial={reduceMotion ? false : { opacity: 0, y: 16 }}
+              whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ delay: 0.2, duration: 0.5, ease: "easeOut" }}
+            >
               Analyze, predict, and optimize how ChatGPT, Gemini, Perplexity, and Copilot recognize your content.
-            </p>
+            </motion.p>
 
-            <div className="flex items-center flex-wrap gap-3 mb-10">
-              <button
+            <motion.div
+              className="flex items-center flex-wrap gap-3 mb-10"
+              initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+              whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ delay: 0.3, duration: 0.45, ease: "easeOut" }}
+            >
+              <motion.button
                 data-testid="hero-get-started"
                 onClick={() => onNavigate("audits")}
                 className="btn-primary inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold"
+                whileHover={reduceMotion ? undefined : { y: -2 }}
+                whileTap={reduceMotion ? undefined : { scale: 0.97 }}
+                transition={{ duration: 0.15, ease: "easeOut" }}
               >
                 Run AI Visibility Audit
                 <ArrowRight className="w-4 h-4" />
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 data-testid="hero-learn-more"
                 onClick={onGetStarted}
                 className="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-medium transition-colors"
@@ -279,11 +337,14 @@ function HeroSection({ onGetStarted, onNavigate }) {
                 }}
                 onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
                 onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
+                whileHover={reduceMotion ? undefined : { y: -2 }}
+                whileTap={reduceMotion ? undefined : { scale: 0.97 }}
+                transition={{ duration: 0.15, ease: "easeOut" }}
               >
                 Book Demo
                 <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
 
             <div className="flex items-center flex-wrap gap-6">
               {[
@@ -297,20 +358,23 @@ function HeroSection({ onGetStarted, onNavigate }) {
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
 
           {/* Right: dashboard mockup */}
-          <div className="flex justify-end">
-            <div style={{
+          <motion.div className="flex justify-end" variants={slideInRight}>
+            <motion.div
+              variants={fadeUp}
+              style={{
               transform: "perspective(1200px) rotateY(-4deg) rotateX(2deg)",
               filter: "drop-shadow(0 40px 80px rgba(79,70,229,0.25))",
-            }}>
+            }}
+            >
               <DashboardMockup />
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
-    </section>
+    </SectionWrapper>
   );
 }
 
@@ -325,10 +389,12 @@ const AI_ENGINES = [
 ];
 
 function AIEngineGrid() {
+  const reduceMotion = useReducedMotion();
+
   return (
-    <section className="py-20 px-8" style={{ borderTop: "1px solid var(--border)" }}>
+    <SectionWrapper className="py-20 px-8" style={{ borderTop: "1px solid var(--border)" }}>
       <div className="max-w-[1120px] mx-auto">
-        <div className="text-center mb-12">
+        <motion.div className="text-center mb-12" variants={fadeUp}>
           <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#4F46E5" }}>
             Coverage
           </p>
@@ -341,22 +407,17 @@ function AIEngineGrid() {
           <p className="text-base max-w-xl mx-auto" style={{ color: "var(--muted)" }}>
             Pinnacle analyzes your visibility across every major AI engine.
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {AI_ENGINES.map((engine) => (
-            <div
+            <motion.div
               key={engine.id}
               className="rounded-xl px-4 py-5 text-center transition-all duration-200"
               style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-              onMouseEnter={e => {
-                e.currentTarget.style.borderColor = `${engine.color}40`;
-                e.currentTarget.style.transform = "translateY(-2px)";
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.borderColor = "var(--border)";
-                e.currentTarget.style.transform = "translateY(0)";
-              }}
+              variants={fadeUp}
+              whileHover={reduceMotion ? undefined : { y: -2, scale: 1.005 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
             >
               <IconContainer className="mx-auto mb-3">
                 <img src={ENGINE_LOGOS[engine.id]} alt={engine.name} className="w-6 h-6 object-contain" />
@@ -364,11 +425,11 @@ function AIEngineGrid() {
               <p className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>
                 {engine.name}
               </p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
-    </section>
+    </SectionWrapper>
   );
 }
 
@@ -398,12 +459,12 @@ const FLOW_STEPS = ["User Query", "AI Generated Answer", "Recognised Sources", "
 
 function SearchShiftSection() {
   return (
-    <section className="py-24 px-8">
+    <SectionWrapper className="py-24 px-8">
       <div className="max-w-[1120px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
           {/* Left: story */}
-          <div>
+          <motion.div variants={slideInLeft}>
             <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "#4F46E5" }}>
               The Shift
             </p>
@@ -433,10 +494,10 @@ function SearchShiftSection() {
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
 
           {/* Right: flow diagram */}
-          <div className="flex justify-center">
+          <motion.div className="flex justify-center" variants={slideInRight}>
             <div className="space-y-2 w-full max-w-[300px]">
               {FLOW_STEPS.map((step, i) => (
                 <div key={step}>
@@ -483,10 +544,10 @@ function SearchShiftSection() {
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
-    </section>
+    </SectionWrapper>
   );
 }
 
@@ -528,10 +589,12 @@ const PILLARS = [
 ];
 
 function PlatformPillars() {
+  const reduceMotion = useReducedMotion();
+
   return (
-    <section className="py-24 px-8" style={{ borderTop: "1px solid var(--border)" }}>
+    <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid var(--border)" }}>
       <div className="max-w-[1120px] mx-auto">
-        <div className="text-center mb-14">
+        <motion.div className="text-center mb-14" variants={fadeUp}>
           <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#4F46E5" }}>
             Platform
           </p>
@@ -544,18 +607,19 @@ function PlatformPillars() {
           <p className="text-base max-w-xl mx-auto" style={{ color: "var(--muted)" }}>
             Everything you need to understand, optimize, and monitor your AI visibility.
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {PILLARS.map((pillar) => {
             const Icon = pillar.icon;
             return (
-              <div
+              <motion.div
                 key={pillar.title}
                 className="rounded-2xl p-7 transition-all duration-200"
                 style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = `${pillar.color}40`}
-                onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
+                variants={fadeUp}
+                whileHover={reduceMotion ? undefined : { y: -2, scale: 1.005 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
               >
                 <IconContainer className="mb-5">
                   <Icon className="w-6 h-6" style={{ color: pillar.color }} />
@@ -571,12 +635,12 @@ function PlatformPillars() {
                     </li>
                   ))}
                 </ul>
-              </div>
+              </motion.div>
             );
           })}
         </div>
       </div>
-    </section>
+    </SectionWrapper>
   );
 }
 
@@ -589,13 +653,15 @@ const LAB_STEPS = [
 ];
 
 function AIVisibilityLabPreview({ onNavigate }) {
+  const reduceMotion = useReducedMotion();
+
   return (
-    <section className="py-24 px-8" style={{ borderTop: "1px solid var(--border)" }}>
+    <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid var(--border)" }}>
       <div className="max-w-[1120px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
           {/* Left: copy */}
-          <div>
+          <motion.div variants={slideInLeft}>
             <div
               className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6 text-xs font-medium"
               style={{
@@ -637,17 +703,20 @@ function AIVisibilityLabPreview({ onNavigate }) {
               ))}
             </div>
 
-            <button
+            <motion.button
               onClick={() => onNavigate?.("ai-visibility-lab")}
               className="btn-primary inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold"
+              whileHover={reduceMotion ? undefined : { y: -2 }}
+              whileTap={reduceMotion ? undefined : { scale: 0.97 }}
+              transition={{ duration: 0.15, ease: "easeOut" }}
             >
               Open AI Visibility Lab
               <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
 
           {/* Right: mini lab UI preview */}
-          <div>
+          <motion.div variants={slideInRight}>
             <div
               className="rounded-2xl overflow-hidden"
               style={{
@@ -751,16 +820,17 @@ function AIVisibilityLabPreview({ onNavigate }) {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
-    </section>
+    </SectionWrapper>
   );
 }
 
 // ── 7. Free Audit CTA ─────────────────────────────────────────────────────────
 function FreeAuditCTA({ onGetStarted, onNavigate }) {
   const [auditUrl, setAuditUrl] = useState("");
+  const reduceMotion = useReducedMotion();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -768,14 +838,15 @@ function FreeAuditCTA({ onGetStarted, onNavigate }) {
   };
 
   return (
-    <section className="py-24 px-8" style={{ borderTop: "1px solid var(--border)" }}>
+    <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid var(--border)" }}>
       <div className="max-w-[900px] mx-auto">
-        <div
+        <motion.div
           className="rounded-2xl p-10 lg:p-14 text-center"
           style={{
             background: "linear-gradient(135deg, rgba(79,70,229,0.08) 0%, rgba(124,58,237,0.05) 100%)",
             border: "1px solid rgba(79,70,229,0.25)",
           }}
+          variants={fadeUp}
         >
           <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "#818CF8" }}>
             Get Started Free
@@ -816,82 +887,94 @@ function FreeAuditCTA({ onGetStarted, onNavigate }) {
           {/* Preview cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
             {[
-              { label: "AI Visibility Score",    value: "78", sub: "Combined score out of 100",   color: "#4F46E5" },
-              { label: "Citation Probability",   value: "64%", sub: "Likelihood of being cited",   color: "#7C3AED" },
-              { label: "Top Engine",             value: "ChatGPT", sub: "Best performing AI engine",   color: "#0891B2" },
+              { label: "AI Visibility Score", value: 78, valueSuffix: "", valuePrefix: "", sub: "Combined score out of 100", color: "#4F46E5" },
+              { label: "Citation Probability", value: 64, valueSuffix: "%", valuePrefix: "", sub: "Likelihood of being cited", color: "#7C3AED" },
+              { label: "Top Engine", textValue: "ChatGPT", sub: "Best performing AI engine", color: "#0891B2" },
             ].map((card) => (
-              <div
+              <motion.div
                 key={card.label}
                 className="rounded-xl p-4"
                 style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
+                variants={fadeUp}
+                whileHover={reduceMotion ? undefined : { y: -2, scale: 1.005 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
               >
                 <p className="text-xs mb-2" style={{ color: "var(--muted)" }}>{card.label}</p>
-                <p className="text-2xl font-bold mb-1" style={{ color: card.color }}>{card.value}</p>
+                <p className="text-2xl font-bold mb-1" style={{ color: card.color }}>
+                  {card.textValue || (
+                    <>
+                      {card.valuePrefix}
+                      <CountUpNumber value={card.value} duration={800} />
+                      {card.valueSuffix}
+                    </>
+                  )}
+                </p>
                 <p className="text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>{card.sub}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
-    </section>
+    </SectionWrapper>
   );
 }
 
 const CLI_TYPING_COMMAND = "pinnacle analyze https://site.com";
 
 function PinnacleCLISection({ onGetStarted }) {
+  const reduceMotion = useReducedMotion();
   const [typedCommand, setTypedCommand] = useState("");
 
   useEffect(() => {
+    if (reduceMotion) {
+      setTypedCommand(CLI_TYPING_COMMAND);
+      return undefined;
+    }
+
     let timeoutId;
     let index = 0;
-    let deleting = false;
+    let pause = false;
 
     const tick = () => {
-      if (!deleting) {
-        index += 1;
-        setTypedCommand(CLI_TYPING_COMMAND.slice(0, index));
-
-        if (index >= CLI_TYPING_COMMAND.length) {
-          deleting = true;
-          timeoutId = setTimeout(tick, 1300);
-          return;
-        }
-
-        timeoutId = setTimeout(tick, 42);
+      if (pause) {
+        pause = false;
+        index = 0;
+        setTypedCommand("");
+        timeoutId = setTimeout(tick, 480);
         return;
       }
 
-      index -= 1;
-      setTypedCommand(CLI_TYPING_COMMAND.slice(0, Math.max(index, 0)));
+      index += 1;
+      setTypedCommand(CLI_TYPING_COMMAND.slice(0, index));
 
-      if (index <= 0) {
-        deleting = false;
-        timeoutId = setTimeout(tick, 460);
+      if (index >= CLI_TYPING_COMMAND.length) {
+        pause = true;
+        timeoutId = setTimeout(tick, 1500);
         return;
       }
 
-      timeoutId = setTimeout(tick, 20);
+      timeoutId = setTimeout(tick, 40);
     };
 
     timeoutId = setTimeout(tick, 500);
     return () => clearTimeout(timeoutId);
-  }, []);
+  }, [reduceMotion]);
 
   return (
-    <section className="px-8 py-[120px]" style={{ borderTop: "1px solid var(--border)" }}>
+    <SectionWrapper className="px-8 py-[120px]" style={{ borderTop: "1px solid var(--border)" }}>
       <div className="max-w-[1120px] mx-auto">
-        <div
+        <motion.div
           className="rounded-3xl p-8 lg:p-10"
           style={{
             background: "linear-gradient(135deg, rgba(79,70,229,0.12) 0%, rgba(124,58,237,0.09) 55%, rgba(8,145,178,0.08) 100%)",
             border: "1px solid rgba(124,58,237,0.28)",
             boxShadow: "0 18px 42px rgba(0,0,0,0.35)",
           }}
+          variants={fadeUp}
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
 
-            <div>
+            <motion.div variants={slideInLeft}>
               <span
                 className="inline-flex items-center mb-5"
                 style={{
@@ -950,7 +1033,7 @@ pinnacle analyze https://yoursite.com/page`}
                 </pre>
               </div>
 
-              <button
+              <motion.button
                 onClick={onGetStarted}
                 className="btn-secondary inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold"
                 style={{
@@ -958,14 +1041,17 @@ pinnacle analyze https://yoursite.com/page`}
                   color: "#DDD6FE",
                   background: "rgba(124,58,237,0.12)",
                 }}
+                whileHover={reduceMotion ? undefined : { y: -2 }}
+                whileTap={reduceMotion ? undefined : { scale: 0.97 }}
+                transition={{ duration: 0.15, ease: "easeOut" }}
               >
                 Join CLI Waitlist
                 <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
 
-            <div>
-              <div
+            <motion.div variants={slideInRight}>
+              <motion.div
                 className="rounded-xl p-5 transition-all duration-300"
                 style={{
                   background: "#0B0B14",
@@ -974,6 +1060,8 @@ pinnacle analyze https://yoursite.com/page`}
                   fontFamily: "monospace",
                   boxShadow: "0 0 40px rgba(124,58,237,0.15)",
                 }}
+                whileHover={reduceMotion ? undefined : { y: -4 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
               >
                 <div className="flex items-center gap-2 mb-5" aria-hidden="true">
                   <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#ff5f57" }} />
@@ -985,7 +1073,14 @@ pinnacle analyze https://yoursite.com/page`}
                   <div>
                     <span style={{ color: "#A78BFA" }}>$ </span>
                     <span style={{ color: "#EDE9FE" }}>{typedCommand}</span>
-                    <span className="inline-block animate-pulse" style={{ color: "#A78BFA" }}>|</span>
+                    <motion.span
+                      className="inline-block"
+                      style={{ color: "#A78BFA" }}
+                      animate={reduceMotion ? undefined : { opacity: [0, 1, 0] }}
+                      transition={reduceMotion ? undefined : { duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                      |
+                    </motion.span>
                   </div>
 
                   <div style={{ color: "#9CA3AF" }}>Analyzing AI visibility...</div>
@@ -1010,12 +1105,12 @@ pinnacle analyze https://yoursite.com/page`}
                     <div>✓ Increase authoritative citations</div>
                   </div>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </section>
+    </SectionWrapper>
   );
 }
 
