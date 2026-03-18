@@ -15,6 +15,9 @@ services:
       dockerfile: ../docker/Dockerfile.backend
     ports:
       - "8001:8001"
+    volumes:
+      - ../backend:/app/backend
+    command: uvicorn server:app --host 0.0.0.0 --port 8001 --reload
     environment:
       JWT_SECRET: ${JWT_SECRET:-CHANGE_THIS_TO_A_SECURE_RANDOM_STRING_IN_PRODUCTION_MIN_32_CHARS}
       MONGODB_USER: pinnacle_admin

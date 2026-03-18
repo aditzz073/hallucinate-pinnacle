@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Pinnacle.AI favicon">
+  <defs>
+    <clipPath id="roundedClip">
+      <rect x="24" y="24" width="464" height="464" rx="112" ry="112" />
+    </clipPath>
+  </defs>
+  <image href="/logo.png" x="24" y="24" width="464" height="464" clip-path="url(#roundedClip)" preserveAspectRatio="xMidYMid meet" />
+</svg>
