@@ -3,7 +3,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight, ArrowDown, Eye, Settings2,
   TrendingUp, CheckCircle, BarChart2, Cpu, Mail, Phone, MessageSquare,
-  Microscope,
+  Microscope, Copy, Check, ChevronDown, ChevronUp,
 } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import StrategySimulatorSection from "../components/landing/StrategySimulatorSection";
@@ -920,10 +920,41 @@ function FreeAuditCTA({ onGetStarted, onNavigate }) {
 }
 
 const CLI_TYPING_COMMAND = "pinnacle analyze https://site.com";
+const CLI_QUICK_START_COMMAND = `pip install pinnacle-cli
+pinnacle analyze https://yoursite.com`;
 
-function PinnacleCLISection({ onGetStarted }) {
+function PinnacleCLISection({ onNavigate }) {
   const reduceMotion = useReducedMotion();
   const [typedCommand, setTypedCommand] = useState("");
+  const [copied, setCopied] = useState(false);
+  const [showAdvancedSetup, setShowAdvancedSetup] = useState(false);
+
+  useEffect(() => {
+    if (!copied) return undefined;
+    const timeoutId = setTimeout(() => setCopied(false), 1600);
+    return () => clearTimeout(timeoutId);
+  }, [copied]);
+
+  const copyQuickStart = async () => {
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(CLI_QUICK_START_COMMAND);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = CLI_QUICK_START_COMMAND;
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+      setCopied(true);
+    } catch {
+      setCopied(false);
+    }
+  };
 
   useEffect(() => {
     if (reduceMotion) {
@@ -961,8 +992,8 @@ function PinnacleCLISection({ onGetStarted }) {
   }, [reduceMotion]);
 
   return (
-    <SectionWrapper className="px-8 py-[120px]" style={{ borderTop: "1px solid var(--border)" }}>
-      <div className="max-w-[1120px] mx-auto">
+    <SectionWrapper className="px-8 py-24" style={{ borderTop: "1px solid var(--border)" }}>
+      <div className="max-w-6xl mx-auto">
         <motion.div
           className="rounded-3xl p-8 lg:p-10"
           style={{
@@ -972,15 +1003,15 @@ function PinnacleCLISection({ onGetStarted }) {
           }}
           variants={fadeUp}
         >
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
 
             <motion.div variants={slideInLeft}>
               <span
                 className="inline-flex items-center mb-5"
                 style={{
-                  background: "rgba(124,58,237,0.15)",
-                  border: "1px solid rgba(124,58,237,0.4)",
-                  color: "#A78BFA",
+                  background: "rgba(16,185,129,0.14)",
+                  border: "1px solid rgba(16,185,129,0.35)",
+                  color: "#6EE7B7",
                   padding: "4px 10px",
                   borderRadius: "999px",
                   fontSize: "12px",
@@ -988,7 +1019,7 @@ function PinnacleCLISection({ onGetStarted }) {
                   letterSpacing: "0.06em",
                 }}
               >
-                RELEASING SOON
+                LIVE
               </span>
 
               <h2
@@ -999,58 +1030,141 @@ function PinnacleCLISection({ onGetStarted }) {
               </h2>
 
               <p className="text-lg mb-4" style={{ color: "#C4B5FD" }}>
-                Pinnacle AI in your command line.
+                Pinnacle AI. Now in your terminal.
               </p>
 
-              <p className="text-base leading-relaxed mb-6 max-w-xl" style={{ color: "var(--muted)" }}>
-                Run AI visibility audits, simulations, and analysis directly from your terminal.
-                Perfect for developers, CI pipelines, and teams that want to test changes before deploying.
+              <p className="text-sm leading-relaxed mb-5" style={{ color: "var(--muted)" }}>
+                Run AI visibility analysis directly from your terminal.
               </p>
 
-              <ul className="space-y-2.5 mb-6">
-                {[
-                  "Run audits locally before deployment",
-                  "Test AI visibility inside CI/CD pipelines",
-                  "Access Pinnacle tools without leaving your terminal",
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-2 text-sm" style={{ color: "var(--foreground)" }}>
-                    <span style={{ color: "#A78BFA" }}>•</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+              <div className="mb-2">
+                <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#A78BFA" }}>
+                  Quick Start
+                </p>
+              </div>
 
               <div
-                className="rounded-xl p-4 mb-6"
+                className="rounded-xl p-4 mb-4 relative"
                 style={{
                   background: "rgba(11,11,20,0.95)",
                   border: "1px solid rgba(255,255,255,0.08)",
                 }}
               >
+                <button
+                  type="button"
+                  onClick={copyQuickStart}
+                  className="absolute top-3 right-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors"
+                  style={{
+                    background: copied ? "rgba(16,185,129,0.16)" : "rgba(99,102,241,0.12)",
+                    border: copied ? "1px solid rgba(16,185,129,0.35)" : "1px solid rgba(99,102,241,0.25)",
+                    color: copied ? "#6EE7B7" : "#C4B5FD",
+                  }}
+                >
+                  {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                  {copied ? "Copied ✓" : "Copy"}
+                </button>
                 <pre className="text-xs sm:text-sm leading-relaxed m-0" style={{ color: "#C4B5FD", fontFamily: "monospace" }}>
-{`pip install pinnaclevault
-pinnacle analyze https://yoursite.com/page`}
+{CLI_QUICK_START_COMMAND}
                 </pre>
               </div>
 
-              <motion.button
-                onClick={onGetStarted}
-                className="btn-secondary inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold"
-                style={{
-                  borderColor: "rgba(124,58,237,0.4)",
-                  color: "#DDD6FE",
-                  background: "rgba(124,58,237,0.12)",
-                }}
-                whileHover={reduceMotion ? undefined : { y: -2 }}
-                whileTap={reduceMotion ? undefined : { scale: 0.97 }}
-                transition={{ duration: 0.15, ease: "easeOut" }}
-              >
-                Join CLI Waitlist
-                <ArrowRight className="w-4 h-4" />
-              </motion.button>
+              <p className="text-xs mb-3" style={{ color: "#B7B3D6" }}>
+                Used by developers to test AI visibility before deploying.
+              </p>
+
+              <div className="flex flex-wrap items-center gap-2 mb-6">
+                {[
+                  "Works locally",
+                  "CI/CD ready",
+                  "Fast analysis",
+                ].map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px]"
+                    style={{
+                      color: "#D1D5DB",
+                      background: "rgba(255,255,255,0.04)",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                    }}
+                  >
+                    • {tag}
+                  </span>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap gap-3 mb-5">
+                <motion.button
+                  onClick={() => onNavigate?.("cli")}
+                  className="btn-primary inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold"
+                  whileHover={reduceMotion ? undefined : { y: -2 }}
+                  whileTap={reduceMotion ? undefined : { scale: 0.97 }}
+                  transition={{ duration: 0.15, ease: "easeOut" }}
+                >
+                  View CLI Docs
+                  <ArrowRight className="w-4 h-4" />
+                </motion.button>
+
+                <motion.button
+                  onClick={copyQuickStart}
+                  className="btn-secondary inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold"
+                  style={{
+                    borderColor: "rgba(124,58,237,0.4)",
+                    color: "#DDD6FE",
+                    background: "rgba(124,58,237,0.12)",
+                  }}
+                  whileHover={reduceMotion ? undefined : { y: -2 }}
+                  whileTap={reduceMotion ? undefined : { scale: 0.97 }}
+                  transition={{ duration: 0.15, ease: "easeOut" }}
+                >
+                  Install Now
+                </motion.button>
+              </div>
+
+              <div className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.08)", background: "rgba(11,11,20,0.65)" }}>
+                <button
+                  type="button"
+                  onClick={() => setShowAdvancedSetup((prev) => !prev)}
+                  className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium"
+                  style={{ color: "#C4B5FD" }}
+                >
+                  <span>Advanced Setup (optional)</span>
+                  {showAdvancedSetup ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                </button>
+
+                {showAdvancedSetup && (
+                  <div className="px-4 pb-4 space-y-3" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+                    <div>
+                      <p className="text-xs mb-1" style={{ color: "#9CA3AF" }}>Local backend setup</p>
+                      <pre className="text-xs m-0 rounded-lg p-2.5" style={{ color: "#DDD6FE", background: "rgba(4,4,12,0.85)", fontFamily: "monospace", border: "1px solid rgba(255,255,255,0.06)" }}>
+{`cd backend
+python3 -m pip install -r requirements.txt
+python3 server.py`}
+                      </pre>
+                    </div>
+
+                    <div>
+                      <p className="text-xs mb-1" style={{ color: "#9CA3AF" }}>Editable install</p>
+                      <pre className="text-xs m-0 rounded-lg p-2.5" style={{ color: "#DDD6FE", background: "rgba(4,4,12,0.85)", fontFamily: "monospace", border: "1px solid rgba(255,255,255,0.06)" }}>
+{`cd cli
+python3 -m pip install -e .`}
+                      </pre>
+                    </div>
+
+                    <div>
+                      <p className="text-xs mb-1" style={{ color: "#9CA3AF" }}>API key config</p>
+                      <pre className="text-xs m-0 rounded-lg p-2.5" style={{ color: "#DDD6FE", background: "rgba(4,4,12,0.85)", fontFamily: "monospace", border: "1px solid rgba(255,255,255,0.06)" }}>
+{`pinnacle auth <YOUR_API_KEY>`}
+                      </pre>
+                    </div>
+                  </div>
+                )}
+              </div>
             </motion.div>
 
             <motion.div variants={slideInRight}>
+              <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#A78BFA" }}>
+                Example Output
+              </p>
               <motion.div
                 className="rounded-xl p-5 transition-all duration-300"
                 style={{
@@ -1086,9 +1200,14 @@ pinnacle analyze https://yoursite.com/page`}
                   <div style={{ color: "#9CA3AF" }}>Analyzing AI visibility...</div>
                   <div className="h-px my-2" style={{ background: "rgba(255,255,255,0.06)" }} />
 
+                  <div className="pt-1" style={{ color: "#C4B5FD", fontWeight: 700 }}>Score</div>
                   <div><span style={{ color: "#9CA3AF" }}>AI Visibility Score: </span><span style={{ color: "#A78BFA", fontWeight: 700 }}>78</span></div>
-                  <div><span style={{ color: "#9CA3AF" }}>Citation Probability: </span><span style={{ color: "#22d3ee", fontWeight: 700 }}>64%</span></div>
-                  <div><span style={{ color: "#9CA3AF" }}>Top Engine: </span><span style={{ color: "#34d399", fontWeight: 700 }}>ChatGPT</span></div>
+
+                  <div className="pt-1" style={{ color: "#C4B5FD", fontWeight: 700 }}>Citation Probability</div>
+                  <div><span style={{ color: "#22d3ee", fontWeight: 700 }}>64%</span></div>
+
+                  <div className="pt-1" style={{ color: "#C4B5FD", fontWeight: 700 }}>Top Engine</div>
+                  <div><span style={{ color: "#34d399", fontWeight: 700 }}>ChatGPT</span></div>
 
                   <div className="pt-2" style={{ color: "#C4B5FD", fontWeight: 700 }}>Engine Readiness</div>
                   <div className="pl-2 space-y-1">
@@ -1125,7 +1244,7 @@ export default function LandingPage({ onGetStarted, onNavigate }) {
       <StrategySimulatorSection onNavigate={onNavigate} />
       <PlatformPillars />
       <FreeAuditCTA onGetStarted={onGetStarted} onNavigate={onNavigate} />
-      <PinnacleCLISection onGetStarted={onGetStarted} />
+      <PinnacleCLISection onNavigate={onNavigate} />
 
       {/* ── PRICING ──────────────────────────────────────────────────────── */}
       <section className="py-16 px-8" data-section="pricing" id="pricing" style={{ borderTop: "1px solid var(--border)" }}>
