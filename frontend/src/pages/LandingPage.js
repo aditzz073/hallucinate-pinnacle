@@ -1489,7 +1489,7 @@ export default function LandingPage({ onGetStarted, onNavigate }) {
           </div>
 
           {/* Bottom bar */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8" style={{ borderTop: "1px solid var(--border)" }}>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8" >
             <p className="text-xs" style={{ color: "var(--text-muted)" }}>
               &copy; {new Date().getFullYear()} Pinnacle.ai. All rights reserved.
             </p>
