@@ -5,7 +5,7 @@ import { changePassword, generateApiKey } from "../api";
 import { 
   User, Mail, Shield, FileSearch, Search, 
   Clock, TrendingUp, Activity, ChevronDown,
-  LogOut, Lock, ExternalLink, Eye, EyeOff, Check, X, Key, Copy
+  LogOut, Lock, ExternalLink, Eye, EyeOff, Check, X, Key, Copy, UserRound
 } from "lucide-react";
 
 export default function ProfilePage() {
@@ -49,13 +49,6 @@ export default function ProfilePage() {
 
   const stats = overview?.summary || {};
   
-  // Get user initials for avatar
-  const getInitials = () => {
-    if (user?.nickname) return user.nickname.charAt(0).toUpperCase();
-    if (user?.email) return user.email.charAt(0).toUpperCase();
-    return "U";
-  };
-
   // Determine role display
   const getRoleInfo = () => {
     if (user) {
@@ -76,7 +69,9 @@ export default function ProfilePage() {
           {/* Avatar */}
           <div className="relative">
             <div className="w-28 h-28 rounded-full bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border-2 border-white/10 flex items-center justify-center backdrop-blur-sm shadow-2xl">
-              <span className="text-4xl font-bold text-white">{getInitials()}</span>
+              <div className="w-20 h-20 rounded-full bg-white/10 border border-white/15 flex items-center justify-center">
+                <UserRound className="w-10 h-10 text-white" strokeWidth={1.8} />
+              </div>
             </div>
           </div>
 
