@@ -200,6 +200,7 @@ MONGO_URL=mongodb://localhost:27017
 DB_NAME=pinnacle
 JWT_SECRET=your-secret-key-min-32-chars
 JWT_EXPIRY_HOURS=24
+CORS_ORIGINS=http://localhost:3000
 ```
 
 Install dependencies and start the server:
@@ -209,7 +210,7 @@ pip install -r requirements.txt
 uvicorn server:app --reload
 ```
 
-The API will be available at `http://localhost:8000`. Interactive docs at `http://localhost:8000/docs`.
+The API will be available at `http://localhost:8001`. Interactive docs at `http://localhost:8001/docs`.
 
 ---
 
@@ -222,7 +223,7 @@ cd frontend
 Create a `.env` file in the `frontend/` directory:
 
 ```env
-REACT_APP_BACKEND_URL=http://localhost:8000
+REACT_APP_BACKEND_URL=http://localhost:8001
 ```
 
 Install dependencies and start the dev server:
@@ -251,6 +252,42 @@ Optionally create `backend/.env` and `frontend/.env` to override defaults before
 
 ---
 
+## Separate Deployment (Frontend + Backend)
+
+This repo is ready for split hosting: frontend on Vaale and backend on Render.
+
+### Backend on Render
+
+- Use the root `render.yaml` blueprint.
+- Service root directory is `backend`.
+- Start command is:
+
+```bash
+uvicorn server:app --host 0.0.0.0 --port $PORT --workers 1
+```
+
+- Configure these Render environment variables:
+    - `MONGO_URL`
+    - `DB_NAME` (default: `pinnacle`)
+    - `JWT_SECRET`
+    - `JWT_EXPIRY_HOURS` (default: `24`)
+    - `CORS_ORIGINS` (set to your Vaale frontend URL)
+
+### Frontend on Vaale
+
+- Use `frontend` as the project root.
+- Build command: `npm run build`
+- Output directory: `build`
+- Set environment variable:
+
+```env
+REACT_APP_BACKEND_URL=https://<your-render-service>.onrender.com
+```
+
+- Use `frontend/.env.example` as the template.
+
+---
+
 ## Environment Variables
 
 ### Backend (`backend/.env`)
@@ -261,6 +298,7 @@ Optionally create `backend/.env` and `frontend/.env` to override defaults before
 | `DB_NAME` | Yes | Database name (e.g. `pinnacle`) |
 | `JWT_SECRET` | Yes | Secret key for signing JWTs (min 32 chars) |
 | `JWT_EXPIRY_HOURS` | No | Token lifetime in hours (default: `24`) |
+| `CORS_ORIGINS` | Yes (prod) | Comma-separated allowed frontend origins |
 
 ### Frontend (`frontend/.env`)
 
@@ -280,6 +318,8 @@ Optionally create `backend/.env` and `frontend/.env` to override defaults before
 ## Contributing
 
 Contributions are welcome. Please open an issue before submitting large changes, and ensure both the backend tests (`pytest`) and frontend build pass before raising a pull request.
+
+Note: backend tests are integration tests. Set `BACKEND_BASE_URL` (or `REACT_APP_BACKEND_URL`) and ensure the API + MongoDB are running before executing `pytest`.
 
 ## License
 

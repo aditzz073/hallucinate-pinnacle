@@ -29,6 +29,7 @@ services:
     command: uvicorn server:app --host 0.0.0.0 --port 8001 --reload
     environment:
       JWT_SECRET: ${JWT_SECRET:-CHANGE_THIS_TO_A_SECURE_RANDOM_STRING_IN_PRODUCTION_MIN_32_CHARS}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
       MONGODB_USER: pinnacle_admin
       MONGODB_PASSWORD: ${MONGO_PASSWORD:-pinnacle_secure_pass_2026}
       MONGODB_HOST: mongodb

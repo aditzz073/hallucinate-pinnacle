@@ -53,11 +53,20 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+
+def _parse_cors_origins() -> list[str]:
+    raw_origins = os.getenv("CORS_ORIGINS", "").strip()
+    if not raw_origins:
+        return ["http://localhost:3000", "http://127.0.0.1:3000"]
+    return [origin.strip().rstrip("/") for origin in raw_origins.split(",") if origin.strip()]
+
+
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=_parse_cors_origins(),
+    # This API uses bearer tokens in Authorization headers, not cookie auth.
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

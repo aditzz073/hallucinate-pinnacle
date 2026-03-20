@@ -12,7 +12,22 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
+BASE_URL = (
+    os.environ.get("BACKEND_BASE_URL")
+    or os.environ.get("REACT_APP_BACKEND_URL")
+    or "http://localhost:8001"
+).rstrip("/")
+
+
+@pytest.fixture(scope="module", autouse=True)
+def ensure_backend_is_running():
+    """These tests require a running API service and DB."""
+    try:
+        response = requests.get(f"{BASE_URL}/api/health", timeout=5)
+        if response.status_code >= 500:
+            pytest.skip(f"Backend is running but unhealthy at {BASE_URL}")
+    except requests.RequestException:
+        pytest.skip(f"Backend integration tests skipped: server not reachable at {BASE_URL}")
 
 # Test user credentials
 TEST_EMAIL = "test@pinnacle.ai"

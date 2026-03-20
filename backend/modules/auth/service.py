@@ -7,6 +7,9 @@ from database.connection import users_collection
 JWT_SECRET = os.environ.get("JWT_SECRET", "")
 JWT_EXPIRY_HOURS = int(os.environ.get("JWT_EXPIRY_HOURS", "24"))
 
+if not JWT_SECRET:
+    raise RuntimeError("JWT_SECRET environment variable is required and cannot be empty")
+
 # Privileged access whitelist (founding team)
 PRIVILEGED_EMAILS = {
     "mrsahebsandhu@gmail.com",
