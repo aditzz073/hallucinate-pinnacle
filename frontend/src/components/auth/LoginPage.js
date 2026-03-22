@@ -118,7 +118,7 @@ export default function LoginPage({ onSwitch, onSuccess }) {
             </form>
 
             <p className="text-xs text-center mt-6" style={{ color: "#8A90B0" }}>
-              By continuing, you agree to Pinnacle's Terms of Service and Privacy Policy.
+              By continuing, you agree to Pinnacle's Terms and Data Policy.
             </p>
 
             <p className="text-sm text-center mt-8" style={{ color: "#9EA3C6" }}>

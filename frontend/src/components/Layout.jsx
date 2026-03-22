@@ -99,7 +99,7 @@ export default function Layout() {
         activePage={activePage}
         onNavigate={handleNavigate}
         isLanding={isLandingLike && !user}
-        onGetStarted={() => navigate(user ? "/dashboard" : "/login")}
+        onGetStarted={() => navigate(user ? "/dashboard" : "/register")}
         onShowFeatureLocked={handleShowFeatureLocked}
         onLogout={logout}
       />

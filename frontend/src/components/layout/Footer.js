@@ -20,12 +20,15 @@ export default function Footer({ onNavigate }) {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Logo size="sm" />
-              <span className="flex items-baseline text-base font-black tracking-tight">
-                <span className="bg-gradient-to-r from-blue-400 via-blue-500 to-cyan-400 bg-clip-text text-transparent">Pinnacle</span>
-                <span className="text-cyan-400 font-light">.ai</span>
+              <span className="font-display font-bold text-xl tracking-tight leading-none text-white">
+                <span>Pinnacle</span>
+                <span className="text-indigo-400 font-light">.ai</span>
               </span>
             </div>
-            <p className="text-sm text-gray-500">AI Engine Optimization Platform</p>
+            <p className="text-sm text-gray-500 max-w-md leading-relaxed">
+              Pinnacle is an AI visibility platform that analyzes your pages, scores citation readiness,
+              and shows exactly how to improve performance across ChatGPT, Gemini, Perplexity, and Copilot.
+            </p>
           </div>
 
           {/* Right: Navigation Links */}

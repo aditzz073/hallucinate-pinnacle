@@ -32,8 +32,7 @@ const AboutPage = lazy(() => import("../pages/AboutPage"));
 const BlogPage = lazy(() => import("../pages/BlogPage"));
 const CareersPage = lazy(() => import("../pages/CareersPage"));
 const PressPage = lazy(() => import("../pages/PressPage"));
-const PrivacyPolicyPage = lazy(() => import("../pages/PrivacyPolicyPage"));
-const TermsPage = lazy(() => import("../pages/TermsPage"));
+const TermsDataPolicyPage = lazy(() => import("../pages/TermsDataPolicyPage"));
 const CookiePolicyPage = lazy(() => import("../pages/CookiePolicyPage"));
 
 function SuspensePage({ children }) {
@@ -161,8 +160,9 @@ export default function AppRoutes() {
           <Route path="/blog" element={<SuspensePage><BlogPage /></SuspensePage>} />
           <Route path="/careers" element={<SuspensePage><CareersPage /></SuspensePage>} />
           <Route path="/press" element={<SuspensePage><PressPage /></SuspensePage>} />
-          <Route path="/privacy" element={<SuspensePage><PrivacyPolicyPage /></SuspensePage>} />
-          <Route path="/terms" element={<SuspensePage><TermsPage /></SuspensePage>} />
+          <Route path="/terms-and-data-policy" element={<SuspensePage><TermsDataPolicyPage /></SuspensePage>} />
+          <Route path="/privacy" element={<Navigate to="/terms-and-data-policy" replace />} />
+          <Route path="/terms" element={<Navigate to="/terms-and-data-policy" replace />} />
           <Route path="/cookies" element={<SuspensePage><CookiePolicyPage /></SuspensePage>} />
         </Route>
 

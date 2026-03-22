@@ -144,6 +144,25 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
     onNavigate(itemId);
   };
 
+  const renderGuestActions = () => (
+    <div className="flex items-center gap-3 pl-4 border-l border-white/10 ml-3">
+      <button
+        data-testid="nav-login-btn"
+        onClick={() => onNavigate && onNavigate("login")}
+        className="btn-secondary text-sm px-5 py-2"
+      >
+        Sign In
+      </button>
+      <button
+        data-testid="nav-get-started-btn"
+        onClick={onGetStarted}
+        className="btn-primary text-sm px-5 py-2"
+      >
+        Get Started
+      </button>
+    </div>
+  );
+
   // Landing page navbar - show full nav for guests to access Audits and AI Tests
   if (isLanding) {
     return (
@@ -217,22 +236,7 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
           </div>
 
           {/* Auth Buttons */}
-          <div className="flex items-center gap-3 pl-4 border-l border-white/10 ml-3">
-            <button
-              data-testid="nav-login-btn"
-              onClick={onGetStarted}
-              className="btn-secondary text-sm px-5 py-2"
-            >
-              Sign In
-            </button>
-            <button
-              data-testid="nav-get-started-btn"
-              onClick={onGetStarted}
-              className="btn-primary text-sm px-5 py-2"
-            >
-              Get Started
-            </button>
-          </div>
+          {!user && renderGuestActions()}
         </nav>
       </motion.header>
     );
@@ -335,6 +339,9 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
             </button>
           </div>
         )}
+
+        {/* Guest Auth Buttons */}
+        {!user && renderGuestActions()}
       </nav>
     </motion.header>
   );

@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight, ArrowDown, Eye, Settings2,
-  TrendingUp, CheckCircle, BarChart2, Cpu, Mail, Phone, MessageSquare,
-  Microscope, Copy, Check, ChevronDown, ChevronUp,
+  TrendingUp, CheckCircle, BarChart2, Cpu, Mail, MessageSquare,
+  Microscope, Copy, Check,
 } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import StrategySimulatorSection from "../components/landing/StrategySimulatorSection";
@@ -927,7 +927,6 @@ function PinnacleCLISection({ onNavigate }) {
   const reduceMotion = useReducedMotion();
   const [typedCommand, setTypedCommand] = useState("");
   const [copied, setCopied] = useState(false);
-  const [showAdvancedSetup, setShowAdvancedSetup] = useState(false);
 
   useEffect(() => {
     if (!copied) return undefined;
@@ -1120,45 +1119,6 @@ function PinnacleCLISection({ onNavigate }) {
                 </motion.button>
               </div>
 
-              <div className="rounded-xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.08)", background: "rgba(11,11,20,0.65)" }}>
-                <button
-                  type="button"
-                  onClick={() => setShowAdvancedSetup((prev) => !prev)}
-                  className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium"
-                  style={{ color: "#C4B5FD" }}
-                >
-                  <span>Advanced Setup (optional)</span>
-                  {showAdvancedSetup ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                </button>
-
-                {showAdvancedSetup && (
-                  <div className="px-4 pb-4 space-y-3" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
-                    <div>
-                      <p className="text-xs mb-1" style={{ color: "#9CA3AF" }}>Local backend setup</p>
-                      <pre className="text-xs m-0 rounded-lg p-2.5" style={{ color: "#DDD6FE", background: "rgba(4,4,12,0.85)", fontFamily: "monospace", border: "1px solid rgba(255,255,255,0.06)" }}>
-{`cd backend
-python3 -m pip install -r requirements.txt
-python3 server.py`}
-                      </pre>
-                    </div>
-
-                    <div>
-                      <p className="text-xs mb-1" style={{ color: "#9CA3AF" }}>Editable install</p>
-                      <pre className="text-xs m-0 rounded-lg p-2.5" style={{ color: "#DDD6FE", background: "rgba(4,4,12,0.85)", fontFamily: "monospace", border: "1px solid rgba(255,255,255,0.06)" }}>
-{`cd cli
-python3 -m pip install -e .`}
-                      </pre>
-                    </div>
-
-                    <div>
-                      <p className="text-xs mb-1" style={{ color: "#9CA3AF" }}>API key config</p>
-                      <pre className="text-xs m-0 rounded-lg p-2.5" style={{ color: "#DDD6FE", background: "rgba(4,4,12,0.85)", fontFamily: "monospace", border: "1px solid rgba(255,255,255,0.06)" }}>
-{`pinnacle auth <YOUR_API_KEY>`}
-                      </pre>
-                    </div>
-                  </div>
-                )}
-              </div>
             </motion.div>
 
             <motion.div variants={slideInRight}>
@@ -1354,21 +1314,6 @@ export default function LandingPage({ onGetStarted = () => {}, onNavigate = () =
                   </div>
                 </a>
                 <a
-                  href="tel:+18005550199"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
-                  style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
-                >
-                  <div className="w-6 h-6 rounded-md flex items-center justify-center shrink-0" style={{ background: "rgba(79,70,229,0.12)" }}>
-                    <Phone className="w-3 h-3" style={{ color: "#818CF8" }} />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-xs font-medium" style={{ color: "var(--foreground)" }}>+1 (800) 555-0199</div>
-                    <div className="text-xs" style={{ color: "var(--text-muted)" }}>Mon–Fri, 9am–6pm EST</div>
-                  </div>
-                </a>
-                <a
                   href="https://calendly.com/pinnacle-sales"
                   target="_blank"
                   rel="noreferrer"
@@ -1398,13 +1343,14 @@ export default function LandingPage({ onGetStarted = () => {}, onNavigate = () =
             {/* Brand */}
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-base font-black tracking-tight">
-                  <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Pinnacle</span>
-                  <span style={{ color: "#818CF8" }} className="font-light">.ai</span>
+                <span className="font-display font-bold text-xl tracking-tight leading-none" style={{ color: "var(--foreground)" }}>
+                  <span>Pinnacle</span>
+                  <span className="font-light" style={{ color: "#818CF8" }}>.ai</span>
                 </span>
               </div>
-              <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>
-                AI visibility optimization for the next generation of search.
+              <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
+                Pinnacle helps teams measure and improve how AI engines discover, cite, and summarize their pages.
+                Run audits, monitor visibility signals, and turn recommendations into a clear optimization roadmap.
               </p>
             </div>
 
@@ -1463,8 +1409,7 @@ export default function LandingPage({ onGetStarted = () => {}, onNavigate = () =
               <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--text-muted)" }}>Legal</p>
               <ul className="space-y-2.5 mb-6">
                 {[
-                  { label: "Privacy Policy", page: "privacy" },
-                  { label: "Terms of Service", page: "terms" },
+                  { label: "Terms and Data Policy", page: "terms-data-policy" },
                   { label: "Cookie Policy",  page: "cookies" },
                 ].map(({ label, page }) => (
                   <li key={label}>
