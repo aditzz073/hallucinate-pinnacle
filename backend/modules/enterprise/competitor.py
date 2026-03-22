@@ -1,5 +1,5 @@
 """Competitor AI Comparison - Phase 9"""
-from modules.aeoEngine.html_fetcher import fetch_html
+from modules.aeoEngine.page_fetch_service import fetch_page_content
 from modules.aeoEngine.html_parser import parse_html
 from modules.aeoEngine.page_classifier import classify_page
 from modules.aeoEngine.signal_builder import build_signals
@@ -68,7 +68,10 @@ async def compare_competitors(query: str, primary_url: str, competitor_urls: lis
 
 
 async def _analyze_url(url: str, tokens: list, intent: str) -> dict:
-    html = await fetch_html(url)
+    fetch_result = await fetch_page_content(url)
+    if not fetch_result.get("success"):
+        raise ValueError(fetch_result.get("error") or "Unable to fetch content")
+    html = fetch_result["html"]
     parsed = parse_html(html, url)
     page_type = classify_page(parsed)
     signals = build_signals(parsed, page_type)

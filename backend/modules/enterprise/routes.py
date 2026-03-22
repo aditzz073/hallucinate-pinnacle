@@ -39,7 +39,7 @@ async def compare_competitors(req: CompareRequest, current_user: dict = Depends(
 @router.post("/sensitivity-test")
 async def sensitivity_test(req: SensitivityTestRequest, current_user: dict = Depends(verify_token)):
     """Run AI test with custom sensitivity mode."""
-    from modules.aeoEngine.html_fetcher import fetch_html
+    from modules.aeoEngine.page_fetch_service import fetch_page_content
     from modules.aeoEngine.html_parser import parse_html
     from modules.aiTestingEngine.query_processor import tokenize_query, detect_intent
     from modules.aiTestingEngine.content_matcher import calculate_content_match
@@ -55,7 +55,10 @@ async def sensitivity_test(req: SensitivityTestRequest, current_user: dict = Dep
         raise HTTPException(status_code=400, detail=f"Unknown mode. Options: {list(MODES.keys())}")
 
     try:
-        html = await fetch_html(str(req.url))
+        fetch_result = await fetch_page_content(str(req.url), requester_id=current_user.get("user_id"))
+        if not fetch_result.get("success"):
+            raise ValueError(fetch_result.get("error") or "Unable to fetch content")
+        html = fetch_result["html"]
         parsed = parse_html(html, str(req.url))
         tokens = tokenize_query(req.query.strip())
         intent = detect_intent(req.query.strip())

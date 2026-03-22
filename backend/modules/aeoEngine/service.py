@@ -4,7 +4,8 @@ import logging
 import gc
 
 from database.connection import audits_collection
-from modules.aeoEngine.html_fetcher_hybrid import fetch_html_hybrid
+from modules.aeoEngine.page_fetch_service import fetch_page_content
+from modules.aeoEngine.content_detector import get_content_stats
 from modules.aeoEngine.html_parser import parse_html
 from modules.aeoEngine.page_classifier import classify_page
 from modules.aeoEngine.signal_builder import build_signals
@@ -27,17 +28,21 @@ async def run_audit(url: str, user_id: str = None) -> dict:
     
     NEVER persists raw HTML or rendered DOM.
     """
-    # Step 1: Fetch HTML (hybrid: raw with intelligent headless fallback)
+    # Step 1: Fetch HTML (fetch-first with headless fallback)
     # HTML stored in memory only
-    fetch_result = await fetch_html_hybrid(url)
+    fetch_result = await fetch_page_content(url, requester_id=user_id)
+    if not fetch_result.get("success"):
+        raise ValueError(fetch_result.get("error") or "Unable to fetch content")
     html = fetch_result["html"]
     
     # Extract metadata before processing (NO HTML CONTENT)
     fetch_metadata = {
-        "method": fetch_result["method"],
-        "used_headless": fetch_result["used_headless"],
-        "render_time_ms": fetch_result["render_time_ms"],
-        "content_stats": fetch_result["content_stats"],  # Stats only, no content
+        "method": fetch_result["source"],
+        "used_headless": fetch_result["source"] == "browser",
+        "render_time_ms": fetch_result.get("render_time_ms", 0),
+        "content_stats": get_content_stats(html),
+        "status_code": fetch_result.get("status_code", 0),
+        "blocked_reasons": fetch_result.get("blocked_reasons", []),
     }
     
     # Log fetch method for monitoring (NO HTML CONTENT)

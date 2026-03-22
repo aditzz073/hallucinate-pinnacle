@@ -7,7 +7,7 @@ from database.connection import (
     page_snapshots_collection,
     page_change_logs_collection,
 )
-from modules.aeoEngine.html_fetcher import fetch_html
+from modules.aeoEngine.page_fetch_service import fetch_page_content
 from modules.aeoEngine.html_parser import parse_html
 from modules.aeoEngine.page_classifier import classify_page
 from modules.aeoEngine.signal_builder import build_signals
@@ -28,7 +28,7 @@ async def add_monitored_page(url: str, user_id: str) -> dict:
     page_id = str(result.inserted_id)
 
     # Take initial snapshot
-    snapshot = await _take_snapshot(page_id, url)
+    snapshot = await _take_snapshot(page_id, url, user_id=user_id)
 
     return {
         "id": page_id,
@@ -38,9 +38,12 @@ async def add_monitored_page(url: str, user_id: str) -> dict:
     }
 
 
-async def _take_snapshot(monitored_page_id: str, url: str) -> dict:
+async def _take_snapshot(monitored_page_id: str, url: str, user_id: str = None) -> dict:
     """Fetch page and store signals as append-only snapshot."""
-    html = await fetch_html(url)
+    fetch_result = await fetch_page_content(url, requester_id=user_id)
+    if not fetch_result.get("success"):
+        raise ValueError(fetch_result.get("error") or "Unable to fetch content")
+    html = fetch_result["html"]
     parsed = parse_html(html, url)
     page_type = classify_page(parsed)
     signals = build_signals(parsed, page_type)
@@ -81,7 +84,7 @@ async def refresh_snapshot(monitored_page_id: str, user_id: str) -> dict:
     )
 
     # Take new snapshot
-    new_snapshot = await _take_snapshot(monitored_page_id, url)
+    new_snapshot = await _take_snapshot(monitored_page_id, url, user_id=user_id)
 
     # Compare if we have a previous snapshot
     changes = []

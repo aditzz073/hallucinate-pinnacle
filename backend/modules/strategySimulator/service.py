@@ -2,7 +2,7 @@
 Simulates content optimization impact without modifying real page."""
 import copy
 
-from modules.aeoEngine.html_fetcher import fetch_html
+from modules.aeoEngine.page_fetch_service import fetch_page_content
 from modules.aeoEngine.html_parser import parse_html
 from modules.aeoEngine.page_classifier import classify_page
 from modules.aeoEngine.signal_builder import build_signals
@@ -43,7 +43,10 @@ async def simulate_strategy(url: str, query: str, strategy: str, user_id: str) -
         raise ValueError(f"Unknown strategy: {strategy}. Options: {list(STRATEGIES.keys())}")
 
     # Fetch and parse real page
-    html = await fetch_html(url)
+    fetch_result = await fetch_page_content(url, requester_id=user_id)
+    if not fetch_result.get("success"):
+        raise ValueError(fetch_result.get("error") or "Unable to fetch content")
+    html = fetch_result["html"]
     parsed = parse_html(html, url)
     page_type = classify_page(parsed)
     signals = build_signals(parsed, page_type)

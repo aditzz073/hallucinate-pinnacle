@@ -7,7 +7,7 @@ import gc
 import logging
 from datetime import datetime, timezone
 
-from modules.aeoEngine.html_fetcher_hybrid import fetch_html_hybrid
+from modules.aeoEngine.page_fetch_service import fetch_page_content
 from modules.aeoEngine.html_parser import parse_html
 from modules.aiTestingLab.aeo_analyzer import run_aeo_analysis
 from modules.aiTestingLab.engine_profiles import ENGINE_PROFILES
@@ -24,7 +24,9 @@ logger = logging.getLogger(__name__)
 
 async def run_ai_testing_lab(query: str, url: str, engines: list) -> dict:
     """Run multi-engine AI citation readiness analysis."""
-    fetch_result = await fetch_html_hybrid(url)
+    fetch_result = await fetch_page_content(url)
+    if not fetch_result.get("success"):
+        raise ValueError(fetch_result.get("error") or "Unable to fetch content")
     html = fetch_result["html"]
 
     try:
@@ -97,7 +99,9 @@ async def run_ai_testing_lab(query: str, url: str, engines: list) -> dict:
 
 async def get_quick_score(url: str, engine: str) -> dict:
     """Quick readiness check without query context (uses neutral 50% relevance)."""
-    fetch_result = await fetch_html_hybrid(url)
+    fetch_result = await fetch_page_content(url)
+    if not fetch_result.get("success"):
+        raise ValueError(fetch_result.get("error") or "Unable to fetch content")
     html = fetch_result["html"]
 
     try:

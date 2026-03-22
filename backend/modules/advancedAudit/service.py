@@ -7,7 +7,7 @@ from database.connection import (
     page_snapshots_collection,
     page_change_logs_collection,
 )
-from modules.aeoEngine.html_fetcher import fetch_html
+from modules.aeoEngine.page_fetch_service import fetch_page_content
 from modules.aeoEngine.html_parser import parse_html
 from modules.aeoEngine.page_classifier import classify_page
 from modules.aeoEngine.signal_builder import build_signals
@@ -21,7 +21,10 @@ from modules.advancedAudit.explainability import (
 
 
 async def run_advanced_audit(url: str, user_id: str) -> dict:
-    html = await fetch_html(url)
+    fetch_result = await fetch_page_content(url, requester_id=user_id)
+    if not fetch_result.get("success"):
+        raise ValueError(fetch_result.get("error") or "Unable to fetch content")
+    html = fetch_result["html"]
     parsed = parse_html(html, url)
     page_type = classify_page(parsed)
     signals = build_signals(parsed, page_type)
