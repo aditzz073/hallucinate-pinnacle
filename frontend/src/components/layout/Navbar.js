@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { getPageIdFromPath } from "../../routes/routeConfig";
 import Logo from "../ui/Logo";
 import {
   LayoutDashboard, FileSearch, Eye, BarChart3,
@@ -18,7 +20,7 @@ const TOOLS_DROPDOWN = [
   { id: "monitor", label: "Monitor Pages", icon: Eye, requiresAuth: true },
   { id: "reports", label: "Reports", icon: BarChart3, requiresAuth: true },
   { id: "advanced", label: "Advanced Audit", icon: Sparkles, requiresAuth: true },
-  { id: "cli", label: "CLI Tool", icon: Microscope, requiresAuth: false },
+  { id: "cli", label: "CLI Tool", icon: Microscope, requiresAuth: true },
   { id: "simulator", label: "Strategy Simulator", icon: FlaskConical, requiresAuth: true, isEnterprise: true },
 ];
 
@@ -59,9 +61,10 @@ function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate, onShow
         data-testid={`nav-dropdown-${label.toLowerCase()}`}
         className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
           isActive
-            ? "bg-white/10 text-white"
+            ? "bg-white/10 text-white font-semibold"
             : "text-gray-400 hover:text-white hover:bg-white/5"
         }`}
+        style={isActive ? { borderLeft: "2px solid #4F46E5", paddingLeft: "calc(0.875rem - 2px)" } : undefined}
       >
         <Icon className="w-4 h-4" />
         <span>{label}</span>
@@ -80,9 +83,10 @@ function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate, onShow
                 onClick={() => handleItemClick(item)}
                 className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all duration-200 ${
                   isItemActive
-                    ? "bg-white/10 text-white"
+                    ? "bg-white/10 text-white font-semibold"
                     : "text-gray-400 hover:text-white hover:bg-white/5"
                 }`}
+                style={isItemActive ? { borderLeft: "2px solid #4F46E5", paddingLeft: "calc(1rem - 2px)" } : undefined}
               >
                 <ItemIcon className="w-4 h-4" />
                 {item.label}
@@ -97,6 +101,8 @@ function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate, onShow
 
 export default function Navbar({ activePage, onNavigate, isLanding = false, onGetStarted, onShowFeatureLocked, onLogout }) {
   const { user } = useAuth();
+  const { pathname } = useLocation();
+  const resolvedActivePage = activePage || getPageIdFromPath(pathname);
   const [scrolled, setScrolled] = useState(false);
   const reduceMotion = useReducedMotion();
 
@@ -170,7 +176,7 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
           <div className="flex items-center gap-0.5">
             {CORE_NAV.map((item) => {
               const Icon = item.icon;
-              const isActive = activePage === item.id;
+              const isActive = resolvedActivePage === item.id;
               return (
                 <button
                   key={item.id}
@@ -178,9 +184,10 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
                   onClick={() => handleNavClickWithAuth(item.id, item.requiresAuth)}
                   className={`flex items-center gap-2 px-3.5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                     isActive
-                      ? "bg-white/10 text-white"
+                      ? "bg-white/10 text-white font-semibold"
                       : "text-gray-400 hover:text-white hover:bg-white/5"
                   }`}
+                  style={isActive ? { borderLeft: "2px solid #4F46E5", paddingLeft: "calc(0.875rem - 2px)" } : undefined}
                 >
                   <Icon className="w-4 h-4" />
                   <span className="hidden md:inline">{item.label}</span>
@@ -193,7 +200,7 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
               label="Tools"
               icon={Layers}
               items={TOOLS_DROPDOWN}
-              activePage={activePage}
+              activePage={resolvedActivePage}
               onNavigate={onNavigate}
               onShowFeatureLocked={onShowFeatureLocked}
             />
@@ -203,7 +210,7 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
               label="Enterprise"
               icon={Beaker}
               items={ENTERPRISE_DROPDOWN}
-              activePage={activePage}
+              activePage={resolvedActivePage}
               onNavigate={onNavigate}
               onShowFeatureLocked={onShowFeatureLocked}
             />
@@ -262,7 +269,7 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
         <div className="flex items-center gap-0.5">
           {CORE_NAV.map((item) => {
             const Icon = item.icon;
-            const isActive = activePage === item.id;
+            const isActive = resolvedActivePage === item.id;
             return (
               <button
                 key={item.id}
@@ -270,9 +277,10 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
                 onClick={() => handleNavClickWithAuth(item.id, item.requiresAuth)}
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                   isActive
-                    ? "bg-white/10 text-white"
+                    ? "bg-white/10 text-white font-semibold"
                     : "text-gray-400 hover:text-white hover:bg-white/5"
                 }`}
+                style={isActive ? { borderLeft: "2px solid #4F46E5", paddingLeft: "calc(0.875rem - 2px)" } : undefined}
               >
                 <Icon className="w-4 h-4" />
                 <span className="hidden md:inline">{item.label}</span>
@@ -285,7 +293,7 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
             label="Tools"
             icon={Layers}
             items={TOOLS_DROPDOWN}
-            activePage={activePage}
+            activePage={resolvedActivePage}
             onNavigate={onNavigate}
             onShowFeatureLocked={onShowFeatureLocked}
           />
@@ -295,7 +303,7 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
             label="Enterprise"
             icon={Beaker}
             items={ENTERPRISE_DROPDOWN}
-            activePage={activePage}
+            activePage={resolvedActivePage}
             onNavigate={onNavigate}
             onShowFeatureLocked={onShowFeatureLocked}
           />
@@ -308,10 +316,11 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
               data-testid="nav-profile"
               onClick={() => onNavigate("profile")}
               className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                activePage === "profile"
-                  ? "bg-white/10 text-white"
+                resolvedActivePage === "profile"
+                  ? "bg-white/10 text-white font-semibold"
                   : "text-gray-400 hover:text-white hover:bg-white/5"
               }`}
+              style={resolvedActivePage === "profile" ? { borderLeft: "2px solid #4F46E5", paddingLeft: "calc(0.75rem - 2px)" } : undefined}
             >
               <User className="w-4 h-4" />
               <span className="hidden lg:inline">Profile</span>

@@ -1233,7 +1233,7 @@ python3 -m pip install -e .`}
   );
 }
 
-export default function LandingPage({ onGetStarted, onNavigate }) {
+export default function LandingPage({ onGetStarted = () => {}, onNavigate = () => {} }) {
   return (
     <div className="relative overflow-hidden" style={{ background: "transparent" }} data-testid="landing-page">
 
@@ -1413,14 +1413,14 @@ export default function LandingPage({ onGetStarted, onNavigate }) {
               <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--text-muted)" }}>Product</p>
               <ul className="space-y-2.5">
                 {[
-                  { label: "AEO Audits",      section: "features" },
-                  { label: "AI Visibility Lab", section: "features" },
-                  { label: "Monitoring",       section: "features" },
-                  { label: "Pricing",          section: "pricing" },
-                ].map(({ label, section }) => (
+                  { label: "AEO Audits", page: "audits" },
+                  { label: "AI Visibility Lab", page: "ai-visibility-lab" },
+                  { label: "Monitoring", page: "monitor" },
+                  { label: "Pricing", page: "pricing" },
+                ].map(({ label, page }) => (
                   <li key={label}>
                     <button
-                      onClick={() => document.getElementById(section)?.scrollIntoView({ behavior: "smooth" })}
+                      onClick={() => onNavigate?.(page)}
                       className="text-sm transition-colors"
                       style={{ color: "var(--text-muted)" }}
                       onMouseEnter={e => e.currentTarget.style.color = "var(--foreground)"}

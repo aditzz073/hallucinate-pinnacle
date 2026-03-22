@@ -1,0 +1,190 @@
+import React, { Suspense, lazy, useEffect } from "react";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import Layout, { AppShellLayout } from "../components/Layout";
+import ScrollToTop from "../components/ScrollToTop";
+import PrivateRoute from "../components/PrivateRoute";
+import LoginPage from "../components/auth/LoginPage";
+import RegisterPage from "../components/auth/RegisterPage";
+import LandingPage from "../pages/LandingPage";
+import Dashboard from "../pages/Dashboard";
+import AuditsPage from "../pages/AuditsPage";
+import AITestsPage from "../pages/AITestsPage";
+import AITestingLabPage from "../pages/AITestingLabPage";
+import AIVisibilityLabPage from "../pages/AIVisibilityLabPage";
+import CLIPage from "../pages/CLIPage";
+import MonitoringPage from "../pages/MonitoringPage";
+import ReportsPage from "../pages/ReportsPage";
+import AdvancedAuditPage from "../pages/AdvancedAuditPage";
+import SimulatorPage from "../pages/SimulatorPage";
+import CompetitorPage from "../pages/CompetitorPage";
+import ExecutiveSummaryPage from "../pages/ExecutiveSummaryPage";
+import ProfilePage from "../pages/ProfilePage";
+import { getPathFromPageIdForAuth, getTitleFromPath } from "./routeConfig";
+
+const AboutPage = lazy(() => import("../pages/AboutPage"));
+const BlogPage = lazy(() => import("../pages/BlogPage"));
+const CareersPage = lazy(() => import("../pages/CareersPage"));
+const PressPage = lazy(() => import("../pages/PressPage"));
+const PrivacyPolicyPage = lazy(() => import("../pages/PrivacyPolicyPage"));
+const TermsPage = lazy(() => import("../pages/TermsPage"));
+const CookiePolicyPage = lazy(() => import("../pages/CookiePolicyPage"));
+
+function SuspensePage({ children }) {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center py-32"><div className="w-6 h-6 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" /></div>}>
+      {children}
+    </Suspense>
+  );
+}
+
+function TitleManager() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    document.title = getTitleFromPath(pathname);
+  }, [pathname]);
+
+  return null;
+}
+
+function LoginRoute() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = location.state?.from?.pathname || "/dashboard";
+
+  return <LoginPage onSwitch={() => navigate("/register", { state: location.state })} onSuccess={() => navigate(redirectTo, { replace: true })} />;
+}
+
+function RegisterRoute() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = location.state?.from?.pathname || "/dashboard";
+
+  return <RegisterPage onSwitch={() => navigate("/login", { state: location.state })} onSuccess={() => navigate(redirectTo, { replace: true })} />;
+}
+
+function PricingRoute() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const navigateToPage = (pageId) => navigate(getPathFromPageIdForAuth(pageId, Boolean(user)));
+
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, []);
+
+  return <LandingPage onGetStarted={() => navigate("/register")} onNavigate={navigateToPage} />;
+}
+
+function LandingRoute() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const navigateToPage = (pageId) => navigate(getPathFromPageIdForAuth(pageId, Boolean(user)));
+
+  return <LandingPage onGetStarted={() => navigate(user ? "/dashboard" : "/register")} onNavigate={navigateToPage} />;
+}
+
+function DashboardRoute() {
+  const navigate = useNavigate();
+  const navigateToPage = (pageId) => navigate(getPathFromPageIdForAuth(pageId, true));
+
+  return <Dashboard onNavigate={navigateToPage} />;
+}
+
+function AuditsRoute() {
+  const navigate = useNavigate();
+  return <AuditsPage onSignUp={() => navigate("/register")} />;
+}
+
+function AITestsRoute() {
+  const navigate = useNavigate();
+  return <AITestsPage onSignUp={() => navigate("/register")} />;
+}
+
+function AITestingLabRoute() {
+  const navigate = useNavigate();
+  return <AITestingLabPage onSignUp={() => navigate("/register")} />;
+}
+
+function AIVisibilityLabRoute() {
+  const navigate = useNavigate();
+  return <AIVisibilityLabPage onSignUp={() => navigate("/register")} />;
+}
+
+function CLIRoute() {
+  const navigate = useNavigate();
+  return <CLIPage onGetStarted={() => navigate("/register")} />;
+}
+
+export default function AppRoutes() {
+  const { loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "#08081A" }} data-testid="loading-screen">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+          <p className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>Loading</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <ScrollToTop />
+      <TitleManager />
+
+      <Routes>
+        <Route path="/login" element={<LoginRoute />} />
+        <Route path="/register" element={<RegisterRoute />} />
+
+        <Route element={<Layout />}>
+          <Route path="/" element={<LandingRoute />} />
+          <Route path="/pricing" element={<PricingRoute />} />
+          <Route path="/trial/audits" element={<AuditsRoute />} />
+          <Route path="/trial/ai-visibility-lab" element={<AIVisibilityLabRoute />} />
+          <Route path="/ai-tests" element={<AITestsRoute />} />
+          <Route path="/ai-testing-lab" element={<AITestingLabRoute />} />
+          <Route path="/tools" element={<AITestingLabRoute />} />
+
+          <Route path="/about" element={<SuspensePage><AboutPage /></SuspensePage>} />
+          <Route path="/blog" element={<SuspensePage><BlogPage /></SuspensePage>} />
+          <Route path="/careers" element={<SuspensePage><CareersPage /></SuspensePage>} />
+          <Route path="/press" element={<SuspensePage><PressPage /></SuspensePage>} />
+          <Route path="/privacy" element={<SuspensePage><PrivacyPolicyPage /></SuspensePage>} />
+          <Route path="/terms" element={<SuspensePage><TermsPage /></SuspensePage>} />
+          <Route path="/cookies" element={<SuspensePage><CookiePolicyPage /></SuspensePage>} />
+        </Route>
+
+        <Route element={<PrivateRoute />}>
+          <Route element={<AppShellLayout />}>
+            <Route path="/dashboard" element={<DashboardRoute />} />
+            <Route path="/audits" element={<AuditsRoute />} />
+            <Route path="/ai-visibility-lab" element={<AIVisibilityLabRoute />} />
+            <Route path="/cli" element={<CLIRoute />} />
+            <Route path="/monitor" element={<MonitoringPage />} />
+            <Route path="/changes" element={<MonitoringPage />} />
+            <Route path="/reports" element={<ReportsPage />} />
+            <Route path="/advanced-audit" element={<AdvancedAuditPage />} />
+            <Route path="/simulator" element={<SimulatorPage />} />
+            <Route path="/competitor-intel" element={<CompetitorPage />} />
+            <Route path="/executive-summary" element={<ExecutiveSummaryPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+          </Route>
+        </Route>
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
+  );
+}
