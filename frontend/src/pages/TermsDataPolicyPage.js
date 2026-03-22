@@ -11,7 +11,7 @@ const TERMS_SECTIONS = [
   },
   {
     title: "3. Account registration",
-    body: `You must register for an account to access certain features of the Service. You agree to provide accurate and complete information during registration and keep your credentials secure. You are responsible for all activities under your account. Notify us at support@pinnacle.ai if you suspect unauthorized use.`,
+    body: `You must register for an account to access certain features of the Service. You agree to provide accurate and complete information during registration and keep your credentials secure. You are responsible for all activities under your account. Notify us at pinnacle.ai.support@gmail.com if you suspect unauthorized use.`,
   },
   {
     title: "4. Acceptable use",
@@ -91,7 +91,7 @@ No system is fully secure, and we cannot guarantee absolute security.`,
 • Objection to or restriction of processing
 • Data portability
 
-To exercise these rights, contact privacy@pinnacle.ai.`,
+To exercise these rights, contact pinnacle.ai.support@gmail.com.`,
   },
   {
     title: "17. Cookies",
@@ -103,7 +103,7 @@ To exercise these rights, contact privacy@pinnacle.ai.`,
   },
   {
     title: "19. Contact",
-    body: `For questions about this Policy, contact legal@pinnacle.ai or privacy@pinnacle.ai, or write to: Pinnacle.ai Inc., 123 Market Street, Suite 400, San Francisco, CA 94105.`,
+    body: `For questions about this Policy, contact pinnacle.ai.support@gmail.com, or write to: Pinnacle.ai Inc., 123 Market Street, Suite 400, San Francisco, CA 94105.`,
   },
 ];
 

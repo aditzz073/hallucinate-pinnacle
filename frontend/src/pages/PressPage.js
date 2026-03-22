@@ -29,10 +29,10 @@ export default function PressPage() {
           style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
         >
           <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "var(--text-muted)" }}>Media contact</p>
-          <p className="text-base font-semibold mb-0.5" style={{ color: "var(--foreground)" }}>press@pinnacle.ai</p>
+          <p className="text-base font-semibold mb-0.5" style={{ color: "var(--foreground)" }}>pinnacle.ai.support@gmail.com</p>
           <p className="text-xs mb-5" style={{ color: "var(--text-muted)" }}>We respond within one business day.</p>
           <a
-            href="mailto:press@pinnacle.ai"
+            href="mailto:pinnacle.ai.support@gmail.com"
             className="btn-primary inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold"
           >
             <Mail className="w-4 h-4" /> Send a note

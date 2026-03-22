@@ -1299,7 +1299,7 @@ export default function LandingPage({ onGetStarted = () => {}, onNavigate = () =
               <div className="rounded-xl p-3 space-y-2" style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}>
                 <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "var(--text-muted)" }}>Get in touch</p>
                 <a
-                  href="mailto:sales@pinnacle.ai"
+                  href="mailto:pinnacle.ai.support@gmail.com"
                   className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
                   style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
                   onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
@@ -1309,8 +1309,8 @@ export default function LandingPage({ onGetStarted = () => {}, onNavigate = () =
                     <Mail className="w-3 h-3" style={{ color: "#818CF8" }} />
                   </div>
                   <div className="text-left">
-                    <div className="text-xs font-medium" style={{ color: "var(--foreground)" }}>sales@pinnacle.ai</div>
-                    <div className="text-xs" style={{ color: "var(--text-muted)" }}>Email our sales team</div>
+                    <div className="text-xs font-medium" style={{ color: "var(--foreground)" }}>pinnacle.ai.support@gmail.com</div>
+                    <div className="text-xs" style={{ color: "var(--text-muted)" }}>Email our team</div>
                   </div>
                 </a>
                 <a
@@ -1427,8 +1427,7 @@ export default function LandingPage({ onGetStarted = () => {}, onNavigate = () =
               </ul>
               <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--text-muted)" }}>Contact</p>
               <ul className="space-y-2.5">
-                <li><a href="mailto:sales@pinnacle.ai" className="text-sm" style={{ color: "var(--text-muted)" }}>sales@pinnacle.ai</a></li>
-                <li><a href="mailto:support@pinnacle.ai" className="text-sm" style={{ color: "var(--text-muted)" }}>support@pinnacle.ai</a></li>
+                <li><a href="mailto:pinnacle.ai.support@gmail.com" className="text-sm" style={{ color: "var(--text-muted)" }}>pinnacle.ai.support@gmail.com</a></li>
               </ul>
             </div>
           </div>

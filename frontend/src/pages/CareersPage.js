@@ -80,7 +80,7 @@ export default function CareersPage() {
               key={role.title}
               className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl px-5 py-4 transition-colors"
               style={{ background: "var(--surface)", border: "1px solid var(--border)", cursor: "pointer" }}
-              onClick={() => window.location.href = "mailto:careers@pinnacle.ai?subject=Application: " + role.title}
+              onClick={() => window.location.href = "mailto:pinnacle.ai.support@gmail.com?subject=Application: " + role.title}
               onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
               onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
             >
@@ -108,7 +108,7 @@ export default function CareersPage() {
         <p className="text-xs mt-6" style={{ color: "var(--text-muted)" }}>
           Don't see your role?{" "}
           <a
-            href="mailto:careers@pinnacle.ai"
+            href="mailto:pinnacle.ai.support@gmail.com"
             className="underline"
             style={{ color: "#818CF8" }}
           >

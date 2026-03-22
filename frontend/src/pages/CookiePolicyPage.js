@@ -50,7 +50,7 @@ Note that disabling strictly necessary cookies will impair the functionality of 
   },
   {
     title: "8. Contact",
-    body: `For questions about our use of cookies, contact us at privacy@pinnacle.ai.`,
+    body: `For questions about our use of cookies, contact us at pinnacle.ai.support@gmail.com.`,
   },
 ];
 
