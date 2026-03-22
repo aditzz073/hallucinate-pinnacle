@@ -59,21 +59,6 @@ export default function RegisterPage({ onSwitch, onSuccess }) {
               </p>
             </div>
 
-            <button
-              type="button"
-              className="w-full h-12 rounded-full border flex items-center justify-center gap-3 text-base font-medium mb-7"
-              style={{ borderColor: "rgba(255,255,255,0.15)", color: "#F3F4FF", background: "rgba(255,255,255,0.02)" }}
-            >
-              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white text-black text-sm font-bold">G</span>
-              Continue with Google
-            </button>
-
-            <div className="flex items-center gap-4 mb-7">
-              <div className="h-px flex-1" style={{ background: "rgba(255,255,255,0.12)" }} />
-              <span className="text-sm" style={{ color: "#9EA3C6" }}>or</span>
-              <div className="h-px flex-1" style={{ background: "rgba(255,255,255,0.12)" }} />
-            </div>
-
             <form onSubmit={handleSubmit} className="space-y-4" data-testid="register-form">
               {error && (
                 <div className="rounded-xl bg-red-400/10 border border-red-400/20 px-4 py-3 text-sm text-red-400" data-testid="register-error">{error}</div>
