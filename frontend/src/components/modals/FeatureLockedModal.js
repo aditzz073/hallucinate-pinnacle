@@ -1,45 +1,8 @@
 import React from 'react';
 import { X, Lock, Sparkles } from 'lucide-react';
 
-export default function FeatureLockedModal({ isOpen, onClose, onSignIn, feature = 'Dashboard' }) {
+export default function FeatureLockedModal({ isOpen, onClose, onUpgrade, feature = 'Premium Feature' }) {
   if (!isOpen) return null;
-
-  const messages = {
-    Dashboard: {
-      title: 'Sign in to access your Dashboard',
-      description: 'View your saved insights, analytics, and AI visibility metrics in one place.',
-    },
-    'Monitor Pages': {
-      title: 'Sign in to Monitor Pages',
-      description: 'Track and monitor your pages performance over time with automated alerts.',
-    },
-    'Reports': {
-      title: 'Sign in to access Reports',
-      description: 'Generate comprehensive reports with historical data and trend analysis.',
-    },
-    'Advanced Audit': {
-      title: 'Sign in to access Advanced Audit',
-      description: 'Get deeper insights with advanced scoring algorithms and detailed recommendations.',
-    },
-    'Strategy Simulator': {
-      title: 'Enterprise Feature',
-      description: 'Simulate content optimizations and see projected impact on citation probability.',
-    },
-    'Competitor Intel': {
-      title: 'Enterprise Feature',
-      description: 'Compare your AI visibility against competitors and identify strategic gaps.',
-    },
-    'Executive Summary': {
-      title: 'Enterprise Feature',
-      description: 'Generate executive-ready reports and data-driven decision summaries.',
-    },
-    'Profile': {
-      title: 'Sign in to access your Profile',
-      description: 'Manage your account settings, preferences, and subscription details.',
-    },
-  };
-
-  const { title, description } = messages[feature] || messages.Dashboard;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
@@ -56,23 +19,24 @@ export default function FeatureLockedModal({ isOpen, onClose, onSignIn, feature 
             <Lock className="w-8 h-8 text-indigo-400" />
           </div>
 
-          <h2 className="text-2xl font-bold text-white mb-2">{title}</h2>
-          <p className="text-gray-400 text-sm mb-8">{description}</p>
+          <h2 className="text-2xl font-bold text-white mb-2">Upgrade to access this feature</h2>
+          <p className="text-gray-400 text-sm mb-2">This feature is available on paid plans.</p>
+          <p className="text-xs mb-8" style={{ color: "#A5B4FC" }}>{feature}</p>
 
           <div className="space-y-3">
             <button
-              onClick={onSignIn}
+              onClick={onUpgrade}
               className="btn-primary w-full py-3 rounded-lg text-sm font-bold inline-flex items-center justify-center gap-2"
             >
               <Sparkles className="w-4 h-4" />
-              Sign In to Access
+              See Premium Plan
             </button>
             <button
               onClick={onClose}
               className="w-full py-3 rounded-lg border text-sm font-medium text-white transition-all duration-200 hover:bg-white/5"
               style={{ borderColor: "var(--border)" }}
             >
-              Go Back
+              Maybe Later
             </button>
           </div>
         </div>

@@ -2,6 +2,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from middlewares.auth_middleware import verify_token
+from middlewares.feature_access import enforce_feature_access, UpgradeRequiredException
 
 router = APIRouter(prefix="/simulate-strategy", tags=["Strategy Simulator"])
 
@@ -17,11 +18,14 @@ async def simulate(req: SimulateRequest, current_user: dict = Depends(verify_tok
     from modules.strategySimulator.service import simulate_strategy
 
     try:
+        await enforce_feature_access(current_user, "strategy_simulator")
         result = await simulate_strategy(
             str(req.url), req.query.strip(), req.strategy.strip(), current_user["user_id"]
         )
         return result
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except UpgradeRequiredException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Simulation failed: {str(e)}")

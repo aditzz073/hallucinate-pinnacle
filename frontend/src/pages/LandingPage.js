@@ -1263,13 +1263,20 @@ export default function LandingPage({ onGetStarted = () => {}, onNavigate = () =
                 MOST POPULAR
               </div>
               <h3 className="text-base font-semibold mb-0.5" style={{ color: "var(--foreground)" }}>Professional</h3>
-              <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>For teams serious about AEO.</p>
+              <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>For teams scaling AI visibility with premium workflows.</p>
               <div className="mb-4">
                 <span className="text-4xl font-bold" style={{ color: "#818CF8" }}>$100</span>
                 <span className="text-sm ml-1" style={{ color: "var(--muted)" }}>/month</span>
               </div>
               <ul className="space-y-2 mb-6">
-                {["Unlimited audits", "Unlimited AI tests", "Page monitoring", "Strategy simulator", "Priority support"].map(item => (
+                {[
+                  "Unlimited audits",
+                  "Unlimited AI tests",
+                  "Advanced Audit access",
+                  "Strategy Simulator access",
+                  "CLI Tool access",
+                  "Priority support",
+                ].map(item => (
                   <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: "var(--text-muted)" }}>
                     <CheckCircle className="w-4 h-4 shrink-0" style={{ color: "#818CF8" }} />
                     {item}
@@ -1284,12 +1291,18 @@ export default function LandingPage({ onGetStarted = () => {}, onNavigate = () =
             {/* Enterprise */}
             <div className="rounded-2xl p-6" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
               <h3 className="text-base font-semibold mb-0.5" style={{ color: "var(--foreground)" }}>Enterprise</h3>
-              <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>For large-scale operations.</p>
+              <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>For large teams with competitive intelligence needs.</p>
               <div className="mb-4">
                 <span className="text-2xl font-semibold" style={{ color: "var(--text-muted)" }}>Custom pricing</span>
               </div>
               <ul className="space-y-2 mb-5">
-                {["Everything in Pro", "Competitor intel", "Executive reports", "Dedicated support", "Custom integrations"].map(item => (
+                {[
+                  "Everything in Professional",
+                  "Competitor Intel",
+                  "Executive reports",
+                  "Dedicated support",
+                  "Custom integrations",
+                ].map(item => (
                   <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: "var(--text-muted)" }}>
                     <CheckCircle className="w-4 h-4 shrink-0" style={{ color: "#4F46E5" }} />
                     {item}

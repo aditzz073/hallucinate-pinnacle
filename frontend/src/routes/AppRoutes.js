@@ -7,6 +7,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { canAccessFeature } from "../utils/featureAccess";
 import Layout, { AppShellLayout } from "../components/Layout";
 import ScrollToTop from "../components/ScrollToTop";
 import PrivateRoute from "../components/PrivateRoute";
@@ -124,6 +125,54 @@ function CLIRoute() {
   return <CLIPage onGetStarted={() => navigate("/register")} />;
 }
 
+function PremiumFeatureRoute({ feature, children }) {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  if (canAccessFeature(user, feature)) {
+    return children;
+  }
+
+  return (
+    <div className="max-w-[760px] mx-auto pt-12">
+      <div
+        className="rounded-2xl p-7"
+        style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+      >
+        <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#818CF8" }}>
+          Premium Feature
+        </p>
+        <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--foreground)" }}>
+          Upgrade to access this feature
+        </h2>
+        <p className="text-sm mb-5" style={{ color: "var(--text-muted)" }}>
+          This feature is available on paid plans.
+        </p>
+        <div
+          className="rounded-xl px-4 py-3 mb-5"
+          style={{ background: "rgba(79,70,229,0.08)", border: "1px solid rgba(79,70,229,0.22)" }}
+        >
+          <p className="text-sm" style={{ color: "#C7D2FE" }}>
+            You're seeing a preview. Upgrade to unlock full access.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <button className="btn-primary rounded-lg px-4 py-2.5 text-sm font-semibold" onClick={() => navigate("/pricing")}>
+            See Premium Plan
+          </button>
+          <button
+            className="rounded-lg px-4 py-2.5 text-sm font-medium"
+            style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--foreground)" }}
+            onClick={() => navigate("/dashboard")}
+          >
+            Maybe Later
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AppRoutes() {
   const { loading } = useAuth();
 
@@ -171,13 +220,13 @@ export default function AppRoutes() {
             <Route path="/dashboard" element={<DashboardRoute />} />
             <Route path="/audits" element={<AuditsRoute />} />
             <Route path="/ai-visibility-lab" element={<AIVisibilityLabRoute />} />
-            <Route path="/cli" element={<CLIRoute />} />
+            <Route path="/cli" element={<PremiumFeatureRoute feature="cli_tool"><CLIRoute /></PremiumFeatureRoute>} />
             <Route path="/monitor" element={<MonitoringPage />} />
             <Route path="/changes" element={<MonitoringPage />} />
             <Route path="/reports" element={<ReportsPage />} />
-            <Route path="/advanced-audit" element={<AdvancedAuditPage />} />
-            <Route path="/simulator" element={<SimulatorPage />} />
-            <Route path="/competitor-intel" element={<CompetitorPage />} />
+            <Route path="/advanced-audit" element={<PremiumFeatureRoute feature="advanced_audit"><AdvancedAuditPage /></PremiumFeatureRoute>} />
+            <Route path="/simulator" element={<PremiumFeatureRoute feature="strategy_simulator"><SimulatorPage /></PremiumFeatureRoute>} />
+            <Route path="/competitor-intel" element={<PremiumFeatureRoute feature="competitor_intel"><CompetitorPage /></PremiumFeatureRoute>} />
             <Route path="/executive-summary" element={<ExecutiveSummaryPage />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Route>

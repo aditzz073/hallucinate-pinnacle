@@ -23,6 +23,7 @@ from modules.reports.routes import router as reports_router
 from modules.strategySimulator.routes import router as simulate_router
 from modules.enterprise.routes import router as enterprise_router
 from modules.cli.routes import router as cli_router
+from middlewares.feature_access import UpgradeRequiredException
 
 load_dotenv()
 
@@ -92,6 +93,14 @@ async def global_exception_handler(request: Request, exc: Exception):
             "error_code": "INTERNAL_ERROR",
             "timestamp": datetime.now(timezone.utc).isoformat(),
         },
+    )
+
+
+@app.exception_handler(UpgradeRequiredException)
+async def upgrade_required_exception_handler(request: Request, exc: UpgradeRequiredException):
+    return JSONResponse(
+        status_code=403,
+        content={"error": exc.message},
     )
 
 

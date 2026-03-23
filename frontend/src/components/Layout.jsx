@@ -19,6 +19,11 @@ import {
   getPathFromPageIdForAuth,
   PRIVATE_PAGE_IDS,
 } from "../routes/routeConfig";
+import {
+  FEATURE_LABELS,
+  PREMIUM_FEATURE_PAGE_MAP,
+  canAccessFeature,
+} from "../utils/featureAccess";
 
 const MOBILE_NAV = [
   { id: "dashboard", label: "Home", icon: LayoutDashboard },
@@ -39,6 +44,14 @@ const FEATURE_NAMES = {
   profile: "Profile",
 };
 
+function getLockedFeatureLabel(featureIdOrLabel) {
+  const premiumFeature = PREMIUM_FEATURE_PAGE_MAP[featureIdOrLabel];
+  if (premiumFeature) {
+    return FEATURE_LABELS[premiumFeature] || FEATURE_NAMES[featureIdOrLabel] || featureIdOrLabel;
+  }
+  return FEATURE_NAMES[featureIdOrLabel] || featureIdOrLabel;
+}
+
 export default function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -55,7 +68,7 @@ export default function Layout() {
   };
 
   const handleShowFeatureLocked = (featureIdOrLabel) => {
-    const label = FEATURE_NAMES[featureIdOrLabel] || featureIdOrLabel;
+    const label = getLockedFeatureLabel(featureIdOrLabel);
     setLockedFeature(label);
     setShowFeatureLockedModal(true);
 
@@ -67,15 +80,24 @@ export default function Layout() {
   const handleNavigate = (pageId) => {
     const requiresAuth = PRIVATE_PAGE_IDS.includes(pageId);
     if (requiresAuth && !user) {
+      navigate("/login", {
+        state: { from: { pathname: getPathFromPageId(pageId) } },
+      });
+      return;
+    }
+
+    const premiumFeature = PREMIUM_FEATURE_PAGE_MAP[pageId];
+    if (premiumFeature && !canAccessFeature(user, premiumFeature)) {
       handleShowFeatureLocked(pageId);
       return;
     }
+
     navigateToPage(pageId);
   };
 
-  const handleSignInFromModal = () => {
+  const handleUpgradeFromModal = () => {
     setShowFeatureLockedModal(false);
-    navigate("/login", {
+    navigate("/pricing", {
       state: pendingPath ? { from: { pathname: pendingPath } } : undefined,
     });
   };
@@ -119,7 +141,7 @@ export default function Layout() {
       <FeatureLockedModal
         isOpen={showFeatureLockedModal}
         onClose={() => setShowFeatureLockedModal(false)}
-        onSignIn={handleSignInFromModal}
+        onUpgrade={handleUpgradeFromModal}
         feature={lockedFeature}
       />
     </div>
@@ -129,11 +151,25 @@ export default function Layout() {
 export function AppShellLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout: authLogout } = useAuth();
+  const { user, logout: authLogout } = useAuth();
   const activePage = useMemo(() => getPageIdFromPath(location.pathname), [location.pathname]);
+  const [showFeatureLockedModal, setShowFeatureLockedModal] = useState(false);
+  const [lockedFeature, setLockedFeature] = useState("");
 
   const handleNavigate = (pageId) => {
+    const premiumFeature = PREMIUM_FEATURE_PAGE_MAP[pageId];
+    if (premiumFeature && !canAccessFeature(user, premiumFeature)) {
+      setLockedFeature(FEATURE_LABELS[premiumFeature] || pageId);
+      setShowFeatureLockedModal(true);
+      return;
+    }
     navigate(getPathFromPageIdForAuth(pageId, true));
+  };
+
+  const handleFeatureLocked = (featureIdOrLabel) => {
+    const label = getLockedFeatureLabel(featureIdOrLabel);
+    setLockedFeature(label);
+    setShowFeatureLockedModal(true);
   };
 
   const logout = () => {
@@ -144,7 +180,12 @@ export function AppShellLayout() {
   return (
     <div className="flex min-h-screen" style={{ background: "var(--bg)" }}>
       <div className="hidden md:block">
-        <Sidebar activePage={activePage} onNavigate={handleNavigate} onLogout={logout} />
+        <Sidebar
+          activePage={activePage}
+          onNavigate={handleNavigate}
+          onFeatureLocked={handleFeatureLocked}
+          onLogout={logout}
+        />
       </div>
 
       <main className="flex-1 pb-20 md:pb-0" style={{ marginLeft: "0" }}>
@@ -182,6 +223,16 @@ export function AppShellLayout() {
           })}
         </div>
       </nav>
+
+      <FeatureLockedModal
+        isOpen={showFeatureLockedModal}
+        onClose={() => setShowFeatureLockedModal(false)}
+        onUpgrade={() => {
+          setShowFeatureLockedModal(false);
+          navigate("/pricing");
+        }}
+        feature={lockedFeature}
+      />
     </div>
   );
 }

@@ -15,7 +15,9 @@ import {
   ChevronRight,
   User,
   Microscope,
+  Lock,
 } from "lucide-react";
+import { PREMIUM_FEATURE_PAGE_MAP, canAccessFeature } from "../../utils/featureAccess";
 
 const NAV_SECTIONS = [
   {
@@ -55,7 +57,7 @@ const NAV_SECTIONS = [
   },
 ];
 
-export default function Sidebar({ activePage, onNavigate, onLogout }) {
+export default function Sidebar({ activePage, onNavigate, onFeatureLocked, onLogout }) {
   const { user } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -99,12 +101,26 @@ export default function Sidebar({ activePage, onNavigate, onLogout }) {
               {section.items.map((item) => {
                 const Icon = item.icon;
                 const isActive = activePage === item.id;
+                const premiumFeature = PREMIUM_FEATURE_PAGE_MAP[item.id];
+                const isPremiumLocked = Boolean(premiumFeature) && !canAccessFeature(user, premiumFeature);
                 return (
                   <button
                     key={item.id}
                     data-testid={`nav-${item.id}`}
-                    onClick={() => onNavigate(item.id)}
-                    title={collapsed ? item.label : undefined}
+                    onClick={() => {
+                      if (isPremiumLocked) {
+                        onFeatureLocked?.(item.id);
+                        return;
+                      }
+                      onNavigate(item.id);
+                    }}
+                    title={
+                      collapsed
+                        ? item.label
+                        : isPremiumLocked
+                          ? "Available on Premium plan"
+                          : undefined
+                    }
                     className={`w-full flex items-center gap-2.5 rounded-md text-sm font-medium transition-all duration-200 ease-out hover:-translate-y-[1px] group relative ${
                       collapsed ? "justify-center px-0 py-2.5" : "px-3 py-2"
                     } ${
@@ -118,8 +134,13 @@ export default function Sidebar({ activePage, onNavigate, onLogout }) {
                             background: "rgba(79,70,229,0.12)",
                             borderLeft: "2px solid #4F46E5",
                             paddingLeft: collapsed ? undefined : "calc(0.75rem - 2px)",
+                            opacity: isPremiumLocked ? 0.62 : 1,
                           }
-                        : { background: "transparent", borderLeft: "2px solid transparent" }
+                        : {
+                            background: "transparent",
+                            borderLeft: "2px solid transparent",
+                            opacity: isPremiumLocked ? 0.62 : 1,
+                          }
                     }
                   >
                     <Icon
@@ -130,6 +151,13 @@ export default function Sidebar({ activePage, onNavigate, onLogout }) {
                     />
                     {!collapsed && (
                       <span className="whitespace-nowrap">{item.label}</span>
+                    )}
+                    {isPremiumLocked && (
+                      <Lock
+                        className="ml-auto shrink-0"
+                        style={{ width: "13px", height: "13px", color: "#A5B4FC" }}
+                        aria-label="Premium feature locked"
+                      />
                     )}
                     {/* Tooltip for collapsed */}
                     {collapsed && (

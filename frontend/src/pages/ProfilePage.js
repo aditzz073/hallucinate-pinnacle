@@ -1,15 +1,35 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getOverview } from "../api";
 import { changePassword, generateApiKey } from "../api";
-import { 
-  User, Mail, Shield, FileSearch, Search, 
-  Clock, TrendingUp, Activity, ChevronDown,
-  LogOut, Lock, ExternalLink, Eye, EyeOff, Check, X, Key, Copy, UserRound
+import { canAccessFeature } from "../utils/featureAccess";
+import {
+  User,
+  Mail,
+  Shield,
+  FileSearch,
+  Search,
+  Clock,
+  TrendingUp,
+  ChevronDown,
+  LogOut,
+  Lock,
+  Eye,
+  EyeOff,
+  Check,
+  Key,
+  Copy,
+  UserRound,
+  Settings,
+  PencilLine,
+  CreditCard,
+  SlidersHorizontal,
 } from "lucide-react";
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [overview, setOverview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
@@ -21,15 +41,39 @@ export default function ProfilePage() {
   const [generatingKey, setGeneratingKey] = useState(false);
   const [generatedKey, setGeneratedKey] = useState(null);
   const [keyCopied, setKeyCopied] = useState(false);
+  const [apiKeyError, setApiKeyError] = useState("");
+  const [openSettings, setOpenSettings] = useState({
+    security: false,
+    billing: false,
+    preferences: false,
+  });
+  const canUseCliTool = canAccessFeature(user, "cli_tool");
+
+  const openSettingsPanel = (panel) => {
+    setOpenSettings((prev) => ({ ...prev, [panel]: true }));
+    setTimeout(() => {
+      const el = document.getElementById("settings-section");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 60);
+  };
+
+  const togglePanel = (panel) => {
+    setOpenSettings((prev) => ({ ...prev, [panel]: !prev[panel] }));
+  };
 
   const handleGenerateKey = async () => {
     setGeneratingKey(true);
     setKeyCopied(false);
+    setApiKeyError("");
     try {
       const res = await generateApiKey();
       setGeneratedKey(res.api_key);
     } catch (err) {
-      console.error(err);
+      setApiKeyError(
+        err?.response?.data?.error ||
+        err?.response?.data?.detail ||
+        "Failed to generate API key"
+      );
     } finally {
       setGeneratingKey(false);
     }
@@ -51,8 +95,14 @@ export default function ProfilePage() {
   
   // Determine role display
   const getRoleInfo = () => {
-    if (user) {
+    if (user?.isFoundingUser) {
+      return { text: "Founding Access", color: "from-amber-300 to-yellow-500", icon: Shield };
+    }
+    if (user?.isSubscribed || user?.plan === "pro") {
       return { text: "Pro User", color: "from-blue-400 to-cyan-400", icon: Shield };
+    }
+    if (user) {
+      return { text: "Free User", color: "from-slate-300 to-slate-500", icon: User };
     }
     return { text: "Guest", color: "from-gray-400 to-gray-500", icon: User };
   };
@@ -60,132 +110,279 @@ export default function ProfilePage() {
   const roleInfo = getRoleInfo();
   const RoleIcon = roleInfo.icon;
 
+  const statItems = [
+    { icon: FileSearch, label: "Total Audits", value: stats.total_audits || 0, tint: "#60A5FA" },
+    { icon: Search, label: "AI Tests", value: stats.total_ai_tests || 0, tint: "#C084FC" },
+    { icon: TrendingUp, label: "Avg Score", value: stats.avg_score || "N/A", tint: "#34D399" },
+    { icon: Clock, label: "Last Active", value: "Today", tint: "#FBBF24" },
+  ];
+
   return (
-    <div className="space-y-8 animate-in fade-in duration-700" data-testid="profile-page">
-      
-      {/* 1️⃣ PROFILE HEADER CARD (Hero Section) */}
-      <div className="glass-card p-10 lg:p-12 border-white/10">
-        <div className="flex flex-col lg:flex-row items-center gap-8">
-          {/* Avatar */}
-          <div className="relative">
-            <div className="w-28 h-28 rounded-full bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border-2 border-white/10 flex items-center justify-center backdrop-blur-sm shadow-2xl">
-              <div className="w-20 h-20 rounded-full bg-white/10 border border-white/15 flex items-center justify-center">
-                <UserRound className="w-10 h-10 text-white" strokeWidth={1.8} />
+    <div className="mx-auto w-full max-w-[1100px] space-y-6 pb-6" data-testid="profile-page">
+      <section
+        className="rounded-xl border p-5 md:p-6"
+        style={{
+          background: "linear-gradient(180deg, #1D1D2A 0%, #181824 100%)",
+          borderColor: "rgba(255,255,255,0.06)",
+        }}
+      >
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-4 min-w-0">
+            <div
+              className="h-16 w-16 md:h-20 md:w-20 rounded-full border flex items-center justify-center shrink-0"
+              style={{ background: "rgba(79,70,229,0.14)", borderColor: "rgba(255,255,255,0.12)" }}
+            >
+              <div
+                className="h-12 w-12 md:h-14 md:w-14 rounded-full border flex items-center justify-center"
+                style={{ background: "rgba(255,255,255,0.05)", borderColor: "rgba(255,255,255,0.12)" }}
+              >
+                <UserRound className="w-6 h-6 md:w-7 md:h-7 text-white" strokeWidth={1.8} />
+              </div>
+            </div>
+
+            <div className="min-w-0">
+              <h1 className="font-display text-2xl md:text-[30px] font-bold text-white leading-tight">
+                {user?.nickname || user?.email?.split("@")[0] || "User"}
+              </h1>
+              <p className="mt-1 flex items-center gap-2 text-sm truncate" style={{ color: "#9CA3AF" }}>
+                <Mail className="w-4 h-4 shrink-0" />
+                <span className="truncate">{user?.email || "guest@pinnacle.ai"}</span>
+              </p>
+
+              <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border"
+                style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.12)" }}>
+                <RoleIcon className="w-4 h-4" style={{ color: "#FCD34D" }} />
+                <span className="text-xs md:text-sm font-semibold" style={{ color: "#F3F4F6" }}>
+                  {roleInfo.text}
+                </span>
               </div>
             </div>
           </div>
 
-          {/* User Info */}
-          <div className="flex-1 text-center lg:text-left">
-            <div className="flex items-center justify-center lg:justify-start gap-3 mb-2">
-              <h1 className="font-display text-3xl font-bold text-white">
-                {user?.nickname || user?.email?.split("@")[0] || "User"}
-              </h1>
-            </div>
-            
-            <p className="text-gray-400 mb-4 flex items-center justify-center lg:justify-start gap-2">
-              <Mail className="w-4 h-4" />
-              {user?.email || "guest@pinnacle.ai"}
-            </p>
-
-            {/* Role Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10">
-              <RoleIcon className="w-4 h-4" style={{ color: `var(--tw-gradient-stops)` }} />
-              <span className={`text-sm font-semibold bg-gradient-to-r ${roleInfo.color} bg-clip-text text-transparent`}>
-                {roleInfo.text}
-              </span>
-            </div>
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-end">
+            <button
+              type="button"
+              onClick={() => openSettingsPanel("security")}
+              className="h-10 px-3 rounded-lg border text-sm font-medium text-white inline-flex items-center justify-center gap-2 transition-all hover:-translate-y-[2px]"
+              style={{ background: "#202032", borderColor: "rgba(255,255,255,0.10)" }}
+            >
+              <PencilLine className="w-4 h-4" />
+              Edit
+            </button>
+            <button
+              type="button"
+              onClick={() => openSettingsPanel("preferences")}
+              className="h-10 px-3 rounded-lg border text-sm font-medium text-white inline-flex items-center justify-center gap-2 transition-all hover:-translate-y-[2px]"
+              style={{ background: "#202032", borderColor: "rgba(255,255,255,0.10)" }}
+            >
+              <Settings className="w-4 h-4" />
+              Settings
+            </button>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* 2️⃣ ACCOUNT & USAGE METRICS */}
-      <div>
-        <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-          <Activity className="w-5 h-5 text-blue-400" />
+      <section className="mt-6">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.12em] mb-3" style={{ color: "#9CA3AF" }}>
           Usage Metrics
         </h2>
-        
         {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="w-8 h-8 border-2 border-gray-700 border-t-blue-500 rounded-full animate-spin" />
+          <div className="rounded-xl border p-8 flex items-center justify-center" style={{ background: "#181824", borderColor: "rgba(255,255,255,0.06)" }}>
+            <div className="w-7 h-7 border-2 border-gray-700 border-t-blue-500 rounded-full animate-spin" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Metric Cards */}
-            {[
-              { 
-                icon: FileSearch, 
-                label: "Total Audits", 
-                value: stats.total_audits || 0,
-                iconColor: "text-blue-400",
-                bgColor: "from-blue-500/10 to-cyan-500/10"
-              },
-              { 
-                icon: Search, 
-                label: "AI Tests", 
-                value: stats.total_ai_tests || 0,
-                iconColor: "text-purple-400",
-                bgColor: "from-purple-500/10 to-pink-500/10"
-              },
-              { 
-                icon: TrendingUp, 
-                label: "Avg Score", 
-                value: stats.avg_score || "N/A",
-                iconColor: "text-emerald-400",
-                bgColor: "from-emerald-500/10 to-green-500/10"
-              },
-              { 
-                icon: Clock, 
-                label: "Last Active", 
-                value: "Today",
-                iconColor: "text-amber-400",
-                bgColor: "from-amber-500/10 to-orange-500/10"
-              },
-            ].map((metric, i) => {
-              const Icon = metric.icon;
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {statItems.map((item) => {
+              const Icon = item.icon;
               return (
-                <div 
-                  key={i} 
-                  className="glass-card p-6 hover:border-white/20 transition-all duration-300 group"
+                <div
+                  key={item.label}
+                  className="rounded-xl border p-4 min-h-[92px] transition-all duration-200 hover:-translate-y-[2px]"
+                  style={{ background: "#181824", borderColor: "rgba(255,255,255,0.06)" }}
                 >
-                  <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${metric.bgColor} border border-white/10 mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className={`w-6 h-6 ${metric.iconColor}`} />
+                  <div className="flex items-center gap-2 text-xs" style={{ color: "#A1A1AA" }}>
+                    <Icon className="w-4 h-4" style={{ color: item.tint }} />
+                    {item.label}
                   </div>
-                  <p className="text-sm text-gray-500 mb-1">{metric.label}</p>
-                  <p className="text-3xl font-bold text-white">{metric.value}</p>
+                  <p className="mt-2 text-xl font-bold text-white leading-tight">{item.value}</p>
                 </div>
               );
             })}
           </div>
         )}
-      </div>
+      </section>
 
-      {/* 3️⃣ ACTIONS SECTION */}
-      <div>
-        <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-          <Shield className="w-5 h-5 text-blue-400" />
-          Account Actions
+      <section className="mt-6">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.12em] mb-3" style={{ color: "#9CA3AF" }}>
+          Quick Actions
         </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Change Password */}
-          <div className="glass-card overflow-hidden">
-            <button
-              onClick={() => { setShowPasswordForm(v => !v); setPwStatus(null); setPwError(""); setPwForm({ current: "", next: "", confirm: "" }); }}
-              className="w-full p-6 flex items-center gap-4 hover:bg-white/5 transition-all duration-200"
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+          <button
+            type="button"
+            onClick={() => openSettingsPanel("security")}
+            className="rounded-xl border p-4 text-left transition-all duration-200 hover:-translate-y-[2px]"
+            style={{ background: "#181824", borderColor: "rgba(255,255,255,0.06)" }}
+          >
+            <Lock className="w-4 h-4 mb-2" style={{ color: "#60A5FA" }} />
+            <p className="text-sm font-semibold text-white">Change Password</p>
+            <p className="text-xs mt-1 text-zinc-400">Manage account security</p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.getElementById("cli-card");
+              if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+            className="rounded-xl border p-4 text-left transition-all duration-200 hover:-translate-y-[2px]"
+            style={{ background: "#181824", borderColor: "rgba(255,255,255,0.06)" }}
+          >
+            <Key className="w-4 h-4 mb-2" style={{ color: "#818CF8" }} />
+            <p className="text-sm font-semibold text-white">CLI Access</p>
+            <p className="text-xs mt-1 text-zinc-400">Generate local access key</p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.getElementById("cli-card");
+              if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+            className="rounded-xl border p-4 text-left transition-all duration-200 hover:-translate-y-[2px]"
+            style={{ background: "#181824", borderColor: "rgba(255,255,255,0.06)" }}
+          >
+            <Shield className="w-4 h-4 mb-2" style={{ color: "#22D3EE" }} />
+            <p className="text-sm font-semibold text-white">API Keys</p>
+            <p className="text-xs mt-1 text-zinc-400">View and copy generated key</p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate("/pricing")}
+            className="rounded-xl border p-4 text-left transition-all duration-200 hover:-translate-y-[2px]"
+            style={{ background: "#181824", borderColor: "rgba(255,255,255,0.06)" }}
+          >
+            <CreditCard className="w-4 h-4 mb-2" style={{ color: "#FBBF24" }} />
+            <p className="text-sm font-semibold text-white">Billing</p>
+            <p className="text-xs mt-1 text-zinc-400">Plan and subscription settings</p>
+          </button>
+        </div>
+      </section>
+
+      <section id="cli-card" className="mt-6">
+        <div
+          className="rounded-xl border p-4"
+          style={{ background: "#181824", borderColor: "rgba(255,255,255,0.06)" }}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-white">Pinnacle CLI</p>
+              <p className="text-xs mt-1 text-zinc-400">Generate API key to use locally</p>
+            </div>
+            <span
+              className="text-xs px-2 py-1 rounded-md border"
+              style={{ color: "#A5B4FC", borderColor: "rgba(129,140,248,0.28)", background: "rgba(129,140,248,0.10)" }}
             >
-              <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
-                <Lock className="w-5 h-5 text-blue-400" />
+              pinnacle login
+            </span>
+          </div>
+
+          <div className="mt-3">
+            {!canUseCliTool ? (
+              <div
+                className="rounded-lg p-3 border"
+                style={{ background: "rgba(99,102,241,0.08)", borderColor: "rgba(99,102,241,0.25)" }}
+              >
+                <p className="text-xs mb-2" style={{ color: "#C4B5FD" }}>
+                  Premium required for CLI Tool
+                </p>
+                <button
+                  type="button"
+                  onClick={() => navigate("/pricing")}
+                  className="h-9 px-3 rounded-lg text-xs font-semibold text-white"
+                  style={{ background: "#4F46E5" }}
+                >
+                  See Premium Plan
+                </button>
               </div>
-              <div className="flex-1 text-left">
-                <p className="text-sm font-semibold text-white mb-1">Change Password</p>
-                <p className="text-xs text-gray-500">{showPasswordForm ? "Cancel" : "Update your account password"}</p>
+            ) : !generatedKey ? (
+              <button
+                onClick={handleGenerateKey}
+                disabled={generatingKey}
+                className="w-full sm:w-auto h-9 px-4 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 text-white"
+                style={{ background: "#4F46E5" }}
+              >
+                {generatingKey ? (
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>Generate API Key</>
+                )}
+              </button>
+            ) : (
+              <div className="rounded-lg border p-3" style={{ background: "#0F0F18", borderColor: "rgba(255,255,255,0.10)" }}>
+                <p className="text-xs text-green-400 mb-2 flex items-center gap-1">
+                  <Check className="w-3 h-3" /> Key generated successfully
+                </p>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    readOnly
+                    value={generatedKey}
+                    className="flex-1 bg-black/50 border border-white/10 rounded px-2 py-1.5 text-xs text-gray-300 font-mono outline-none"
+                  />
+                  <button
+                    onClick={copyKeyToClipboard}
+                    className="p-1.5 rounded bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 transition-colors"
+                  >
+                    {keyCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
-              {showPasswordForm ? <X className="w-4 h-4 text-gray-500" /> : <ChevronDown className="w-4 h-4 text-gray-500" />}
+            )}
+            {apiKeyError && <p className="text-xs text-red-400 mt-2">{apiKeyError}</p>}
+          </div>
+        </div>
+      </section>
+
+      <section id="settings-section" className="mt-8">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.12em] mb-3" style={{ color: "#9CA3AF" }}>
+          Settings
+        </h2>
+
+        <div className="space-y-3">
+          <div className="rounded-xl border" style={{ background: "#181824", borderColor: "rgba(255,255,255,0.06)" }}>
+            <button
+              type="button"
+              onClick={() => togglePanel("security")}
+              className="w-full p-4 flex items-center justify-between"
+            >
+              <div className="flex items-center gap-2">
+                <Lock className="w-4 h-4 text-blue-400" />
+                <div className="text-left">
+                  <p className="text-sm font-semibold text-white">Security</p>
+                  <p className="text-xs text-zinc-400">Password and account protection</p>
+                </div>
+              </div>
+              <ChevronDown className={`w-4 h-4 text-zinc-400 transition-transform ${openSettings.security ? "rotate-180" : ""}`} />
             </button>
 
-            {showPasswordForm && (
+            {openSettings.security && (
+              <div className="px-4 pb-4 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPasswordForm((v) => !v);
+                    setPwStatus(null);
+                    setPwError("");
+                    setPwForm({ current: "", next: "", confirm: "" });
+                  }}
+                  className="mt-3 mb-3 h-9 px-3 rounded-lg border text-xs font-semibold text-white"
+                  style={{ background: "#202032", borderColor: "rgba(255,255,255,0.12)" }}
+                >
+                  {showPasswordForm ? "Cancel Password Update" : "Change Password"}
+                </button>
+
+                {showPasswordForm && (
               <form
                 onSubmit={async (e) => {
                   e.preventDefault();
@@ -203,7 +400,7 @@ export default function ProfilePage() {
                     setPwStatus("error");
                   }
                 }}
-                className="px-6 pb-6 border-t border-white/5 pt-4 space-y-3"
+                className="space-y-3"
               >
                 {[{key: "current", label: "Current password"}, {key: "next", label: "New password"}, {key: "confirm", label: "Confirm new password"}].map(({ key, label }) => (
                   <div key={key} className="relative">
@@ -231,85 +428,85 @@ export default function ProfilePage() {
                   type="submit"
                   disabled={pwStatus === "loading" || pwStatus === "success"}
                   className="w-full h-10 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all"
-                  style={{ background: pwStatus === "success" ? "rgba(16,185,129,0.2)" : "rgba(79,70,229,0.8)", color: "white", border: pwStatus === "success" ? "1px solid rgba(16,185,129,0.4)" : "none" }}
+                  style={{ background: pwStatus === "success" ? "rgba(16,185,129,0.2)" : "#4F46E5", color: "white", border: pwStatus === "success" ? "1px solid rgba(16,185,129,0.4)" : "none" }}
                 >
                   {pwStatus === "loading" && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                   {pwStatus === "success" && <><Check className="w-4 h-4 text-emerald-400" /> Password updated</>}
                   {(pwStatus === null || pwStatus === "error") && "Update Password"}
                 </button>
               </form>
+                )}
+              </div>
             )}
           </div>
 
-          {/* API Keys (For CLI) */}
-          <div className="glass-card p-6 border-indigo-500/20 hover:border-indigo-500/40 transition-all duration-300">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
-                <Key className="w-5 h-5 text-indigo-400" />
-              </div>
-              <div className="flex-1 text-left">
-                <p className="text-sm font-semibold text-white mb-1">Pinnacle CLI Access</p>
-                <p className="text-xs text-gray-500">Generate an API key to use Pinnacle locally.</p>
-              </div>
-            </div>
-
-            {!generatedKey ? (
-              <button
-                onClick={handleGenerateKey}
-                disabled={generatingKey}
-                className="w-full py-2.5 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all bg-indigo-600 hover:bg-indigo-500 text-white"
-              >
-                {generatingKey ? (
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                ) : (
-                  <>Generate New API Key</>
-                )}
-              </button>
-            ) : (
-              <div className="bg-[#0B0B14] border border-indigo-500/30 rounded-lg p-3">
-                <p className="text-xs text-green-400 mb-2 flex items-center gap-1">
-                  <Check className="w-3 h-3" /> Key generated successfully! 
-                </p>
-                <p className="text-[10px] text-gray-400 mb-2 leading-relaxed">
-                  Copy this key and paste it when running <code className="text-indigo-400 bg-indigo-400/10 px-1 rounded">pinnacle auth</code> in your terminal. You will only see this key once.
-                </p>
-                <div className="flex items-center gap-2">
-                  <input 
-                    type="text" 
-                    readOnly 
-                    value={generatedKey} 
-                    className="flex-1 bg-black/50 border border-white/10 rounded px-2 py-1.5 text-xs text-gray-300 font-mono outline-none"
-                  />
-                  <button 
-                    onClick={copyKeyToClipboard}
-                    className="p-1.5 rounded bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30 transition-colors"
-                  >
-                    {keyCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                  </button>
+          <div className="rounded-xl border" style={{ background: "#181824", borderColor: "rgba(255,255,255,0.06)" }}>
+            <button
+              type="button"
+              onClick={() => togglePanel("billing")}
+              className="w-full p-4 flex items-center justify-between"
+            >
+              <div className="flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-amber-300" />
+                <div className="text-left">
+                  <p className="text-sm font-semibold text-white">Billing</p>
+                  <p className="text-xs text-zinc-400">Plans, premium features, invoices</p>
                 </div>
               </div>
+              <ChevronDown className={`w-4 h-4 text-zinc-400 transition-transform ${openSettings.billing ? "rotate-180" : ""}`} />
+            </button>
+            {openSettings.billing && (
+              <div className="px-4 pb-4 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                <p className="text-sm text-zinc-300 mt-3 mb-3">Manage billing details and feature access from pricing.</p>
+                <button
+                  type="button"
+                  onClick={() => navigate("/pricing")}
+                  className="h-9 px-3 rounded-lg text-xs font-semibold text-white"
+                  style={{ background: "#4F46E5" }}
+                >
+                  Open Billing
+                </button>
+              </div>
             )}
           </div>
 
-          {/* Sign Out (Destructive Action) */}
-          <button 
-            onClick={() => {
-              // Logout will be handled by parent component
-              window.location.href = '/';
-            }}
-            className="glass-card p-6 flex items-center gap-4 border-red-500/20 hover:border-red-500/40 hover:bg-red-500/5 transition-all duration-300 group"
-          >
-            <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 group-hover:bg-red-500/20 transition-colors">
-              <LogOut className="w-5 h-5 text-red-400" />
-            </div>
-            <div className="flex-1 text-left">
-              <p className="text-sm font-semibold text-red-400 mb-1">Sign Out</p>
-              <p className="text-xs text-gray-500">End your session</p>
-            </div>
-            <ExternalLink className="w-4 h-4 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </button>
+          <div className="rounded-xl border" style={{ background: "#181824", borderColor: "rgba(255,255,255,0.06)" }}>
+            <button
+              type="button"
+              onClick={() => togglePanel("preferences")}
+              className="w-full p-4 flex items-center justify-between"
+            >
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal className="w-4 h-4 text-cyan-300" />
+                <div className="text-left">
+                  <p className="text-sm font-semibold text-white">Preferences</p>
+                  <p className="text-xs text-zinc-400">Dashboard and notification defaults</p>
+                </div>
+              </div>
+              <ChevronDown className={`w-4 h-4 text-zinc-400 transition-transform ${openSettings.preferences ? "rotate-180" : ""}`} />
+            </button>
+            {openSettings.preferences && (
+              <div className="px-4 pb-4 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                <p className="text-sm text-zinc-300 mt-3">Preference controls will appear here.</p>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      </section>
+
+      <section className="mt-6">
+        <button
+          onClick={() => {
+            logout();
+            navigate("/");
+          }}
+          className="w-full sm:w-auto rounded-lg border px-4 h-10 text-sm font-semibold inline-flex items-center justify-center gap-2 transition-all hover:-translate-y-[2px]"
+          style={{ background: "rgba(239,68,68,0.14)", borderColor: "rgba(239,68,68,0.30)", color: "#FECACA" }}
+        >
+          <LogOut className="w-4 h-4" />
+          Sign Out
+        </button>
+      </section>
     </div>
   );
 }

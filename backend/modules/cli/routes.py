@@ -3,6 +3,7 @@ import logging
 from modules.cli.models import CLIAnalyzeRequest
 from modules.cli.service import run_cli_analysis
 from middlewares.auth_middleware import get_current_user
+from middlewares.feature_access import enforce_feature_access, UpgradeRequiredException
 
 router = APIRouter(prefix="/cli", tags=["CLI"])
 logger = logging.getLogger("pinnacle_ai")
@@ -14,9 +15,12 @@ async def analyze_from_cli(req: CLIAnalyzeRequest, current_user: dict = get_curr
     Expects HTML to be fetched locally by the CLI and posted here to avoid crawling limits/issues on localhost.
     """
     try:
+        await enforce_feature_access(current_user, "cli_tool")
         # Pass the raw html from the request body to the analysis service
         result = await run_cli_analysis(str(req.url), req.html, req.query)
         return result
+    except UpgradeRequiredException:
+        raise
     except Exception as e:
         logger.exception("CLI Analysis failed: %s", e)
         raise HTTPException(status_code=500, detail=str(e))

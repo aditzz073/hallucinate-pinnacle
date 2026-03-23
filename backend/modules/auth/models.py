@@ -1,6 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from datetime import datetime, timezone
+from typing import Literal
 
 
 class UserRegisterRequest(BaseModel):
@@ -18,6 +19,9 @@ class UserResponse(BaseModel):
     id: str
     email: str
     nickname: Optional[str] = None
+    plan: Literal["free", "pro", "founder"] = "free"
+    isSubscribed: bool = False
+    isFoundingUser: bool = False
     is_privileged: bool = False
     created_at: str
 

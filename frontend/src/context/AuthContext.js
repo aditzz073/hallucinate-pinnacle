@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
+import { normalizeUserAccess } from "../utils/featureAccess";
 
 const AuthContext = createContext(null);
 
@@ -17,7 +18,7 @@ export function AuthProvider({ children }) {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
-          setUser(res.data);
+          setUser(normalizeUserAccess(res.data));
         })
         .catch(() => {
           localStorage.removeItem("token");
@@ -35,8 +36,9 @@ export function AuthProvider({ children }) {
     const { access_token, user: userData } = res.data;
     localStorage.setItem("token", access_token);
     setToken(access_token);
-    setUser(userData);
-    return userData;
+    const normalizedUser = normalizeUserAccess(userData);
+    setUser(normalizedUser);
+    return normalizedUser;
   };
 
   const register = async (email, password, nickname = null) => {
@@ -44,8 +46,9 @@ export function AuthProvider({ children }) {
     const { access_token, user: userData } = res.data;
     localStorage.setItem("token", access_token);
     setToken(access_token);
-    setUser(userData);
-    return userData;
+    const normalizedUser = normalizeUserAccess(userData);
+    setUser(normalizedUser);
+    return normalizedUser;
   };
 
   const logout = () => {

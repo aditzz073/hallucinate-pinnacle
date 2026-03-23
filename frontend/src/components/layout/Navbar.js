@@ -7,8 +7,9 @@ import Logo from "../ui/Logo";
 import {
   LayoutDashboard, FileSearch, Eye, BarChart3,
   Sparkles, FlaskConical, Swords, Crown, LogOut, ChevronDown,
-  Layers, Beaker, User, Microscope,
+  Layers, Beaker, User, Microscope, Lock,
 } from "lucide-react";
+import { canAccessFeature } from "../../utils/featureAccess";
 
 const CORE_NAV = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, requiresAuth: true },
@@ -19,13 +20,13 @@ const CORE_NAV = [
 const TOOLS_DROPDOWN = [
   { id: "monitor", label: "Monitor Pages", icon: Eye, requiresAuth: true },
   { id: "reports", label: "Reports", icon: BarChart3, requiresAuth: true },
-  { id: "advanced", label: "Advanced Audit", icon: Sparkles, requiresAuth: true },
-  { id: "cli", label: "CLI Tool", icon: Microscope, requiresAuth: true },
-  { id: "simulator", label: "Strategy Simulator", icon: FlaskConical, requiresAuth: true, isEnterprise: true },
+  { id: "advanced", label: "Advanced Audit", icon: Sparkles, requiresAuth: true, premiumFeature: "advanced_audit" },
+  { id: "cli", label: "CLI Tool", icon: Microscope, requiresAuth: true, premiumFeature: "cli_tool" },
+  { id: "simulator", label: "Strategy Simulator", icon: FlaskConical, requiresAuth: true, premiumFeature: "strategy_simulator" },
 ];
 
 const ENTERPRISE_DROPDOWN = [
-  { id: "compare", label: "Competitor Intel", icon: Swords, requiresAuth: true, isEnterprise: true },
+  { id: "compare", label: "Competitor Intel", icon: Swords, requiresAuth: true, premiumFeature: "competitor_intel" },
   { id: "executive", label: "Executive Summary", icon: Crown, requiresAuth: true, isEnterprise: true },
 ];
 
@@ -47,7 +48,12 @@ function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate, onShow
     setOpen(false);
     
     if (item.requiresAuth && !user) {
-      onShowFeatureLocked && onShowFeatureLocked(item.label);
+      onNavigate("login");
+      return;
+    }
+
+    if (item.premiumFeature && !canAccessFeature(user, item.premiumFeature)) {
+      onShowFeatureLocked && onShowFeatureLocked(item.id);
       return;
     }
     
@@ -76,20 +82,31 @@ function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate, onShow
           {items.map((item) => {
             const ItemIcon = item.icon;
             const isItemActive = activePage === item.id;
+            const isPremiumLocked = Boolean(item.premiumFeature) && !canAccessFeature(user, item.premiumFeature);
             return (
               <button
                 key={item.id}
                 data-testid={`nav-${item.id}`}
                 onClick={() => handleItemClick(item)}
+                title={isPremiumLocked ? "Available on Premium plan" : undefined}
                 className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all duration-200 ${
                   isItemActive
                     ? "bg-white/10 text-white font-semibold"
                     : "text-gray-400 hover:text-white hover:bg-white/5"
                 }`}
-                style={isItemActive ? { borderLeft: "2px solid #4F46E5", paddingLeft: "calc(1rem - 2px)" } : undefined}
+                style={
+                  isItemActive
+                    ? {
+                        borderLeft: "2px solid #4F46E5",
+                        paddingLeft: "calc(1rem - 2px)",
+                        opacity: isPremiumLocked ? 0.62 : 1,
+                      }
+                    : { opacity: isPremiumLocked ? 0.62 : 1 }
+                }
               >
                 <ItemIcon className="w-4 h-4" />
                 {item.label}
+                {isPremiumLocked && <Lock className="w-3.5 h-3.5 ml-auto text-indigo-300" />}
               </button>
             );
           })}
@@ -136,7 +153,7 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
 
     // Requires auth but user not logged in
     if (!user) {
-      onShowFeatureLocked && onShowFeatureLocked(itemId);
+      onNavigate("login");
       return;
     }
 

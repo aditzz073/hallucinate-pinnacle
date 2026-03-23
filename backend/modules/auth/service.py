@@ -22,6 +22,31 @@ def is_privileged_email(email: str) -> bool:
     return email.lower() in PRIVILEGED_EMAILS
 
 
+def _normalize_access_fields(user_doc: dict, fallback_email: str = "") -> dict:
+    # Keep backward compatibility with legacy is_privileged field.
+    is_founding_user = bool(
+        user_doc.get("isFoundingUser", user_doc.get("is_privileged", False))
+        or (fallback_email and is_privileged_email(fallback_email))
+    )
+    is_subscribed = bool(user_doc.get("isSubscribed", False))
+
+    plan = user_doc.get("plan")
+    if plan not in {"free", "pro", "founder"}:
+        if is_founding_user:
+            plan = "founder"
+        elif is_subscribed:
+            plan = "pro"
+        else:
+            plan = "free"
+
+    return {
+        "plan": plan,
+        "isSubscribed": is_subscribed,
+        "isFoundingUser": is_founding_user,
+        "is_privileged": is_founding_user,
+    }
+
+
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
@@ -48,12 +73,18 @@ async def register_user(email: str, password: str, nickname: str = None) -> dict
 
     now = datetime.now(timezone.utc).isoformat()
     is_privileged = is_privileged_email(email)
+    access_fields = {
+        "plan": "founder" if is_privileged else "free",
+        "isSubscribed": False,
+        "isFoundingUser": is_privileged,
+        "is_privileged": is_privileged,
+    }
     
     user_doc = {
         "email": email,
         "password_hash": hash_password(password),
         "nickname": nickname,
-        "is_privileged": is_privileged,
+        **access_fields,
         "created_at": now,
     }
     result = await users_collection.insert_one(user_doc)
@@ -67,7 +98,7 @@ async def register_user(email: str, password: str, nickname: str = None) -> dict
             "id": user_id,
             "email": email,
             "nickname": nickname,
-            "is_privileged": is_privileged,
+            **access_fields,
             "created_at": now
         },
     }
@@ -82,7 +113,7 @@ async def login_user(email: str, password: str) -> dict:
         raise ValueError("Invalid email or password")
 
     user_id = str(user["_id"])
-    is_privileged = is_privileged_email(email)
+    access_fields = _normalize_access_fields(user, fallback_email=email)
     
     token = create_token(user_id, email)
     return {
@@ -92,7 +123,7 @@ async def login_user(email: str, password: str) -> dict:
             "id": user_id,
             "email": user["email"],
             "nickname": user.get("nickname"),
-            "is_privileged": is_privileged,
+            **access_fields,
             "created_at": user["created_at"],
         },
     }
@@ -122,12 +153,12 @@ async def get_user_by_id(user_id: str) -> dict:
     if not user:
         raise ValueError("User not found")
     
-    is_privileged = is_privileged_email(user["email"])
+    access_fields = _normalize_access_fields(user, fallback_email=user.get("email", ""))
     
     return {
         "id": str(user["_id"]),
         "email": user["email"],
         "nickname": user.get("nickname"),
-        "is_privileged": is_privileged,
+        **access_fields,
         "created_at": user["created_at"],
     }

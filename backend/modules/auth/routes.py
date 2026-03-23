@@ -3,6 +3,7 @@ import logging
 from modules.auth.models import UserRegisterRequest, UserLoginRequest, TokenResponse, ChangePasswordRequest, APIKeyResponse
 from modules.auth.service import register_user, login_user, get_user_by_id, change_password, create_token
 from middlewares.auth_middleware import get_current_user
+from middlewares.feature_access import enforce_feature_access, UpgradeRequiredException
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 logger = logging.getLogger("pinnacle_ai")
@@ -58,9 +59,12 @@ async def change_password_route(req: ChangePasswordRequest, current_user: dict =
 @router.post("/api-key", response_model=APIKeyResponse)
 async def generate_api_key(current_user: dict = get_current_user):
     try:
+        await enforce_feature_access(current_user, "cli_tool")
         # Create a token valid for ~10 years (87600 hours)
         token = create_token(current_user["user_id"], current_user["email"], expiry_hours=87600)
         return {"api_key": token}
+    except UpgradeRequiredException:
+        raise
     except Exception as e:
         logger.exception("API key generation failed: %s", e)
         raise HTTPException(status_code=500, detail="Failed to generate API key")

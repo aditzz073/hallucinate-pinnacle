@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from middlewares.auth_middleware import verify_token
+from middlewares.feature_access import enforce_feature_access, UpgradeRequiredException
 
 router = APIRouter(prefix="/enterprise", tags=["Enterprise"])
 
@@ -28,10 +29,13 @@ async def compare_competitors(req: CompareRequest, current_user: dict = Depends(
     if len(req.competitor_urls) > 5:
         raise HTTPException(status_code=400, detail="Maximum 5 competitor URLs allowed")
     try:
+        await enforce_feature_access(current_user, "competitor_intel")
         result = await _compare(req.query.strip(), str(req.primary_url), [str(u) for u in req.competitor_urls])
         return result
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except UpgradeRequiredException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Comparison failed: {str(e)}")
 
