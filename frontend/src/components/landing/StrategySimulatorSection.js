@@ -41,7 +41,7 @@ export default function StrategySimulatorSection({ onNavigate }) {
               }}
             >
               <Target className="w-3.5 h-3.5" />
-              Flagship Feature
+              Premium Feature
             </div>
 
             <h2
@@ -53,6 +53,10 @@ export default function StrategySimulatorSection({ onNavigate }) {
 
             <p className="text-lg mb-8 leading-relaxed" style={{ color: "var(--muted)" }}>
               Simulate optimization strategies and predict how changes impact AI visibility.
+            </p>
+
+            <p className="text-xs font-medium mb-6" style={{ color: "#A5B4FC" }}>
+              Preview available on landing. Full simulator runs are part of paid plans.
             </p>
 
             <div className="space-y-4 mb-8">
@@ -85,7 +89,7 @@ export default function StrategySimulatorSection({ onNavigate }) {
               whileTap={reduceMotion ? undefined : { scale: 0.97 }}
               transition={{ duration: 0.15, ease: "easeOut" }}
             >
-              Open Strategy Simulator
+              Open Premium Preview
               <ArrowRight className="w-4 h-4" />
             </motion.button>
           </motion.div>

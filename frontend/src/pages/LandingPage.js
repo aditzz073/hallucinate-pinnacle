@@ -3,7 +3,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight, ArrowDown, Eye, Settings2,
   TrendingUp, CheckCircle, BarChart2, Cpu, Mail, MessageSquare,
-  Microscope, Copy, Check,
+  Microscope, Crown,
 } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import StrategySimulatorSection from "../components/landing/StrategySimulatorSection";
@@ -920,40 +920,10 @@ function FreeAuditCTA({ onGetStarted, onNavigate }) {
 }
 
 const CLI_TYPING_COMMAND = "pinnacle analyze https://site.com";
-const CLI_QUICK_START_COMMAND = `pip install pinnacle-cli
-pinnacle analyze https://yoursite.com`;
 
 function PinnacleCLISection({ onNavigate }) {
   const reduceMotion = useReducedMotion();
   const [typedCommand, setTypedCommand] = useState("");
-  const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    if (!copied) return undefined;
-    const timeoutId = setTimeout(() => setCopied(false), 1600);
-    return () => clearTimeout(timeoutId);
-  }, [copied]);
-
-  const copyQuickStart = async () => {
-    try {
-      if (navigator?.clipboard?.writeText) {
-        await navigator.clipboard.writeText(CLI_QUICK_START_COMMAND);
-      } else {
-        const textArea = document.createElement("textarea");
-        textArea.value = CLI_QUICK_START_COMMAND;
-        textArea.style.position = "fixed";
-        textArea.style.opacity = "0";
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textArea);
-      }
-      setCopied(true);
-    } catch {
-      setCopied(false);
-    }
-  };
 
   useEffect(() => {
     if (reduceMotion) {
@@ -1005,21 +975,39 @@ function PinnacleCLISection({ onNavigate }) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
 
             <motion.div variants={slideInLeft}>
-              <span
-                className="inline-flex items-center mb-5"
-                style={{
-                  background: "rgba(16,185,129,0.14)",
-                  border: "1px solid rgba(16,185,129,0.35)",
-                  color: "#6EE7B7",
-                  padding: "4px 10px",
-                  borderRadius: "999px",
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  letterSpacing: "0.06em",
-                }}
-              >
-                LIVE
-              </span>
+              <div className="flex flex-wrap items-center gap-2 mb-5">
+                <span
+                  className="inline-flex items-center gap-1.5"
+                  style={{
+                    background: "rgba(124,58,237,0.18)",
+                    border: "1px solid rgba(124,58,237,0.4)",
+                    color: "#C4B5FD",
+                    padding: "4px 10px",
+                    borderRadius: "999px",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    letterSpacing: "0.06em",
+                  }}
+                >
+                  <Crown className="w-3 h-3" />
+                  PREMIUM FEATURE
+                </span>
+                <span
+                  className="inline-flex items-center"
+                  style={{
+                    background: "rgba(16,185,129,0.14)",
+                    border: "1px solid rgba(16,185,129,0.35)",
+                    color: "#6EE7B7",
+                    padding: "4px 10px",
+                    borderRadius: "999px",
+                    fontSize: "12px",
+                    fontWeight: 600,
+                    letterSpacing: "0.06em",
+                  }}
+                >
+                  PREVIEW
+                </span>
+              </div>
 
               <h2
                 className="font-display text-4xl lg:text-5xl font-bold mb-3"
@@ -1029,53 +1017,31 @@ function PinnacleCLISection({ onNavigate }) {
               </h2>
 
               <p className="text-lg mb-4" style={{ color: "#C4B5FD" }}>
-                Pinnacle AI. Now in your terminal.
+                Run AI visibility analysis without leaving your workflow.
               </p>
 
               <p className="text-sm leading-relaxed mb-5" style={{ color: "var(--muted)" }}>
-                Run AI visibility analysis directly from your terminal.
+                Instead of waiting for post-launch dashboards, Pinnacle CLI lets you test how AI understands
+                your content before users ever see it. Run checks locally or in CI, catch weak spots early,
+                and ship with confidence.
               </p>
 
-              <div className="mb-2">
-                <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#A78BFA" }}>
-                  Quick Start
-                </p>
-              </div>
-
-              <div
-                className="rounded-xl p-4 mb-4 relative"
-                style={{
-                  background: "rgba(11,11,20,0.95)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                }}
-              >
-                <button
-                  type="button"
-                  onClick={copyQuickStart}
-                  className="absolute top-3 right-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors"
-                  style={{
-                    background: copied ? "rgba(16,185,129,0.16)" : "rgba(99,102,241,0.12)",
-                    border: copied ? "1px solid rgba(16,185,129,0.35)" : "1px solid rgba(99,102,241,0.25)",
-                    color: copied ? "#6EE7B7" : "#C4B5FD",
-                  }}
-                >
-                  {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                  {copied ? "Copied ✓" : "Copy"}
-                </button>
-                <pre className="text-xs sm:text-sm leading-relaxed m-0" style={{ color: "#C4B5FD", fontFamily: "monospace" }}>
-{CLI_QUICK_START_COMMAND}
-                </pre>
+              <div className="space-y-2 mb-5 text-xs" style={{ color: "#D1D5DB" }}>
+                <div className="flex items-center gap-2"><span style={{ color: "#22d3ee" }}>•</span> Test AI visibility before pushing changes</div>
+                <div className="flex items-center gap-2"><span style={{ color: "#22d3ee" }}>•</span> Run audits inside your CI/CD pipeline</div>
+                <div className="flex items-center gap-2"><span style={{ color: "#22d3ee" }}>•</span> Catch issues before they affect production</div>
+                <div className="flex items-center gap-2"><span style={{ color: "#22d3ee" }}>•</span> Get actionable fixes instantly in your terminal</div>
               </div>
 
               <p className="text-xs mb-3" style={{ color: "#B7B3D6" }}>
-                Used by developers to test AI visibility before deploying.
+                This preview shows how Pinnacle CLI works. Full access with unlimited runs is available on paid plans.
               </p>
 
               <div className="flex flex-wrap items-center gap-2 mb-6">
                 {[
                   "Works locally",
-                  "CI/CD ready",
-                  "Fast analysis",
+                  "CI/CD friendly",
+                  "Instant results",
                 ].map((tag) => (
                   <span
                     key={tag}
@@ -1099,23 +1065,8 @@ function PinnacleCLISection({ onNavigate }) {
                   whileTap={reduceMotion ? undefined : { scale: 0.97 }}
                   transition={{ duration: 0.15, ease: "easeOut" }}
                 >
-                  View CLI Docs
+                  Try CLI Preview
                   <ArrowRight className="w-4 h-4" />
-                </motion.button>
-
-                <motion.button
-                  onClick={copyQuickStart}
-                  className="btn-secondary inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold"
-                  style={{
-                    borderColor: "rgba(124,58,237,0.4)",
-                    color: "#DDD6FE",
-                    background: "rgba(124,58,237,0.12)",
-                  }}
-                  whileHover={reduceMotion ? undefined : { y: -2 }}
-                  whileTap={reduceMotion ? undefined : { scale: 0.97 }}
-                  transition={{ duration: 0.15, ease: "easeOut" }}
-                >
-                  Install Now
                 </motion.button>
               </div>
 
