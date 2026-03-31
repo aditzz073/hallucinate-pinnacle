@@ -153,6 +153,60 @@ def parse_html(html: str, url: str) -> dict:
                 a = details.get_text(strip=True).replace(q, "", 1).strip()
                 faq_items.append({"question": q, "answer": a})
 
+    # Freshness detection
+    last_modified = ""
+    # Check meta tags for article:modified_time
+    mod_meta = soup.find("meta", attrs={"property": "article:modified_time"})
+    if mod_meta:
+        last_modified = mod_meta.get("content", "")
+    # Check JSON-LD dateModified
+    if not last_modified:
+        pub_meta = soup.find("meta", attrs={"property": "article:published_time"})
+        if pub_meta:
+            last_modified = pub_meta.get("content", "")
+    if not last_modified:
+        for schema in schema_blocks:
+            if isinstance(schema, dict):
+                dm = schema.get("dateModified") or schema.get("datePublished", "")
+                if dm:
+                    last_modified = str(dm)
+                    break
+
+    # Conversational tone detection
+    question_headings = 0
+    for level in range(1, 4):
+        for h_text in headings.get(f"h{level}", []):
+            if h_text.strip().endswith("?") or h_text.lower().startswith(("how ", "what ", "why ", "when ", "where ", "who ", "can ", "do ", "does ", "is ", "are ")):
+                question_headings += 1
+
+    # Pronoun density (you/your)
+    pronoun_count = 0
+    if body_text:
+        lower_body = body_text.lower()
+        pronoun_count = lower_body.count(" you ") + lower_body.count(" your ") + lower_body.count(" you're ")
+
+    conversational_score = min(100, question_headings * 15 + min(50, pronoun_count * 2))
+
+    # Heading hierarchy depth
+    h1_count = len(headings.get("h1", []))
+    h2_count = len(headings.get("h2", []))
+    h3_count = len(headings.get("h3", []))
+
+    heading_depth = 0
+    if h1_count >= 1:
+        heading_depth += 1
+    if h2_count >= 1:
+        heading_depth += 1
+    if h3_count >= 1:
+        heading_depth += 1
+
+    # Explicit schema type flags
+    schema_types_lower = [t.lower() for t in _extract_schema_types(schema_blocks)]
+    has_faq_schema = "faqpage" in schema_types_lower
+    has_article_schema = any(t in schema_types_lower for t in ("article", "newsarticle", "blogposting", "technicalarticle"))
+    has_product_schema = any(t in schema_types_lower for t in ("product", "offer"))
+    has_breadcrumb_schema = "breadcrumblist" in schema_types_lower
+
     return {
         "title": title,
         "meta_description": meta_description,
@@ -168,6 +222,11 @@ def parse_html(html: str, url: str) -> dict:
         "images_with_alt": sum(1 for i in images_data if i["has_alt"]),
         "schema_blocks": schema_blocks,
         "schema_types": _extract_schema_types(schema_blocks),
+        "schema_present": len(schema_blocks) > 0,
+        "has_faq_schema": has_faq_schema,
+        "has_article_schema": has_article_schema,
+        "has_product_schema": has_product_schema,
+        "has_breadcrumb_schema": has_breadcrumb_schema,
         "author": author,
         "has_organization_schema": has_organization_schema,
         "has_contact_info": has_contact_info,
@@ -177,6 +236,10 @@ def parse_html(html: str, url: str) -> dict:
         "has_viewport": has_viewport,
         "faq_items": faq_items,
         "url": url,
+        "last_modified": last_modified,
+        "conversational_score": conversational_score,
+        "question_headings": question_headings,
+        "heading_depth": heading_depth,
     }
 
 

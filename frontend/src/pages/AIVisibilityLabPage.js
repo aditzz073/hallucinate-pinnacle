@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { runAITest, runAITestingLab } from "../api";
+import { runAITest, runAITestingLab, runAudit } from "../api";
+import { useAuth } from "../context/AuthContext";
+import RAGIndicator from "../components/ui/RAGIndicator";
 import { getScoreColor } from "../components/ui/ScoreRing";
 import {
   Search, ExternalLink, Loader2, AlertTriangle, Lightbulb,
@@ -119,6 +121,7 @@ function summarizeWeaknesses(engineResults = []) {
 }
 
 export default function AIVisibilityLabPage({ onSignUp }) {
+  const { user } = useAuth();
   const {
     isGuest, remainingUses, hasReachedLimit, incrementUsage,
     showLimitModal, setShowLimitModal,
@@ -129,11 +132,14 @@ export default function AIVisibilityLabPage({ onSignUp }) {
   const [loading, setLoading]               = useState(false);
   const [citationResult, setCitationResult] = useState(null);
   const [engineResult, setEngineResult]     = useState(null);
+  const [auditResult, setAuditResult]       = useState(null);
   const [error, setError]                   = useState("");
   const [activeTab, setActiveTab]           = useState("citation");
   const [showGeoDetails, setShowGeoDetails] = useState(false);
   const [expandedEngines, setExpandedEngines] = useState({});
   const [downloadingReport, setDownloadingReport] = useState(false);
+
+  const canSeeGeoInsights = user?.isSubscribed || user?.is_privileged;
 
   const toggleExpand = (id) =>
     setExpandedEngines((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -163,12 +169,14 @@ export default function AIVisibilityLabPage({ onSignUp }) {
     setExpandedEngines({});
 
     try {
-      const [citation, engine] = await Promise.all([
+      const [citation, engine, audit] = await Promise.all([
         runAITest(url.trim(), query.trim()),
         runAITestingLab(query.trim(), url.trim(), ALL_ENGINES),
+        runAudit(url.trim()).catch(() => null),
       ]);
       setCitationResult(citation);
       setEngineResult(engine);
+      setAuditResult(audit);
       setActiveTab("citation");
     } catch (err) {
       setError(err.response?.data?.detail || "Analysis failed. Please try again.");
@@ -368,6 +376,49 @@ export default function AIVisibilityLabPage({ onSignUp }) {
             </div>
           </div>
 
+          {/* RAG Status Chart */}
+          {auditResult?.breakdown && (
+            <div className="glass-card p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <Globe className="w-4 h-4 text-cyan-400" />
+                <span className="text-sm font-medium text-white">AEO RAG Status</span>
+                <span className="text-[10px] text-gray-600 ml-1">Red / Amber / Green</span>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
+                {Object.entries(auditResult.breakdown).map(([key, val]) => (
+                  <RAGIndicator key={key} label={key.charAt(0).toUpperCase() + key.slice(1)} score={val} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Auto-Suggest Optimization Pills */}
+          {auditResult?.top_suggestions?.length > 0 && (
+            <div className="glass-card p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <Lightbulb className="w-4 h-4 text-amber-400" />
+                <span className="text-sm font-medium text-white">Quick Wins</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {auditResult.top_suggestions.map((s, i) => (
+                  <span
+                    key={i}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border ${
+                      s.impact === "High"
+                        ? "bg-red-500/10 text-red-400 border-red-500/20"
+                        : s.impact === "Medium"
+                          ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                          : "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                    }`}
+                    title={`${s.dimension} • ${s.impact} impact`}
+                  >
+                    {s.suggestion}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Tab switcher */}
           <div
             className="flex gap-0 p-1 rounded-xl"
@@ -498,47 +549,64 @@ export default function AIVisibilityLabPage({ onSignUp }) {
                 })}
               </div>
 
-              {/* GEO Insights toggle */}
+              {/* GEO Insights toggle — gated for paid users */}
               {citationResult.geo_insights && (
-                <div className="glass-card overflow-hidden">
-                  <button
-                    onClick={() => setShowGeoDetails(!showGeoDetails)}
-                    className="w-full p-5 flex items-center justify-between hover:bg-white/[0.02] transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Zap className="w-4 h-4 text-cyan-400" />
-                      <span className="text-sm font-medium text-white">GEO Insights & Improvements</span>
-                      <span className="text-xs text-gray-600">
-                        ({citationResult.geo_insights.improvement_suggestions?.length || 0} suggestions)
-                      </span>
-                    </div>
-                    {showGeoDetails
-                      ? <ChevronUp className="w-4 h-4 text-gray-500" />
-                      : <ChevronDown className="w-4 h-4 text-gray-500" />}
-                  </button>
-                  {showGeoDetails && (
-                    <div className="px-5 pb-5 space-y-4 border-t border-white/5">
-                      {citationResult.geo_insights.improvement_suggestions?.slice(0, 5).map((s, i) => (
-                        <div key={i} className="pt-4 rounded-xl bg-white/[0.02] p-4">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Lightbulb className="w-4 h-4 text-cyan-400" />
-                            <span className="text-sm font-medium text-white">{s.issue}</span>
-                            {s.impact && (
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                                s.impact === "High"
-                                  ? "bg-red-500/20 text-red-400"
-                                  : "bg-amber-500/20 text-amber-400"
-                              }`}>
-                                {s.impact}
-                              </span>
-                            )}
+                canSeeGeoInsights ? (
+                  <div className="glass-card overflow-hidden">
+                    <button
+                      onClick={() => setShowGeoDetails(!showGeoDetails)}
+                      className="w-full p-5 flex items-center justify-between hover:bg-white/[0.02] transition-colors"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Zap className="w-4 h-4 text-cyan-400" />
+                        <span className="text-sm font-medium text-white">GEO Insights & Improvements</span>
+                        <span className="text-xs text-gray-600">
+                          ({citationResult.geo_insights.improvement_suggestions?.length || 0} suggestions)
+                        </span>
+                      </div>
+                      {showGeoDetails
+                        ? <ChevronUp className="w-4 h-4 text-gray-500" />
+                        : <ChevronDown className="w-4 h-4 text-gray-500" />}
+                    </button>
+                    {showGeoDetails && (
+                      <div className="px-5 pb-5 space-y-4 border-t border-white/5">
+                        {citationResult.geo_insights.improvement_suggestions?.slice(0, 5).map((s, i) => (
+                          <div key={i} className="pt-4 rounded-xl bg-white/[0.02] p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Lightbulb className="w-4 h-4 text-cyan-400" />
+                              <span className="text-sm font-medium text-white">{s.issue}</span>
+                              {s.impact && (
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded ${
+                                  s.impact === "High"
+                                    ? "bg-red-500/20 text-red-400"
+                                    : "bg-amber-500/20 text-amber-400"
+                                }`}>
+                                  {s.impact}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-500">{s.how_to_fix}</p>
                           </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <LockedSection
+                    title="GEO Insights & Improvements"
+                    description="Upgrade to a paid plan to unlock detailed GEO optimization insights and improvement suggestions."
+                    onUnlock={onSignUp || (() => {})}
+                  >
+                    <div className="space-y-3">
+                      {citationResult.geo_insights.improvement_suggestions?.slice(0, 3).map((s, i) => (
+                        <div key={i} className="rounded-xl bg-white/[0.02] p-4">
+                          <p className="text-sm text-white">{s.issue}</p>
                           <p className="text-xs text-gray-500">{s.how_to_fix}</p>
                         </div>
                       ))}
                     </div>
-                  )}
-                </div>
+                  </LockedSection>
+                )
               )}
             </div>
           )}

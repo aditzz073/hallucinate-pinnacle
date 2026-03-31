@@ -24,14 +24,14 @@ export default function StrategySimulatorSection({ onNavigate }) {
 
   return (
     <SectionWrapper
-      className="py-24 px-8"
+      className="py-24 px-8 bg-background"
       style={{ borderTop: "1px solid var(--border)" }}
     >
       <div className="max-w-[1120px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
           {/* ── Left: copy ─────────────────────────────────────────────── */}
-          <motion.div variants={slideInLeft}>
+          <motion.div className="order-1 lg:order-2" variants={slideInRight}>
             <div
               className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6 text-xs font-medium"
               style={{
@@ -92,11 +92,12 @@ export default function StrategySimulatorSection({ onNavigate }) {
 
           {/* ── Right: UI mockup ───────────────────────────────────────── */}
           <motion.div
-            className="transition-transform duration-300 hover:scale-[1.02]"
-            variants={slideInRight}
+            className="order-2 lg:order-1 transition-transform duration-300"
+            variants={slideInLeft}
+            whileHover={reduceMotion ? undefined : { scale: 1.02, y: -4 }}
           >
             <div
-              className="rounded-2xl overflow-hidden"
+              className="rounded-2xl overflow-hidden shadow-2xl transition-shadow hover:shadow-[0_0_80px_rgba(79,70,229,0.15)]"
               style={{
                 background: "var(--surface)",
                 border: "1px solid rgba(79,70,229,0.25)",

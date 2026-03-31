@@ -143,12 +143,34 @@ export default function CompetitorPage() {
                   ) : (
                     <div className="space-y-2">
                       {ga.gaps.map((g, j) => (
-                        <div key={j} className="flex items-center gap-3 rounded-xl bg-white/[0.02] border border-white/5 px-4 py-2.5 text-xs">
-                          <span className="font-medium text-gray-300 w-32">{g.dimension}</span>
-                          <span style={{ color: getScoreColor(g.your_score) }}>{g.your_score}</span>
-                          <ArrowRight className="w-3 h-3 text-gray-600" />
-                          <span style={{ color: getScoreColor(g.competitor_score) }}>{g.competitor_score}</span>
-                          <span className="text-red-400 font-medium ml-2">-{g.gap}</span>
+                        <div key={j} className="rounded-xl bg-white/[0.02] border border-white/5 px-4 py-3 text-xs">
+                          <div className="flex items-center gap-3 mb-1">
+                            <span className="font-medium text-gray-300 w-40">{g.dimension}</span>
+                            <span style={{ color: getScoreColor(g.your_score) }}>{g.your_score}</span>
+                            <ArrowRight className="w-3 h-3 text-gray-600" />
+                            <span style={{ color: getScoreColor(g.competitor_score) }}>{g.competitor_score}</span>
+                            <span className="text-red-400 font-medium ml-2">-{g.gap}</span>
+                          </div>
+                          {g.why_competitor_wins && (
+                            <p className="text-gray-500 mt-1 italic">{g.why_competitor_wins}</p>
+                          )}
+                          {g.missing_schema_types?.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-1.5">
+                              {g.missing_schema_types.map((t, ti) => (
+                                <span key={ti} className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 text-[10px] font-medium">{t}</span>
+                              ))}
+                            </div>
+                          )}
+                          {g.authority_signals?.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-1.5">
+                              {g.authority_signals.map((a, ai) => (
+                                <span key={ai} className="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 text-[10px] font-medium">{a}</span>
+                              ))}
+                            </div>
+                          )}
+                          {g.content_depth_gap && (
+                            <p className="text-gray-500 mt-1">{g.recommendation}</p>
+                          )}
                         </div>
                       ))}
                     </div>

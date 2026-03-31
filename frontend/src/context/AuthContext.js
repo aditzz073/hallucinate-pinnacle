@@ -9,6 +9,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   useEffect(() => {
     if (token) {
@@ -17,7 +18,8 @@ export function AuthProvider({ children }) {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {
-          setUser(res.data);
+          const u = res.data;
+          setUser({ ...u, isSubscribed: !!(u.is_subscribed || u.isSubscribed) });
         })
         .catch(() => {
           localStorage.removeItem("token");
@@ -35,7 +37,7 @@ export function AuthProvider({ children }) {
     const { access_token, user: userData } = res.data;
     localStorage.setItem("token", access_token);
     setToken(access_token);
-    setUser(userData);
+    setUser({ ...userData, isSubscribed: !!(userData.is_subscribed || userData.isSubscribed) });
     return userData;
   };
 
@@ -44,7 +46,7 @@ export function AuthProvider({ children }) {
     const { access_token, user: userData } = res.data;
     localStorage.setItem("token", access_token);
     setToken(access_token);
-    setUser(userData);
+    setUser({ ...userData, isSubscribed: !!(userData.is_subscribed || userData.isSubscribed) });
     return userData;
   };
 
@@ -54,8 +56,21 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const value = {
+    user,
+    token,
+    loading,
+    login,
+    register,
+    logout,
+    isLoggedIn: !!user,
+    isSubscribed: !!user?.isSubscribed,
+    showUpgradeModal,
+    setShowUpgradeModal
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

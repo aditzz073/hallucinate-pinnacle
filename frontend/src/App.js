@@ -1,4 +1,4 @@
-import React, { useState, Suspense, lazy } from "react";
+import React, { useState, useEffect, Suspense, lazy } from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Navbar from "./components/layout/Navbar";
@@ -9,6 +9,7 @@ import HistorySlider from "./components/ui/HistorySlider";
 import LoginPage from "./components/auth/LoginPage";
 import RegisterPage from "./components/auth/RegisterPage";
 import FeatureLockedModal from "./components/modals/FeatureLockedModal";
+import UpgradeModal from "./components/modals/UpgradeModal";
 import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import AuditsPage from "./pages/AuditsPage";
@@ -18,6 +19,7 @@ import MonitoringPage from "./pages/MonitoringPage";
 import ReportsPage from "./pages/ReportsPage";
 import AdvancedAuditPage from "./pages/AdvancedAuditPage";
 import SimulatorPage from "./pages/SimulatorPage";
+import PlansPage from "./pages/PlansPage";
 import CompetitorPage from "./pages/CompetitorPage";
 import ExecutiveSummaryPage from "./pages/ExecutiveSummaryPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -49,7 +51,7 @@ const MOBILE_NAV = [
 
 
 function AppContent() {
-  const { user, loading, logout: authLogout } = useAuth();
+  const { user, loading, logout: authLogout, isLoggedIn, showUpgradeModal, setShowUpgradeModal } = useAuth();
   const [view, setView] = useState("landing");
   const [activePage, setActivePage] = useState("landing");
   const [showFeatureLockedModal, setShowFeatureLockedModal] = useState(false);
@@ -57,6 +59,27 @@ function AppContent() {
   const [navigationHistory, setNavigationHistory] = useState(["landing"]);
   const [historyIndex, setHistoryIndex] = useState(0);
   const [pendingPage, setPendingPage] = useState(null);
+
+  const handleUpgradeRedirect = () => {
+    setShowUpgradeModal(false);
+    handlePageNavigation("plans");
+  };
+
+  const handleGetStarted = () => {
+    if (isLoggedIn) {
+      handlePageNavigation("dashboard");
+    } else {
+      navigateToAuth("register");
+    }
+  };
+
+  const handleSignUp = () => {
+    if (isLoggedIn) {
+      setShowUpgradeModal(true);
+    } else {
+      navigateToAuth("register");
+    }
+  };
 
   const logout = () => {
     authLogout();
@@ -129,6 +152,13 @@ function AppContent() {
     // pendingPage is already set from renderPage when this fires
   };
 
+  useEffect(() => {
+    const premiumPages = ["advanced", "simulator", "compare", "executive"];
+    if (isLoggedIn && !user?.isSubscribed && premiumPages.includes(activePage)) {
+      setShowUpgradeModal(true);
+    }
+  }, [activePage, isLoggedIn, user?.isSubscribed, setShowUpgradeModal]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: "#08081A" }} data-testid="loading-screen">
@@ -158,7 +188,15 @@ function AppContent() {
   }
 
   const renderPage = () => {
-    if (activePage === "landing") return <LandingPage onGetStarted={() => navigateToAuth("register")} onNavigate={handlePageNavigation} />;
+    if (activePage === "landing") {
+      return (
+        <LandingPage 
+          onGetStarted={handleGetStarted} 
+          onNavigate={handlePageNavigation} 
+          onUpgrade={() => isLoggedIn ? handleUpgradeRedirect() : navigateToAuth("login")}
+        />
+      );
+    }
 
     const lazyPages = { about: AboutPage, blog: BlogPage, careers: CareersPage, press: PressPage, privacy: PrivacyPolicyPage, terms: TermsPage, cookies: CookiePolicyPage };
     if (lazyPages[activePage]) {
@@ -170,18 +208,27 @@ function AppContent() {
       );
     }
 
-    if (activePage === "audits") return <AuditsPage onSignUp={() => navigateToAuth("register")} />;
-    if (activePage === "ai-visibility-lab") return <AIVisibilityLabPage onSignUp={() => navigateToAuth("register")} />;
-    if (activePage === "cli") return <CLIPage onGetStarted={() => navigateToAuth("register")} />;
+    if (activePage === "audits") return <AuditsPage onSignUp={handleSignUp} />;
+    if (activePage === "ai-visibility-lab") return <AIVisibilityLabPage onSignUp={handleSignUp} />;
+    if (activePage === "cli") return <CLIPage onGetStarted={handleGetStarted} />;
+    if (activePage === "plans") return <PlansPage onGetStarted={handleGetStarted} onNavigate={handlePageNavigation} />;
 
     if (activePage === "dashboard") {
-      if (!user) { handleShowFeatureLocked("dashboard"); return <LandingPage onGetStarted={() => navigateToAuth("register")} />; }
+      if (!user) { 
+        setPendingPage("dashboard");
+        handleShowFeatureLocked("dashboard"); 
+        return <LandingPage onGetStarted={handleGetStarted} onNavigate={handlePageNavigation} onUpgrade={() => navigateToAuth("login")} />; 
+      }
       return <Dashboard onNavigate={handlePageNavigation} />;
     }
 
     const authPages = ["monitor","reports","advanced","simulator","compare","executive","profile"];
     if (authPages.includes(activePage)) {
-      if (!user) { handleShowFeatureLocked(activePage); setPendingPage(activePage); return <LandingPage onGetStarted={() => navigateToAuthWithRedirect("register", activePage)} onNavigate={handlePageNavigation} />; }
+      if (!user) { 
+        handleShowFeatureLocked(activePage); 
+        setPendingPage(activePage); 
+        return <LandingPage onGetStarted={() => navigateToAuthWithRedirect("register", activePage)} onNavigate={handlePageNavigation} onUpgrade={() => navigateToAuth("login")} />; 
+      }
       switch (activePage) {
         case "monitor":   return <MonitoringPage />;
         case "reports":   return <ReportsPage />;
@@ -194,7 +241,7 @@ function AppContent() {
       }
     }
 
-    return <LandingPage onGetStarted={() => navigateToAuth("register")} />;
+    return <LandingPage onGetStarted={handleGetStarted} />;
   };
 
   // Authenticated app shell: sidebar + content area (no top navbar, no footer)
@@ -267,6 +314,12 @@ function AppContent() {
           onSignIn={handleSignInFromModal}
           feature={lockedFeature}
         />
+
+        <UpgradeModal
+          isOpen={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+          onUpgrade={handleUpgradeRedirect}
+        />
       </div>
     );
   }
@@ -313,6 +366,12 @@ function AppContent() {
         onClose={() => setShowFeatureLockedModal(false)}
         onSignIn={handleSignInFromModal}
         feature={lockedFeature}
+      />
+
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        onUpgrade={handleUpgradeRedirect}
       />
     </div>
   );

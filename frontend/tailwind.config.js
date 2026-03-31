@@ -6,21 +6,21 @@ module.exports = {
     extend: {
       colors: {
         // -- Layered surface system --
-        background: "#08081A",       // page background
-        surface: "#0E0E1F",          // section containers
-        "surface-2": "#14142A",      // elevated cards
-        "surface-3": "#1A1A30",      // hover / pressed state
+        background: "#080c16",       // page background (darkest navy)
+        surface: "#0c1022",          // section containers (slightly lighter)
+        "surface-2": "#1a1d4b",      // elevated cards (dark blue)
+        "surface-3": "#2d3466",      // hover / pressed state
 
         // -- Text --
-        foreground: "#F0F0FF",
-        "muted-foreground": "#7070A0",
-        "subtle-foreground": "#4A4A70",
+        foreground: "#ffffff",
+        "muted-foreground": "#949bc5", // (lavender blue)
+        "subtle-foreground": "#525c88", // (muted blue)
 
         // -- Primary accent: Indigo --
-        primary: "#4F46E5",
-        "primary-hover": "#4338CA",
-        "primary-light": "rgba(79,70,229,0.15)",
-        "primary-foreground": "#FFFFFF",
+        primary: "#525c88",
+        "primary-hover": "#4a537f",
+        "primary-light": "rgba(82,92,136,0.15)",
+        "primary-foreground": "#ffffff",
 
         // -- Border / divider --
         border: "rgba(255,255,255,0.07)",
@@ -33,23 +33,23 @@ module.exports = {
         info: "#3B82F6",
 
         // -- Semantic --
-        card: "#14142A",
-        "card-foreground": "#F0F0FF",
-        secondary: "#1A1A30",
-        "secondary-foreground": "#F0F0FF",
-        muted: "#1A1A30",
-        accent: "#1A1A30",
-        "accent-foreground": "#F0F0FF",
+        card: "#1a1d4b",
+        "card-foreground": "#ffffff",
+        secondary: "#2d3466",
+        "secondary-foreground": "#ffffff",
+        muted: "#2d3466",
+        accent: "#525c88",
+        "accent-foreground": "#ffffff",
         destructive: "#EF4444",
-        input: "#14142A",
-        ring: "#4F46E5",
+        input: "#1a1d4b",
+        ring: "#525c88",
 
         // -- Legacy brand kept for backwards compat --
         brand: {
-          blue: "#4F46E5",
-          teal: "#22D3EE",
-          indigo: "#4F46E5",
-          violet: "#7C3AED",
+          blue: "#525c88",
+          teal: "#949bc5",
+          indigo: "#1a1d4b",
+          violet: "#2d3466",
         },
       },
       maxWidth: {

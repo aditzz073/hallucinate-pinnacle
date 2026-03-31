@@ -4,7 +4,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, field_validator
 
-from middlewares.auth_middleware import verify_token_optional
+from middlewares.auth_middleware import verify_token_optional, require_subscription
 from modules.aiTestingLab.engine_profiles import ENGINE_PROFILES
 
 router = APIRouter(prefix="/ai-testing-lab", tags=["AI Testing Lab"])
@@ -34,7 +34,7 @@ class QuickScoreRequest(BaseModel):
 @router.post("/run")
 async def run_lab(
     req: LabRunRequest,
-    current_user: Optional[dict] = Depends(verify_token_optional),
+    current_user: dict = require_subscription,
 ):
     from modules.aiTestingLab.service import run_ai_testing_lab
 
@@ -54,7 +54,7 @@ async def run_lab(
 @router.post("/quick-score")
 async def quick_score(
     req: QuickScoreRequest,
-    current_user: Optional[dict] = Depends(verify_token_optional),
+    current_user: dict = require_subscription,
 ):
     from modules.aiTestingLab.service import get_quick_score
 

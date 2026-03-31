@@ -1,7 +1,7 @@
 """Monitoring Routes - Phase 3"""
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-from middlewares.auth_middleware import verify_token
+from middlewares.auth_middleware import verify_token, require_subscription
 
 router = APIRouter(prefix="/monitor", tags=["Page Monitoring"])
 
@@ -10,8 +10,8 @@ class MonitorRequest(BaseModel):
     url: str
 
 
-@router.post("")
-async def add_monitored_page(req: MonitorRequest, current_user: dict = Depends(verify_token)):
+@router.post("/pages")
+async def monitor_page(req: MonitorRequest, current_user: dict = require_subscription):
     from modules.monitoring.service import add_monitored_page as _add
 
     try:
@@ -23,8 +23,8 @@ async def add_monitored_page(req: MonitorRequest, current_user: dict = Depends(v
         raise HTTPException(status_code=502, detail=f"Failed to monitor URL: {str(e)}")
 
 
-@router.get("")
-async def list_monitored_pages(current_user: dict = Depends(verify_token)):
+@router.get("/pages")
+async def list_monitored_pages(current_user: dict = require_subscription):
     from modules.monitoring.service import get_monitored_pages
 
     pages = await get_monitored_pages(current_user["user_id"])
@@ -32,7 +32,7 @@ async def list_monitored_pages(current_user: dict = Depends(verify_token)):
 
 
 @router.post("/{page_id}/refresh")
-async def refresh_page(page_id: str, current_user: dict = Depends(verify_token)):
+async def refresh_page(page_id: str, current_user: dict = require_subscription):
     from modules.monitoring.service import refresh_snapshot
 
     try:
@@ -45,7 +45,7 @@ async def refresh_page(page_id: str, current_user: dict = Depends(verify_token))
 
 
 @router.get("/{page_id}/snapshots")
-async def get_snapshots(page_id: str, current_user: dict = Depends(verify_token)):
+async def get_snapshots(page_id: str, current_user: dict = require_subscription):
     from modules.monitoring.service import get_page_snapshots
 
     try:
@@ -56,7 +56,7 @@ async def get_snapshots(page_id: str, current_user: dict = Depends(verify_token)
 
 
 @router.get("/{page_id}/changes")
-async def get_changes(page_id: str, current_user: dict = Depends(verify_token)):
+async def get_changes(page_id: str, current_user: dict = require_subscription):
     from modules.monitoring.service import get_page_change_logs
 
     try:
@@ -67,7 +67,7 @@ async def get_changes(page_id: str, current_user: dict = Depends(verify_token)):
 
 
 @router.delete("/{page_id}")
-async def delete_page(page_id: str, current_user: dict = Depends(verify_token)):
+async def delete_page(page_id: str, current_user: dict = require_subscription):
     from modules.monitoring.service import delete_monitored_page
 
     try:

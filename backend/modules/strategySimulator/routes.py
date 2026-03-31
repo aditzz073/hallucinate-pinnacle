@@ -1,7 +1,7 @@
 """Strategy Simulator Routes - Phase 7"""
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-from middlewares.auth_middleware import verify_token
+from middlewares.auth_middleware import require_subscription
 
 router = APIRouter(prefix="/simulate-strategy", tags=["Strategy Simulator"])
 
@@ -13,7 +13,7 @@ class SimulateRequest(BaseModel):
 
 
 @router.post("")
-async def simulate(req: SimulateRequest, current_user: dict = Depends(verify_token)):
+async def simulate(req: SimulateRequest, current_user: dict = require_subscription):
     from modules.strategySimulator.service import simulate_strategy
 
     try:

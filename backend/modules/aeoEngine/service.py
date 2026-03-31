@@ -61,6 +61,20 @@ async def run_audit(url: str, user_id: str = None) -> dict:
         # Step 6: Generate recommendations
         recommendations = generate_recommendations(signals, scores)
 
+        # Step 7: Generate auto-suggestions
+        from modules.aeoEngine.auto_suggest import generate_suggestions
+        top_suggestions = generate_suggestions(signals, scores, recommendations)
+
+        # Step 8: Generate RAG status (Red/Amber/Green)
+        rag_status = {}
+        for dim, val in scores.get("breakdown", {}).items():
+            if val >= 70:
+                rag_status[dim] = "green"
+            elif val >= 40:
+                rag_status[dim] = "amber"
+            else:
+                rag_status[dim] = "red"
+
     finally:
         # CRITICAL: Explicitly delete HTML from memory after processing
         # Enforce ephemeral content policy - HTML must not persist
@@ -68,7 +82,7 @@ async def run_audit(url: str, user_id: str = None) -> dict:
         del fetch_result
         gc.collect()  # Suggest garbage collection to free memory
 
-    # Step 7: Save audit (only for authenticated users)
+    # Step 9: Save audit (only for authenticated users)
     # Store ONLY derived analytical metrics, NEVER raw HTML
     audit_id = None
     created_at = datetime.now(timezone.utc).isoformat()
@@ -81,6 +95,7 @@ async def run_audit(url: str, user_id: str = None) -> dict:
             "breakdown_json": scores["breakdown"],
             "signals_json": signals,  # Structured signals only, no raw HTML
             "recommendations": recommendations,
+            "top_suggestions": top_suggestions,
             "page_type": page_type,
             "created_at": created_at,
             "fetch_metadata": fetch_metadata,  # Metadata only, no HTML
@@ -96,6 +111,8 @@ async def run_audit(url: str, user_id: str = None) -> dict:
         "breakdown": scores["breakdown"],
         "signals": signals,  # Structured metrics only
         "recommendations": recommendations,
+        "top_suggestions": top_suggestions,
+        "rag_status": rag_status,
         "created_at": created_at,
     }
 

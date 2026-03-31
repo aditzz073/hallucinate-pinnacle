@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { simulateStrategy } from "../api";
 import { getScoreColor } from "../components/ui/ScoreRing";
 import { FlaskConical, Loader2, ArrowRight, TrendingUp, TrendingDown } from "lucide-react";
@@ -17,19 +17,36 @@ export default function SimulatorPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
+  const debounceRef = useRef(null);
 
-  const handleSimulate = async (e) => {
-    e.preventDefault();
-    if (!url.trim() || !query.trim()) return;
+  const runSimulation = useCallback(async (simUrl, simQuery, simStrategy) => {
+    if (!simUrl.trim() || !simQuery.trim()) return;
     setError("");
     setLoading(true);
     try {
-      const data = await simulateStrategy(url.trim(), query.trim(), strategy);
+      const data = await simulateStrategy(simUrl.trim(), simQuery.trim(), simStrategy);
       setResult(data);
     } catch (err) {
       setError(err.response?.data?.detail || "Simulation failed");
     }
     setLoading(false);
+  }, []);
+
+  // Debounced auto-refresh on input change (400ms)
+  useEffect(() => {
+    if (!url.trim() || !query.trim()) return;
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      runSimulation(url, query, strategy);
+    }, 400);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [url, query, strategy, runSimulation]);
+
+  const handleSimulate = async (e) => {
+    e.preventDefault();
+    runSimulation(url, query, strategy);
   };
 
   return (

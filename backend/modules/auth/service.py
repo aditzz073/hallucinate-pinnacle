@@ -51,6 +51,7 @@ async def register_user(email: str, password: str, nickname: str = None) -> dict
         "password_hash": hash_password(password),
         "nickname": nickname,
         "is_privileged": is_privileged,
+        "is_subscribed": False,
         "created_at": now,
     }
     result = await users_collection.insert_one(user_doc)
@@ -65,6 +66,7 @@ async def register_user(email: str, password: str, nickname: str = None) -> dict
             "email": email,
             "nickname": nickname,
             "is_privileged": is_privileged,
+            "is_subscribed": False,
             "created_at": now
         },
     }
@@ -90,6 +92,7 @@ async def login_user(email: str, password: str) -> dict:
             "email": user["email"],
             "nickname": user.get("nickname"),
             "is_privileged": is_privileged,
+            "is_subscribed": user.get("is_subscribed", False),
             "created_at": user["created_at"],
         },
     }
@@ -126,5 +129,6 @@ async def get_user_by_id(user_id: str) -> dict:
         "email": user["email"],
         "nickname": user.get("nickname"),
         "is_privileged": is_privileged,
+        "is_subscribed": user.get("is_subscribed", False),
         "created_at": user["created_at"],
     }

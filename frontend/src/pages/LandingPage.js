@@ -3,14 +3,19 @@ import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight, ArrowDown, Eye, Settings2,
   TrendingUp, CheckCircle, BarChart2, Cpu, Mail, Phone, MessageSquare,
-  Microscope, Copy, Check, ChevronDown, ChevronUp,
+  Microscope, Copy, Check, ChevronDown, ChevronUp, Loader2, Sparkles, AlertCircle
 } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
+import { useAuth } from "../context/AuthContext";
 import StrategySimulatorSection from "../components/landing/StrategySimulatorSection";
+import PricingSection from "../components/pricing/PricingSection";
 import ENGINE_LOGOS from "../utils/engineLogos";
 import IconContainer from "../components/ui/IconContainer";
 import SectionWrapper from "../hoc/SectionWrapper";
 import { fadeIn, fadeUp, slideInLeft, slideInRight } from "../utils/motion";
+import { useCurrencyLocale } from "../hooks/useCurrencyLocale";
+import { createCheckoutSession, bookDemo, getSelfAudit } from "../api";
+import RAGIndicator from "../components/ui/RAGIndicator";
 
 const VISIBILITY_TREND_SERIES = [
   { key: "citation",      label: "Citation Probability", color: "#8B5CF6" },
@@ -250,15 +255,7 @@ function HeroSection({ onGetStarted, onNavigate }) {
   const reduceMotion = useReducedMotion();
 
   return (
-    <SectionWrapper className="relative min-h-[92vh] flex items-center pt-8 md:pt-12">
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px)`,
-          backgroundSize: "84px 84px",
-        }}
-      />
+    <SectionWrapper className="relative min-h-[92vh] flex items-center pt-8 md:pt-12 bg-background">
       <div
         className="absolute top-8 right-0 w-[440px] h-[420px] pointer-events-none"
         style={{ background: "radial-gradient(ellipse, rgba(79,70,229,0.08) 0%, transparent 72%)" }}
@@ -364,6 +361,8 @@ function HeroSection({ onGetStarted, onNavigate }) {
           <motion.div className="flex justify-end" variants={slideInRight}>
             <motion.div
               variants={fadeUp}
+              whileHover={reduceMotion ? undefined : { scale: 1.02 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
               style={{
               transform: "perspective(1200px) rotateY(-4deg) rotateX(2deg)",
               filter: "drop-shadow(0 40px 80px rgba(79,70,229,0.25))",
@@ -392,7 +391,7 @@ function AIEngineGrid() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <SectionWrapper className="py-20 px-8" style={{ borderTop: "1px solid var(--border)" }}>
+    <SectionWrapper className="py-20 px-8 bg-surface" style={{ borderTop: "1px solid var(--border)" }}>
       <div className="max-w-[1120px] mx-auto">
         <motion.div className="text-center mb-12" variants={fadeUp}>
           <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#4F46E5" }}>
@@ -413,10 +412,10 @@ function AIEngineGrid() {
           {AI_ENGINES.map((engine) => (
             <motion.div
               key={engine.id}
-              className="rounded-xl px-4 py-5 text-center transition-all duration-200"
+              className="rounded-xl px-4 py-5 text-center transition-all duration-300 hover:shadow-lg"
               style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
               variants={fadeUp}
-              whileHover={reduceMotion ? undefined : { y: -2, scale: 1.005 }}
+              whileHover={reduceMotion ? undefined : { y: -4, scale: 1.05 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
             >
               <IconContainer className="mx-auto mb-3">
@@ -459,12 +458,12 @@ const FLOW_STEPS = ["User Query", "AI Generated Answer", "Recognised Sources", "
 
 function SearchShiftSection() {
   return (
-    <SectionWrapper className="py-24 px-8">
+    <SectionWrapper className="py-24 px-8 bg-background">
       <div className="max-w-[1120px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
           {/* Left: story */}
-          <motion.div variants={slideInLeft}>
+          <motion.div className="order-1 lg:order-2" variants={slideInRight}>
             <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "#4F46E5" }}>
               The Shift
             </p>
@@ -497,12 +496,16 @@ function SearchShiftSection() {
           </motion.div>
 
           {/* Right: flow diagram */}
-          <motion.div className="flex justify-center" variants={slideInRight}>
+          <motion.div className="flex justify-center order-2 lg:order-1" variants={slideInLeft}>
             <div className="space-y-2 w-full max-w-[300px]">
               {FLOW_STEPS.map((step, i) => (
-                <div key={step}>
+                <motion.div 
+                  key={step}
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
+                >
                   <div
-                    className="rounded-xl px-5 py-4 text-center text-sm font-medium"
+                    className="rounded-xl px-5 py-4 text-center text-sm font-medium transition-all"
                     style={{
                       background:
                         i === 2
@@ -541,7 +544,7 @@ function SearchShiftSection() {
                       <div className="w-px h-3" style={{ background: "var(--border)" }} />
                     </div>
                   )}
-                </div>
+                </motion.div>
               ))}
             </div>
           </motion.div>
@@ -592,7 +595,7 @@ function PlatformPillars() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid var(--border)" }}>
+    <SectionWrapper className="py-24 px-8 bg-surface" style={{ borderTop: "1px solid var(--border)" }}>
       <div className="max-w-[1120px] mx-auto">
         <motion.div className="text-center mb-14" variants={fadeUp}>
           <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#4F46E5" }}>
@@ -615,11 +618,11 @@ function PlatformPillars() {
             return (
               <motion.div
                 key={pillar.title}
-                className="rounded-2xl p-7 transition-all duration-200"
+                className="rounded-2xl p-7 transition-all duration-300 hover:shadow-[0_8px_30px_rgba(79,70,229,0.12)]"
                 style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
                 variants={fadeUp}
-                whileHover={reduceMotion ? undefined : { y: -2, scale: 1.005 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
+                whileHover={reduceMotion ? undefined : { y: -6, scale: 1.02 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
               >
                 <IconContainer className="mb-5">
                   <Icon className="w-6 h-6" style={{ color: pillar.color }} />
@@ -656,7 +659,7 @@ function AIVisibilityLabPreview({ onNavigate }) {
   const reduceMotion = useReducedMotion();
 
   return (
-    <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid var(--border)" }}>
+    <SectionWrapper className="py-24 px-8 bg-surface" style={{ borderTop: "1px solid var(--border)" }}>
       <div className="max-w-[1120px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
@@ -716,9 +719,13 @@ function AIVisibilityLabPreview({ onNavigate }) {
           </motion.div>
 
           {/* Right: mini lab UI preview */}
-          <motion.div variants={slideInRight}>
+          <motion.div 
+            variants={slideInRight}
+            whileHover={reduceMotion ? undefined : { scale: 1.02, y: -4 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+          >
             <div
-              className="rounded-2xl overflow-hidden"
+              className="rounded-2xl overflow-hidden shadow-2xl transition-shadow hover:shadow-[0_0_80px_rgba(79,70,229,0.15)]"
               style={{
                 background: "var(--surface)",
                 border: "1px solid rgba(79,70,229,0.25)",
@@ -838,10 +845,10 @@ function FreeAuditCTA({ onGetStarted, onNavigate }) {
   };
 
   return (
-    <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid var(--border)" }}>
+    <SectionWrapper className="py-24 px-8 bg-background" style={{ borderTop: "1px solid var(--border)" }}>
       <div className="max-w-[900px] mx-auto">
         <motion.div
-          className="rounded-2xl p-10 lg:p-14 text-center"
+          className="rounded-2xl p-10 lg:p-14 text-center transition-all duration-300"
           style={{
             background: "linear-gradient(135deg, rgba(79,70,229,0.08) 0%, rgba(124,58,237,0.05) 100%)",
             border: "1px solid rgba(79,70,229,0.25)",
@@ -893,11 +900,11 @@ function FreeAuditCTA({ onGetStarted, onNavigate }) {
             ].map((card) => (
               <motion.div
                 key={card.label}
-                className="rounded-xl p-4"
+                className="rounded-xl p-4 transition-all duration-300 hover:shadow-[0_4px_20px_rgba(79,70,229,0.15)]"
                 style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
                 variants={fadeUp}
-                whileHover={reduceMotion ? undefined : { y: -2, scale: 1.005 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
+                whileHover={reduceMotion ? undefined : { y: -4, scale: 1.03 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
               >
                 <p className="text-xs mb-2" style={{ color: "var(--muted)" }}>{card.label}</p>
                 <p className="text-2xl font-bold mb-1" style={{ color: card.color }}>
@@ -992,16 +999,17 @@ function PinnacleCLISection({ onNavigate }) {
   }, [reduceMotion]);
 
   return (
-    <SectionWrapper className="px-8 py-24" style={{ borderTop: "1px solid var(--border)" }}>
+    <SectionWrapper className="px-8 py-24 bg-surface" style={{ borderTop: "1px solid var(--border)" }}>
       <div className="max-w-6xl mx-auto">
         <motion.div
-          className="rounded-3xl p-8 lg:p-10"
+          className="rounded-3xl p-8 lg:p-10 transition-all duration-300 hover:shadow-[0_24px_60px_rgba(124,58,237,0.2)]"
           style={{
             background: "linear-gradient(135deg, rgba(79,70,229,0.12) 0%, rgba(124,58,237,0.09) 55%, rgba(8,145,178,0.08) 100%)",
             border: "1px solid rgba(124,58,237,0.28)",
             boxShadow: "0 18px 42px rgba(0,0,0,0.35)",
           }}
           variants={fadeUp}
+          whileHover={reduceMotion ? undefined : { y: -4 }}
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
 
@@ -1233,7 +1241,48 @@ python3 -m pip install -e .`}
   );
 }
 
-export default function LandingPage({ onGetStarted, onNavigate }) {
+export default function LandingPage({ onGetStarted, onNavigate, onUpgrade }) {
+  const { isLoggedIn } = useAuth();
+  const { formatPrice, currency } = useCurrencyLocale();
+  const [selfAudit, setSelfAudit] = useState(null);
+  const [isAuditing, setIsAuditing] = useState(false);
+  const [bookingStatus, setBookingStatus] = useState(null); // 'loading', 'success', 'error'
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+
+  const handleSelfAudit = async () => {
+    setIsAuditing(true);
+    try {
+      const data = await getSelfAudit();
+      setSelfAudit(data);
+    } catch (err) {
+      console.error("Self audit failed", err);
+    } finally {
+      setIsAuditing(false);
+    }
+  };
+
+  const handleBooking = async (e) => {
+    e.preventDefault();
+    setBookingStatus('loading');
+    const formData = new FormData(e.target);
+    const details = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      company: formData.get('company'),
+      message: formData.get('message')
+    };
+    try {
+      await bookDemo(details);
+      setBookingStatus('success');
+      setTimeout(() => {
+        setBookingStatus(null);
+        setIsBookingModalOpen(false);
+      }, 3000);
+    } catch (err) {
+      setBookingStatus('error');
+    }
+  };
+
   return (
     <div className="relative overflow-hidden" style={{ background: "transparent" }} data-testid="landing-page">
 
@@ -1247,149 +1296,122 @@ export default function LandingPage({ onGetStarted, onNavigate }) {
       <PinnacleCLISection onNavigate={onNavigate} />
 
       {/* ── PRICING ──────────────────────────────────────────────────────── */}
-      <section className="py-16 px-8" data-section="pricing" id="pricing" style={{ borderTop: "1px solid var(--border)" }}>
-        <div className="max-w-[1120px] mx-auto">
-          <div className="mb-10 text-center">
-            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#4F46E5" }}>
-              Pricing
+      <section className="py-16 px-8 bg-background" data-section="pricing" id="pricing" style={{ borderTop: "1px solid var(--border)" }}>
+        <PricingSection onGetStarted={onGetStarted} onUpgrade={onUpgrade} />
+      </section>
+
+      {/* ── PINNACLE SELF-AUDIT ────────────────────────────────────────── */}
+      <section className="py-20 px-8 bg-surface-2" style={{ borderTop: "1px solid var(--border)" }}>
+        <div className="max-w-[1120px] mx-auto text-center">
+          <motion.div variants={fadeUp}>
+            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#4F46E5" }}>Transparency</p>
+            <h2 className="font-display text-3xl lg:text-4xl font-bold mb-6" style={{ color: "var(--foreground)" }}>We optimization ourselves</h2>
+            <p className="text-base max-w-2xl mx-auto mb-10" style={{ color: "var(--muted)" }}>
+              We don't just talk about AEO. We practice it. See how Pinnacle.ai performs across AI engines in real-time.
             </p>
-            <h2
-              className="font-display text-4xl lg:text-5xl font-bold"
-              style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}
-            >
-              Simple, transparent pricing.
-            </h2>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Starter */}
-            <div className="rounded-2xl p-6" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-              <h3 className="text-base font-semibold mb-0.5" style={{ color: "var(--foreground)" }}>Starter</h3>
-              <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>For individuals exploring AEO.</p>
-              <div className="mb-4">
-                <span className="text-4xl font-bold" style={{ color: "var(--foreground)" }}>Free</span>
-              </div>
-              <ul className="space-y-2 mb-6">
-                {["5 audits/month", "10 AI tests/month", "Basic analytics"].map(item => (
-                  <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: "var(--text-muted)" }}>
-                    <CheckCircle className="w-4 h-4 shrink-0" style={{ color: "#4F46E5" }} />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <button
-                onClick={onGetStarted}
-                className="w-full rounded-lg py-2.5 text-sm font-medium transition-colors"
-                style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--foreground)" }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
-                onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
+            <div className="flex justify-center mb-12">
+              <button 
+                onClick={handleSelfAudit}
+                disabled={isAuditing}
+                className="btn-primary rounded-xl px-8 py-4 text-sm font-bold flex items-center gap-3"
               >
-                Get started
+                {isAuditing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
+                {isAuditing ? "Auditing Pinnacle..." : "Audit Pinnacle.ai Source"}
               </button>
             </div>
 
-            {/* Pro , featured */}
-            <div
-              className="rounded-2xl p-6 relative"
-              style={{
-                background: "linear-gradient(135deg, rgba(79,70,229,0.12) 0%, rgba(124,58,237,0.08) 100%)",
-                border: "1px solid rgba(79,70,229,0.4)",
-              }}
-            >
-              <div
-                className="absolute -top-3 left-6 px-3 py-1 rounded-full font-bold tracking-wide"
-                style={{ background: "#4F46E5", color: "#fff", fontSize: "10px" }}
+            {selfAudit && (
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }} 
+                animate={{ opacity: 1, y: 0 }}
+                className="glass-card max-w-4xl mx-auto p-8 text-left grid grid-cols-1 md:grid-cols-3 gap-8"
               >
-                MOST POPULAR
-              </div>
-              <h3 className="text-base font-semibold mb-0.5" style={{ color: "var(--foreground)" }}>Professional</h3>
-              <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>For teams serious about AEO.</p>
-              <div className="mb-4">
-                <span className="text-4xl font-bold" style={{ color: "#818CF8" }}>$100</span>
-                <span className="text-sm ml-1" style={{ color: "var(--muted)" }}>/month</span>
-              </div>
-              <ul className="space-y-2 mb-6">
-                {["Unlimited audits", "Unlimited AI tests", "Page monitoring", "Strategy simulator", "Priority support"].map(item => (
-                  <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: "var(--text-muted)" }}>
-                    <CheckCircle className="w-4 h-4 shrink-0" style={{ color: "#818CF8" }} />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <button onClick={onGetStarted} className="btn-primary w-full justify-center rounded-lg py-2.5 text-sm font-semibold">
-                Start free trial
-              </button>
-            </div>
-
-            {/* Enterprise */}
-            <div className="rounded-2xl p-6" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
-              <h3 className="text-base font-semibold mb-0.5" style={{ color: "var(--foreground)" }}>Enterprise</h3>
-              <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>For large-scale operations.</p>
-              <div className="mb-4">
-                <span className="text-2xl font-semibold" style={{ color: "var(--text-muted)" }}>Custom pricing</span>
-              </div>
-              <ul className="space-y-2 mb-5">
-                {["Everything in Pro", "Competitor intel", "Executive reports", "Dedicated support", "Custom integrations"].map(item => (
-                  <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: "var(--text-muted)" }}>
-                    <CheckCircle className="w-4 h-4 shrink-0" style={{ color: "#4F46E5" }} />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <div className="rounded-xl p-3 space-y-2" style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}>
-                <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "var(--text-muted)" }}>Get in touch</p>
-                <a
-                  href="mailto:sales@pinnacle.ai"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
-                  style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
-                >
-                  <div className="w-6 h-6 rounded-md flex items-center justify-center shrink-0" style={{ background: "rgba(79,70,229,0.12)" }}>
-                    <Mail className="w-3 h-3" style={{ color: "#818CF8" }} />
+                <div className="md:col-span-1">
+                  <p className="text-xs text-gray-500 uppercase tracking-widest mb-4">Overall AEO Score</p>
+                  <div className="flex items-center gap-4">
+                    <span className="text-6xl font-black text-white">{selfAudit.overall_score}</span>
+                    <RAGIndicator score={selfAudit.overall_score} size="lg" />
                   </div>
-                  <div className="text-left">
-                    <div className="text-xs font-medium" style={{ color: "var(--foreground)" }}>sales@pinnacle.ai</div>
-                    <div className="text-xs" style={{ color: "var(--text-muted)" }}>Email our sales team</div>
-                  </div>
-                </a>
-                <a
-                  href="tel:+18005550199"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
-                  style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
-                >
-                  <div className="w-6 h-6 rounded-md flex items-center justify-center shrink-0" style={{ background: "rgba(79,70,229,0.12)" }}>
-                    <Phone className="w-3 h-3" style={{ color: "#818CF8" }} />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-xs font-medium" style={{ color: "var(--foreground)" }}>+1 (800) 555-0199</div>
-                    <div className="text-xs" style={{ color: "var(--text-muted)" }}>Mon–Fri, 9am–6pm EST</div>
-                  </div>
-                </a>
-                <a
-                  href="https://calendly.com/pinnacle-sales"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
-                  style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
-                >
-                  <div className="w-6 h-6 rounded-md flex items-center justify-center shrink-0" style={{ background: "rgba(79,70,229,0.12)" }}>
-                    <MessageSquare className="w-3 h-3" style={{ color: "#818CF8" }} />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-xs font-medium" style={{ color: "var(--foreground)" }}>Book a demo</div>
-                    <div className="text-xs" style={{ color: "var(--text-muted)" }}>Schedule a 30-min call</div>
-                  </div>
-                </a>
-              </div>
-            </div>
-          </div>
+                  <p className="text-xs text-emerald-400 mt-4 flex items-center gap-1">
+                    <CheckCircle className="w-3 h-3" /> Top 1% of AI Visibility
+                  </p>
+                </div>
+                <div className="md:col-span-2 grid grid-cols-2 gap-6">
+                  {Object.entries(selfAudit.rag_status).map(([key, data]) => (
+                    <div key={key} className="p-4 rounded-xl bg-white/[0.03] border border-white/5">
+                      <p className="text-xs text-gray-500 capitalize mb-1">{key.replace('_', ' ')}</p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-lg font-bold text-white">{data.score}%</span>
+                        <div className={`w-2 h-2 rounded-full ${data.status === 'green' ? 'bg-emerald-400' : 'bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.5)]'}`} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
         </div>
       </section>
+
+      {/* ── BOOKING MODAL ────────────────────────────────────────── */}
+      {isBookingModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="glass-card w-full max-w-lg p-8 relative overflow-hidden"
+          >
+            <button 
+              onClick={() => setIsBookingModalOpen(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-white"
+            >
+              <ChevronUp className="w-6 h-6 rotate-180" />
+            </button>
+            <h3 className="text-2xl font-bold text-white mb-2">Book a Demo</h3>
+            <p className="text-sm text-gray-400 mb-6">See how Pinnacle can transform your digital footprint.</p>
+            
+            <form onSubmit={handleBooking} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs text-gray-500 ml-1">Full Name</label>
+                  <input name="name" required className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:border-brand-blue outline-none" placeholder="John Doe" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs text-gray-500 ml-1">Work Email</label>
+                  <input name="email" type="email" required className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:border-brand-blue outline-none" placeholder="john@company.com" />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs text-gray-500 ml-1">Company</label>
+                <input name="company" required className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:border-brand-blue outline-none" placeholder="Acme Inc." />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs text-gray-500 ml-1">How can we help?</label>
+                <textarea name="message" rows={3} className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:border-brand-blue outline-none resize-none" placeholder="Tell us about your AEO goals..." />
+              </div>
+              
+              <button 
+                type="submit" 
+                disabled={bookingStatus === 'loading'}
+                className="btn-primary w-full py-3 font-bold flex items-center justify-center gap-2"
+              >
+                {bookingStatus === 'loading' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+                {bookingStatus === 'success' ? "Booking Confirmed!" : "Request Demo Call"}
+              </button>
+
+              {bookingStatus === 'success' && (
+                <p className="text-center text-xs text-emerald-400 mt-2">Check your inbox for a calendar invite.</p>
+              )}
+              {bookingStatus === 'error' && (
+                <div className="flex items-center gap-2 text-xs text-red-400 justify-center mt-2">
+                  <AlertCircle className="w-3 h-3" /> Failed to send. Please email sales@pinnacle.ai
+                </div>
+              )}
+            </form>
+          </motion.div>
+        </div>
+      )}
 
       {/* ── FOOTER ───────────────────────────────────────────────────────── */}
       <footer style={{ borderTop: "1px solid var(--border)" }}>

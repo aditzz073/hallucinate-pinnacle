@@ -1,11 +1,22 @@
 import React from 'react';
-import { Lock, Sparkles } from 'lucide-react';
+import { Lock, Sparkles, LogIn } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 export default function LockedSection({ title, description, onUnlock, children }) {
+  const { isLoggedIn, setShowUpgradeModal } = useAuth();
+
+  const handleAction = () => {
+    if (isLoggedIn) {
+      setShowUpgradeModal(true);
+    } else if (onUnlock) {
+      onUnlock();
+    }
+  };
+
   return (
     <div className="relative rounded-xl border border-white/10 bg-white/[0.02] p-6 overflow-hidden">
       {/* Blurred content */}
-      <div className="blur-sm opacity-40 pointer-events-none select-none">
+      <div className="blur-[6px] opacity-30 pointer-events-none select-none grayscale-[50%]">
         {children || (
           <div className="space-y-4">
             <div className="h-4 bg-white/10 rounded w-3/4" />
@@ -17,20 +28,35 @@ export default function LockedSection({ title, description, onUnlock, children }
       </div>
 
       {/* Unlock overlay */}
-      <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-        <div className="text-center px-6 max-w-md">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 mb-4">
-            <Lock className="w-8 h-8 text-cyan-400" />
+      <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-[2px]">
+        <div className="text-center px-6 max-w-sm">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 mb-5">
+            <Lock className="w-7 h-7 text-indigo-400" />
           </div>
-          <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
-          <p className="text-gray-400 text-sm mb-6">{description}</p>
+          <h3 className="text-lg font-bold text-white mb-2">{title}</h3>
+          <p className="text-gray-400 text-xs mb-6 leading-relaxed">{description}</p>
           <button
-            onClick={onUnlock}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-sm font-bold hover:shadow-[0_0_30px_rgba(34,211,238,0.4)] transition-all duration-300"
+            onClick={handleAction}
+            className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-indigo-500 text-white text-sm font-bold hover:shadow-[0_0_30px_rgba(79,70,229,0.3)] transition-all duration-300 transform hover:scale-105"
           >
-            <Sparkles className="w-4 h-4" />
-            Sign In to Unlock
+            {isLoggedIn ? (
+              <>
+                <Sparkles className="w-4 h-4" />
+                Upgrade to Unlock
+              </>
+            ) : (
+              <>
+                <LogIn className="w-4 h-4" />
+                Sign In to Continue
+              </>
+            )}
           </button>
+          
+          {!isLoggedIn && (
+            <p className="text-[10px] text-gray-500 mt-4 uppercase tracking-widest">
+              Available on all paid tiers
+            </p>
+          )}
         </div>
       </div>
     </div>

@@ -25,6 +25,12 @@ def score_structure(signals: dict) -> int:
         score += 8  # multiple H1s less ideal
     if s.get("has_heading_hierarchy"):
         score += 10
+    # Heading depth bonus
+    depth = s.get("heading_depth", 0)
+    if depth >= 3:
+        score += 5
+    elif depth >= 2:
+        score += 3
     wc = s.get("word_count", 0)
     if wc >= 2000:
         score += 20
@@ -167,15 +173,61 @@ def score_technical(signals: dict) -> int:
     return _clamp(score)
 
 
+def score_freshness(signals: dict) -> int:
+    """Score content freshness and voice-search readiness."""
+    f = signals.get("freshness", {})
+    score = 0.0
+
+    days = f.get("days_since_update", -1)
+    if days >= 0:
+        # Has modification date — score based on recency
+        if days <= 30:
+            score += 40  # Updated within last month
+        elif days <= 90:
+            score += 30
+        elif days <= 180:
+            score += 20
+        elif days <= 365:
+            score += 10
+        else:
+            score += 0  # Stale content
+    else:
+        # No modification date found — neutral score
+        score += 15
+
+    # Conversational tone (voice search readiness)
+    conv = f.get("conversational_score", 0)
+    if conv >= 60:
+        score += 35
+    elif conv >= 30:
+        score += 25
+    elif conv >= 10:
+        score += 15
+    else:
+        score += 5
+
+    # Question headings boost
+    qh = f.get("question_headings", 0)
+    if qh >= 3:
+        score += 25
+    elif qh >= 1:
+        score += 15
+    else:
+        score += 5
+
+    return _clamp(score)
+
+
 def calculate_overall(
-    structure: int, trust: int, media: int, schema: int, technical: int
+    structure: int, trust: int, media: int, schema: int, technical: int, freshness: int = 50
 ) -> int:
     weighted = (
-        structure * 0.25
-        + trust * 0.20
-        + media * 0.15
-        + schema * 0.25
-        + technical * 0.15
+        structure * 0.22
+        + trust * 0.18
+        + media * 0.13
+        + schema * 0.22
+        + technical * 0.13
+        + freshness * 0.12
     )
     return _clamp(weighted)
 
@@ -186,7 +238,8 @@ def calculate_all_scores(signals: dict) -> dict:
     media = score_media(signals)
     schema = score_schema(signals)
     technical = score_technical(signals)
-    overall = calculate_overall(structure, trust, media, schema, technical)
+    freshness = score_freshness(signals)
+    overall = calculate_overall(structure, trust, media, schema, technical, freshness)
 
     return {
         "overall_score": overall,
@@ -196,5 +249,7 @@ def calculate_all_scores(signals: dict) -> dict:
             "media": media,
             "schema": schema,
             "technical": technical,
+            "freshness": freshness,
         },
     }
+

@@ -27,6 +27,34 @@ async def run_audit(req: AuditRequest, current_user: Optional[dict] = Depends(ve
         raise HTTPException(status_code=502, detail=f"Failed to audit URL: {str(e)}")
 
 
+@router.get("/self")
+async def self_audit():
+    """Run AEO audit on Pinnacle's own site for transparency."""
+    import os
+    from modules.aeoEngine.service import run_audit as _run_audit
+
+    pinnacle_url = os.environ.get("PINNACLE_SELF_URL", "https://usepinnacle.com")
+    try:
+        result = await _run_audit(pinnacle_url, user_id=None)
+        return {
+            "url": pinnacle_url,
+            "overall_score": result.get("overall_score", 0),
+            "breakdown": result.get("breakdown", {}),
+            "rag_status": result.get("rag_status", {}),
+            "top_suggestions": result.get("top_suggestions", []),
+            "strengths": [r for r in result.get("recommendations", []) if r.get("severity") == "low"][:3],
+            "weaknesses": [r for r in result.get("recommendations", []) if r.get("severity") == "high"][:3],
+        }
+    except Exception as e:
+        return {
+            "url": pinnacle_url,
+            "overall_score": 0,
+            "breakdown": {},
+            "rag_status": {},
+            "error": f"Self-audit unavailable: {str(e)}",
+        }
+
+
 @router.get("")
 async def list_audits(current_user: dict = Depends(verify_token)):
     from modules.aeoEngine.service import get_user_audits

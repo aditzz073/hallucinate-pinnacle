@@ -186,6 +186,32 @@ def generate_recommendations(signals: dict, scores: dict) -> list:
             "how_to_fix": "Add lang attribute to the <html> tag (e.g., lang='en').",
         })
 
+    # Freshness recommendations
+    fresh = signals.get("freshness", {})
+    if fresh.get("is_stale"):
+        days = fresh.get("days_since_update", 0)
+        recs.append({
+            "issue": "Content is outdated",
+            "severity": "high",
+            "impact_explanation": f"Content was last updated {days} days ago. Stale content is less likely to be cited by AI engines, especially for voice search.",
+            "how_to_fix": "Update the content with fresh information, recent data, and add a dateModified meta tag.",
+        })
+    elif fresh.get("days_since_update", -1) < 0:
+        recs.append({
+            "issue": "No content date detected",
+            "severity": "low",
+            "impact_explanation": "Without a publish or modification date, AI engines cannot assess content freshness.",
+            "how_to_fix": "Add article:modified_time meta tag or dateModified in JSON-LD schema.",
+        })
+
+    if fresh.get("conversational_score", 0) < 20:
+        recs.append({
+            "issue": "Lacks conversational tone",
+            "severity": "medium",
+            "impact_explanation": "Voice search queries are conversational. Content without Q&A structure and natural language is less likely to be surfaced.",
+            "how_to_fix": "Add question-based headings (e.g., 'What is...?', 'How to...?') and use second-person pronouns (you/your).",
+        })
+
     # Sort by severity
     severity_order = {"high": 0, "medium": 1, "low": 2}
     recs.sort(key=lambda r: severity_order.get(r["severity"], 3))

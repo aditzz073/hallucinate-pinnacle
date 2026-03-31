@@ -152,3 +152,38 @@ export async function getAIEngines() {
   const res = await axios.get(`${API_URL}/api/ai-testing-lab/engines`);
   return res.data;
 }
+
+// Demo Booking
+export async function bookDemo(name, email, selectedTime) {
+  const res = await axios.post(`${API_URL}/api/booking/demo`, {
+    name,
+    email,
+    selected_time: selectedTime,
+  });
+  return res.data;
+}
+
+// Razorpay Payments
+export async function createRazorpayOrder(plan) {
+  const res = await axios.post(
+    `${API_URL}/api/payments/create-order`,
+    { plan },
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function verifyRazorpayPayment(orderId, paymentId, signature, plan) {
+  const res = await axios.post(
+    `${API_URL}/api/payments/verify-payment`,
+    { order_id: orderId, payment_id: paymentId, signature, plan },
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+// Self-audit (Pinnacle's own score)
+export async function getSelfAudit() {
+  const res = await axios.get(`${API_URL}/api/audit/self`);
+  return res.data;
+}

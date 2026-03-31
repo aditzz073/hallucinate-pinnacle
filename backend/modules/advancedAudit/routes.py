@@ -1,7 +1,7 @@
 """Advanced Audit Routes - Phase 5"""
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-from middlewares.auth_middleware import verify_token
+from middlewares.auth_middleware import require_subscription
 
 router = APIRouter(prefix="/audit", tags=["Advanced Audit"])
 
@@ -11,7 +11,7 @@ class AdvancedAuditRequest(BaseModel):
 
 
 @router.post("/advanced")
-async def run_advanced_audit(req: AdvancedAuditRequest, current_user: dict = Depends(verify_token)):
+async def run_advanced_audit(req: AdvancedAuditRequest, current_user: dict = require_subscription):
     from modules.advancedAudit.service import run_advanced_audit as _run
 
     try:
