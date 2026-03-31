@@ -30,6 +30,7 @@
   "overrides": {
     "nth-check": ">=2.0.1",
     "serialize-javascript": ">=6.0.2",
+    "yaml": "^2.8.1",
     "@tootallnate/once": ">=3.0.0",
     "underscore": "1.13.8",
     "resolve-url-loader": {
