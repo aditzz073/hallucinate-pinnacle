@@ -36,6 +36,31 @@ async def setup_indexes() -> bool:
     try:
         # Users
         await users_collection.create_index("email", unique=True)
+        desired_partial_filter = {
+            "stripeCustomerId": {
+                "$type": "string",
+                "$ne": "",
+            }
+        }
+
+        # Migrate any legacy index to partial unique index so null/missing IDs never conflict.
+        user_indexes = await users_collection.index_information()
+        for index_name, index_meta in user_indexes.items():
+            if index_name == "_id_":
+                continue
+            if index_meta.get("key") == [("stripeCustomerId", 1)]:
+                is_desired = (
+                    bool(index_meta.get("unique"))
+                    and index_meta.get("partialFilterExpression") == desired_partial_filter
+                )
+                if not is_desired:
+                    await users_collection.drop_index(index_name)
+
+        await users_collection.create_index(
+            "stripeCustomerId",
+            unique=True,
+            partialFilterExpression=desired_partial_filter,
+        )
 
         # Audits - scoped by user_id
         await audits_collection.create_index("user_id")

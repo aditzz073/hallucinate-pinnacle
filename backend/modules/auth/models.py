@@ -21,6 +21,7 @@ class UserResponse(BaseModel):
     nickname: Optional[str] = None
     plan: Literal["free", "pro", "founder"] = "free"
     isSubscribed: bool = False
+    stripeCustomerId: Optional[str] = None
     isFoundingUser: bool = False
     is_privileged: bool = False
     created_at: str

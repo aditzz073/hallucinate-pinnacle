@@ -264,7 +264,7 @@ export default function AIVisibilityLabPage({ onSignUp }) {
                 {loading
                   ? "Analyzing..."
                   : isGuest && hasReachedLimit
-                    ? "Sign In to Continue"
+                    ? "Sign in to continue"
                     : "Run Analysis"}
               </button>
               <button

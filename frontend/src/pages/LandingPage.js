@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import {
-  ArrowRight, ArrowDown, Eye, Settings2,
+  ArrowRight, ChevronDown, Eye, Settings2,
   TrendingUp, CheckCircle, BarChart2, Cpu, Mail, MessageSquare,
   Microscope, Crown,
 } from "lucide-react";
@@ -29,6 +29,132 @@ const VISIBILITY_TREND_DATA = [
   { day: "Apr 17", citation: 88, readiness: 71, summarization: 53, brand: 58, schema: 52 },
   { day: "Apr 18", citation: 68, readiness: 60, summarization: 78, brand: 40, schema: 34 },
 ];
+
+const AI_SELECTION_SIGNALS = [
+  {
+    title: "Heading structure",
+    description: "Structured content with clear H1/H2/H3 headings scores higher for extractability",
+  },
+  {
+    title: "Schema support",
+    description: "Pages with schema markup are easier for AI systems to interpret and cite",
+  },
+  {
+    title: "Direct definitions",
+    description: "Short, direct definitions improve citation probability by 20-40 points",
+  },
+  {
+    title: "Authority signals",
+    description: "Authority signals like org schema and external citations increase trust scoring",
+  },
+];
+
+const FEATURE_DEPTH_CARDS = [
+  {
+    title: "AI Visibility Audit",
+    description:
+      "Analyzes your page across 23 signals including structure, schema, trust, and technical factors to calculate your AEO score. Pinnacle fetches the page, parses its content, and scores each signal. The result shows exactly where your page loses AI visibility points.",
+  },
+  {
+    title: "Citation Probability",
+    description:
+      "Measures how likely your page is cited by AI systems for a specific query. Scoring uses intent match, extractability, authority, schema support, and content depth. Higher citation probability means your page is more likely to appear in generated answers.",
+  },
+  {
+    title: "Strategy Simulator",
+    description:
+      "Simulates the impact of content changes before you make them. Choose a strategy, like FAQ schema or better headings, and see projected citation score changes. This helps prioritize fixes that deliver measurable impact first.",
+  },
+  {
+    title: "Competitor Intelligence",
+    description:
+      "Compares your page against up to five competitors for the same query. It shows where competitors score higher and why AI systems may prefer them. This helps you close exact gaps that reduce AI visibility.",
+  },
+];
+
+const FAQ_ITEMS = [
+  {
+    question: "What is AI visibility?",
+    answer:
+      "AI visibility measures how often AI systems use, cite, or summarize your content. It tracks discoverability in generative engines, not only traditional search.",
+  },
+  {
+    question: "How is AI visibility different from SEO?",
+    answer:
+      "SEO targets ranking in search results. AI visibility targets inclusion inside generated answers. A page can rank well but still score low for AI use.",
+  },
+  {
+    question: "What is AEO?",
+    answer:
+      "AEO means AI Engine Optimization. It structures and annotates content so systems like ChatGPT and Gemini are more likely to cite it.",
+  },
+  {
+    question: "What is GEO?",
+    answer:
+      "GEO means Generative Engine Optimization. It focuses on making content usable inside AI answer text, not only linked or referenced.",
+  },
+  {
+    question: "How do AI engines decide which content to cite?",
+    answer:
+      "AI engines evaluate extractability, authority, schema support, and content depth. Clear structure and factual sentences increase citation likelihood.",
+  },
+  {
+    question: "What is an AI Visibility Score?",
+    answer:
+      "An AI Visibility Score is a 0-100 measure of citation readiness. Pinnacle calculates it from 23 signals across structure, trust, media, schema, and technical categories.",
+  },
+  {
+    question: "How can I improve my AI visibility?",
+    answer:
+      "Add JSON-LD schema and improve heading hierarchy from H1 to H3. Write short extractable paragraphs and strengthen authority signals with organization markup.",
+  },
+  {
+    question: "What tools can I use to measure AI visibility?",
+    answer:
+      "Pinnacle AI provides AEO audits, citation probability scoring, and engine readiness analysis. It covers ChatGPT, Perplexity, Microsoft Copilot, and Google SGE.",
+  },
+];
+
+const FAQ_PAGE_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQ_ITEMS.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: item.answer,
+    },
+  })),
+};
+
+const ORGANIZATION_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Pinnacle AI",
+  url: "https://pinnacle.ai",
+  description:
+    "Pinnacle AI is an AI visibility platform that helps websites improve citation probability and discoverability in AI-generated responses.",
+  sameAs: [],
+};
+
+const PRODUCT_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: "Pinnacle AI",
+  description:
+    "An AI Engine Optimization platform for auditing and improving AI answer visibility. It supports ChatGPT, Perplexity, Gemini, and Microsoft Copilot.",
+  category: "AI Optimization Software",
+  url: "https://pinnacle.ai",
+};
+
+const WEBSITE_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Pinnacle AI",
+  url: "https://pinnacle.ai",
+  description: "AEO and GEO platform for improving AI visibility and citation probability.",
+};
 
 function CountUpNumber({ value, duration = 800 }) {
   const reduceMotion = useReducedMotion();
@@ -250,7 +376,7 @@ function HeroSection({ onGetStarted, onNavigate }) {
   const reduceMotion = useReducedMotion();
 
   return (
-    <SectionWrapper className="relative min-h-[92vh] flex items-center pt-8 md:pt-12">
+    <SectionWrapper className="relative min-h-[92vh] flex items-center pt-8 md:pt-12" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -378,6 +504,117 @@ function HeroSection({ onGetStarted, onNavigate }) {
   );
 }
 
+function AIVisibilityExplainedSection() {
+  return (
+    <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="max-w-[1120px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+          <div>
+            <p className="text-[11px] font-medium uppercase tracking-[0.08em] mb-3" style={{ color: "#818CF8" }}>
+              AI VISIBILITY
+            </p>
+            <h2 className="font-display text-4xl lg:text-[42px] font-bold mb-4" style={{ color: "#ffffff", letterSpacing: "-0.02em" }}>
+              What is AI Visibility?
+            </h2>
+            <p className="text-base md:text-lg mb-4 max-w-[560px]" style={{ color: "#94A3B8" }}>
+              The new standard for content discoverability in AI-generated responses.
+            </p>
+            <p className="text-sm md:text-[14px] leading-[1.7] mb-3 max-w-[560px]" style={{ color: "#94A3B8" }}>
+              AI visibility tracks how often AI systems cite, summarize, or use your content. It applies to responses from ChatGPT, Gemini, and Perplexity.
+            </p>
+            <p className="text-sm md:text-[14px] leading-[1.7] max-w-[560px]" style={{ color: "#94A3B8" }}>
+              Unlike traditional SEO, which optimizes for ranked links, AI visibility optimizes for appearing inside the answer itself.
+            </p>
+          </div>
+
+          <div>
+            <p className="text-[11px] font-medium uppercase tracking-[0.08em] mb-3" style={{ color: "#818CF8" }}>
+              WHY IT MATTERS
+            </p>
+            <h2 className="font-display text-4xl lg:text-[42px] font-bold mb-4" style={{ color: "#ffffff", letterSpacing: "-0.02em" }}>
+              Traditional SEO is not enough
+            </h2>
+            <p className="text-base md:text-lg max-w-[560px]" style={{ color: "#94A3B8" }}>
+              AI engines use different signals. Pinnacle is built for this shift.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[
+            {
+              tag: "SEO",
+              title: "Traditional SEO",
+              description: "Ranking in search engine results pages",
+              accent: "rgba(148,163,184,0.75)",
+            },
+            {
+              tag: "AEO",
+              title: "AI Engine Optimization",
+              description: "Being cited by AI systems in generated answers",
+              accent: "rgba(99,102,241,0.85)",
+            },
+            {
+              tag: "GEO",
+              title: "Generative Engine Optimization",
+              description: "Being used inside generative engine responses",
+              accent: "rgba(139,92,246,0.85)",
+            },
+          ].map((item) => (
+            <div
+              key={item.title}
+              className="rounded-xl p-5"
+              style={{
+                background: "rgba(255,255,255,0.03)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderTop: `2px solid ${item.accent}`,
+              }}
+            >
+              <p className="text-[11px] uppercase tracking-[0.08em] mb-2" style={{ color: item.accent }}>{item.tag}</p>
+              <h3 className="text-[15px] font-semibold mb-2" style={{ color: "#ffffff" }}>{item.title}</h3>
+              <p className="text-[14px] leading-[1.7]" style={{ color: "#94A3B8" }}>{item.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </SectionWrapper>
+  );
+}
+
+function HowAIEnginesChooseContentSection() {
+  return (
+    <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="max-w-[1120px] mx-auto">
+        <p className="text-[11px] font-medium uppercase tracking-[0.08em] mb-3" style={{ color: "#818CF8" }}>
+          AI UNDERSTANDING
+        </p>
+        <h2 className="font-display text-4xl lg:text-[42px] font-bold mb-4" style={{ color: "#ffffff", letterSpacing: "-0.02em" }}>
+          How AI engines evaluate your content
+        </h2>
+        <p className="text-base md:text-lg max-w-[560px] mb-11" style={{ color: "#94A3B8" }}>
+          AI systems score pages differently than search engines. Here is what they look for.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {AI_SELECTION_SIGNALS.map((signal) => (
+            <div
+              key={signal.description}
+              className="rounded-xl p-5 flex items-start gap-3"
+              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}
+            >
+              <span className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ background: "#6366F1" }} />
+              <div>
+                <h3 className="text-[15px] font-semibold mb-1" style={{ color: "#ffffff" }}>{signal.title}</h3>
+                <p className="text-[14px] leading-[1.7]" style={{ color: "#94A3B8" }}>{signal.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </SectionWrapper>
+  );
+}
+
 // ── 2. AI Engine Grid ─────────────────────────────────────────────────────────
 const AI_ENGINES = [
   { id: "chatgpt",    name: "ChatGPT",    color: "#34d399" },
@@ -392,19 +629,19 @@ function AIEngineGrid() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <SectionWrapper className="py-20 px-8" style={{ borderTop: "1px solid var(--border)" }}>
+    <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
       <div className="max-w-[1120px] mx-auto">
-        <motion.div className="text-center mb-12" variants={fadeUp}>
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#4F46E5" }}>
+        <motion.div className="text-left md:text-center mb-12" variants={fadeUp}>
+          <p className="text-[11px] font-medium uppercase tracking-[0.08em] mb-3" style={{ color: "#818CF8" }}>
             Coverage
           </p>
           <h2
-            className="font-display text-3xl lg:text-4xl font-bold mb-4"
-            style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}
+            className="font-display text-4xl lg:text-[42px] font-bold mb-4"
+            style={{ color: "#ffffff", letterSpacing: "-0.02em" }}
           >
             Where Your Brand Appears in AI
           </h2>
-          <p className="text-base max-w-xl mx-auto" style={{ color: "var(--muted)" }}>
+          <p className="text-base md:text-lg max-w-[560px] md:mx-auto" style={{ color: "#94A3B8" }}>
             Pinnacle analyzes your visibility across every major AI engine.
           </p>
         </motion.div>
@@ -413,8 +650,8 @@ function AIEngineGrid() {
           {AI_ENGINES.map((engine) => (
             <motion.div
               key={engine.id}
-              className="rounded-xl px-4 py-5 text-center transition-all duration-200"
-              style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+              className="rounded-xl px-5 py-6 text-center transition-all duration-200"
+              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}
               variants={fadeUp}
               whileHover={reduceMotion ? undefined : { y: -2, scale: 1.005 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
@@ -455,96 +692,52 @@ const SHIFT_STEPS = [
   },
 ];
 
-const FLOW_STEPS = ["User Query", "AI Generated Answer", "Recognised Sources", "Traffic & Visibility"];
-
 function SearchShiftSection() {
+  const reduceMotion = useReducedMotion();
+
   return (
-    <SectionWrapper className="py-24 px-8">
+    <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
       <div className="max-w-[1120px] mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <motion.div className="mb-12" variants={fadeUp}>
+          <p className="text-[11px] font-medium uppercase tracking-[0.08em] mb-3" style={{ color: "#818CF8" }}>
+            HOW IT WORKS
+          </p>
+          <h2 className="font-display text-4xl lg:text-[42px] font-bold mb-4" style={{ color: "#ffffff", letterSpacing: "-0.02em" }}>
+            Analyze. Understand. Improve.
+          </h2>
+          <p className="text-base md:text-lg max-w-[560px]" style={{ color: "#94A3B8" }}>
+            Three steps to improve your AI visibility score.
+          </p>
+        </motion.div>
 
-          {/* Left: story */}
-          <motion.div variants={slideInLeft}>
-            <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "#4F46E5" }}>
-              The Shift
-            </p>
-            <h2
-              className="font-display text-4xl lg:text-5xl font-bold mb-8"
-              style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}
-            >
-              Search Is<br />Changing Fast
-            </h2>
-            <div className="space-y-8">
-              {SHIFT_STEPS.map((step) => (
-                <div key={step.number} className="flex gap-4">
-                  <div
-                    className="text-2xl font-black shrink-0 w-10 mt-0.5 leading-none"
-                    style={{ color: `${step.color}60` }}
-                  >
-                    {step.number}
-                  </div>
-                  <div>
-                    <h3 className="text-base font-semibold mb-1.5" style={{ color: "var(--foreground)" }}>
-                      {step.title}
-                    </h3>
-                    <p className="text-sm leading-relaxed" style={{ color: "var(--muted)" }}>
-                      {step.desc}
-                    </p>
-                  </div>
+        <div className="relative">
+          <div
+            className="hidden md:block absolute left-[16%] right-[16%] top-12 h-px"
+            style={{ background: "rgba(255,255,255,0.06)" }}
+            aria-hidden="true"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {SHIFT_STEPS.map((step) => (
+              <motion.div
+                key={step.number}
+                className="relative rounded-xl p-6"
+                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}
+                variants={fadeUp}
+                whileHover={reduceMotion ? undefined : { y: -2, scale: 1.005 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+              >
+                <div className="text-4xl font-black mb-4" style={{ color: "rgba(148,163,184,0.35)", lineHeight: 1 }}>
+                  {step.number}
                 </div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Right: flow diagram */}
-          <motion.div className="flex justify-center" variants={slideInRight}>
-            <div className="space-y-2 w-full max-w-[300px]">
-              {FLOW_STEPS.map((step, i) => (
-                <div key={step}>
-                  <div
-                    className="rounded-xl px-5 py-4 text-center text-sm font-medium"
-                    style={{
-                      background:
-                        i === 2
-                          ? "linear-gradient(135deg, rgba(79,70,229,0.2) 0%, rgba(124,58,237,0.15) 100%)"
-                          : "var(--surface)",
-                      border:
-                        i === 2 ? "1px solid rgba(79,70,229,0.4)" : "1px solid var(--border)",
-                      color: i === 2 ? "#A5B4FC" : "var(--foreground)",
-                    }}
-                  >
-                    {i === 2 ? (
-                      <>
-                        <span
-                          className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full mb-1.5 font-medium"
-                          style={{ background: "rgba(79,70,229,0.2)", color: "#818CF8" }}
-                        >
-                          <img src="/logo-white.png" alt="Pinnacle logo" className="w-3 h-3 object-contain" />
-                          Pinnacle makes you win here
-                        </span>
-                        <div>{step}</div>
-                      </>
-                    ) : step}
-                  </div>
-                  {i < FLOW_STEPS.length - 1 && (
-                    <div className="flex flex-col items-center py-1" aria-hidden="true">
-                      <div className="w-px h-3" style={{ background: "var(--border)" }} />
-                      <div
-                        className="w-5 h-5 rounded-full flex items-center justify-center"
-                        style={{
-                          background: "rgba(79,70,229,0.14)",
-                          border: "1px solid rgba(79,70,229,0.35)",
-                        }}
-                      >
-                        <ArrowDown className="w-3 h-3" style={{ color: "#818CF8" }} />
-                      </div>
-                      <div className="w-px h-3" style={{ background: "var(--border)" }} />
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </motion.div>
+                <h3 className="text-[15px] font-semibold mb-2" style={{ color: "#ffffff" }}>
+                  {step.title}
+                </h3>
+                <p className="text-[13px] leading-[1.7]" style={{ color: "#94A3B8" }}>
+                  {step.desc}
+                </p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </SectionWrapper>
@@ -594,18 +787,18 @@ function PlatformPillars() {
   return (
     <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid var(--border)" }}>
       <div className="max-w-[1120px] mx-auto">
-        <motion.div className="text-center mb-14" variants={fadeUp}>
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#4F46E5" }}>
+        <motion.div className="text-left md:text-center mb-14" variants={fadeUp}>
+          <p className="text-[11px] font-medium uppercase tracking-[0.08em] mb-3" style={{ color: "#818CF8" }}>
             Platform
           </p>
           <h2
-            className="font-display text-4xl lg:text-5xl font-bold mb-4"
-            style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}
+            className="font-display text-4xl lg:text-[42px] font-bold mb-4"
+            style={{ color: "#ffffff", letterSpacing: "-0.02em" }}
           >
-            The AI Visibility Platform
+            Features for AI visibility analysis
           </h2>
-          <p className="text-base max-w-xl mx-auto" style={{ color: "var(--muted)" }}>
-            Everything you need to understand, optimize, and monitor your AI visibility.
+          <p className="text-base md:text-lg max-w-[560px] md:mx-auto" style={{ color: "#94A3B8" }}>
+            Structured modules to audit, optimize, and monitor AI visibility with measurable scoring.
           </p>
         </motion.div>
 
@@ -615,8 +808,8 @@ function PlatformPillars() {
             return (
               <motion.div
                 key={pillar.title}
-                className="rounded-2xl p-7 transition-all duration-200"
-                style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
+                className="rounded-xl p-6 transition-all duration-200"
+                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}
                 variants={fadeUp}
                 whileHover={reduceMotion ? undefined : { y: -2, scale: 1.005 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
@@ -624,12 +817,12 @@ function PlatformPillars() {
                 <IconContainer className="mb-5">
                   <Icon className="w-6 h-6" style={{ color: pillar.color }} />
                 </IconContainer>
-                <h3 className="text-lg font-semibold mb-4" style={{ color: "var(--foreground)" }}>
+                <h3 className="text-[15px] font-semibold mb-3" style={{ color: "#ffffff" }}>
                   {pillar.title}
                 </h3>
                 <ul className="space-y-2.5">
                   {pillar.items.map((item) => (
-                    <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: "var(--muted)" }}>
+                    <li key={item} className="flex items-center gap-2.5 text-[14px]" style={{ color: "#94A3B8" }}>
                       <CheckCircle className="w-4 h-4 shrink-0" style={{ color: pillar.color }} />
                       {item}
                     </li>
@@ -638,6 +831,123 @@ function PlatformPillars() {
               </motion.div>
             );
           })}
+        </div>
+      </div>
+    </SectionWrapper>
+  );
+}
+
+function FeatureDepthSection() {
+  return (
+    <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="max-w-[1120px] mx-auto">
+        <p className="text-[11px] font-medium uppercase tracking-[0.08em] mb-3" style={{ color: "#818CF8" }}>
+          FEATURE BREAKDOWN
+        </p>
+        <h2 className="font-display text-4xl lg:text-[42px] font-bold mb-11" style={{ color: "#ffffff", letterSpacing: "-0.02em" }}>
+          How Pinnacle audits AI visibility
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {FEATURE_DEPTH_CARDS.map((feature) => (
+            <div key={feature.title} className="rounded-xl p-6" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <div className="flex items-start gap-3">
+                <span className="w-2 h-2 rounded-full mt-1.5 shrink-0" style={{ background: "#6366F1" }} />
+                <div>
+                  <h3 className="text-[15px] font-semibold mb-2" style={{ color: "#ffffff" }}>
+                    {feature.title}
+                  </h3>
+                  <p className="text-[14px] leading-[1.7]" style={{ color: "#94A3B8" }}>
+                    {feature.description}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </SectionWrapper>
+  );
+}
+
+function WhoUsesPinnacleSection() {
+  return (
+    <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="max-w-[1120px] mx-auto">
+        <p className="text-[11px] font-medium uppercase tracking-[0.08em] mb-3" style={{ color: "#818CF8" }}>
+          BUILT FOR TEAMS
+        </p>
+        <h2 className="font-display text-4xl lg:text-[42px] font-bold mb-4" style={{ color: "#ffffff", letterSpacing: "-0.02em" }}>
+          Who uses Pinnacle AI
+        </h2>
+        <p className="text-base md:text-lg mb-10 max-w-[560px]" style={{ color: "#94A3B8" }}>
+          Teams that publish content use Pinnacle to improve citation probability and answer-level discoverability.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[
+            { title: "SEO Teams", description: "Validate structure and schema signals that impact AI citation outcomes." },
+            { title: "Content Teams", description: "Rewrite weak sections using extractable definitions and measurable scoring feedback." },
+            { title: "Growth Teams", description: "Track engine readiness over time and prioritize fixes with the highest expected lift." },
+          ].map((item) => (
+            <div key={item.title} className="rounded-xl p-6" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+              <h3 className="text-[15px] font-semibold mb-2" style={{ color: "#ffffff" }}>{item.title}</h3>
+              <p className="text-[14px] leading-[1.7]" style={{ color: "#94A3B8" }}>{item.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </SectionWrapper>
+  );
+}
+
+function FAQSection() {
+  const [openFaqIndex, setOpenFaqIndex] = useState(0);
+
+  const handleToggleFaq = (index) => {
+    setOpenFaqIndex((prev) => (prev === index ? -1 : index));
+  };
+
+  return (
+    <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="max-w-[1120px] mx-auto">
+        <p className="text-[11px] font-medium uppercase tracking-[0.08em] mb-3" style={{ color: "#818CF8" }}>
+          FAQ
+        </p>
+        <h2 className="font-display text-4xl lg:text-[42px] font-bold mb-4" style={{ color: "#ffffff", letterSpacing: "-0.02em" }}>
+          Common questions
+        </h2>
+        <p className="text-base md:text-lg mb-11 max-w-[560px]" style={{ color: "#94A3B8" }}>
+          Everything you need to know about AI visibility and how Pinnacle works.
+        </p>
+
+        <div className="rounded-xl" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+          {FAQ_ITEMS.map((item, index) => (
+            <div
+              key={item.question}
+              className="px-6 py-5"
+              style={{ borderBottom: index === FAQ_ITEMS.length - 1 ? "none" : "1px solid rgba(255,255,255,0.06)" }}
+            >
+              <button
+                type="button"
+                onClick={() => handleToggleFaq(index)}
+                className="w-full flex items-center justify-between gap-4 text-left"
+              >
+                <h3 className="text-[15px] font-medium" style={{ color: "#ffffff" }}>
+                  {item.question}
+                </h3>
+                <ChevronDown
+                  className={`w-4 h-4 shrink-0 transition-transform ${openFaqIndex === index ? "rotate-180" : "rotate-0"}`}
+                  style={{ color: "#94A3B8" }}
+                />
+              </button>
+              {openFaqIndex === index && (
+                <p className="text-[14px] pt-2 pb-1" style={{ color: "#94A3B8" }}>
+                  {item.answer}
+                </p>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </SectionWrapper>
@@ -656,12 +966,15 @@ function AIVisibilityLabPreview({ onNavigate }) {
   const reduceMotion = useReducedMotion();
 
   return (
-    <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid var(--border)" }}>
+    <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
       <div className="max-w-[1120px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
           {/* Left: copy */}
           <motion.div variants={slideInLeft}>
+            <p className="text-[11px] font-medium uppercase tracking-[0.08em] mb-3" style={{ color: "#818CF8" }}>
+              AI LAB
+            </p>
             <div
               className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6 text-xs font-medium"
               style={{
@@ -674,12 +987,12 @@ function AIVisibilityLabPreview({ onNavigate }) {
               Flagship Feature
             </div>
             <h2
-              className="font-display text-4xl lg:text-5xl font-bold mb-4"
-              style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}
+              className="font-display text-4xl lg:text-[42px] font-bold mb-4"
+              style={{ color: "#ffffff", letterSpacing: "-0.02em" }}
             >
               AI Visibility Lab
             </h2>
-            <p className="text-lg mb-8 leading-relaxed" style={{ color: "var(--muted)" }}>
+            <p className="text-base md:text-lg mb-10 leading-relaxed max-w-[560px]" style={{ color: "#94A3B8" }}>
               Simulate how AI engines answer questions and predict whether your brand gets recognized.
             </p>
 
@@ -828,7 +1141,7 @@ function AIVisibilityLabPreview({ onNavigate }) {
 }
 
 // ── 7. Free Audit CTA ─────────────────────────────────────────────────────────
-function FreeAuditCTA({ onGetStarted, onNavigate }) {
+function FreeAuditCTA({ onNavigate }) {
   const [auditUrl, setAuditUrl] = useState("");
   const reduceMotion = useReducedMotion();
 
@@ -838,82 +1151,86 @@ function FreeAuditCTA({ onGetStarted, onNavigate }) {
   };
 
   return (
-    <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid var(--border)" }}>
-      <div className="max-w-[900px] mx-auto">
-        <motion.div
-          className="rounded-2xl p-10 lg:p-14 text-center"
+    <SectionWrapper className="pt-24 pb-20 px-8" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="max-w-[1120px] mx-auto">
+        <div
+          className="rounded-xl p-8 lg:p-10"
           style={{
-            background: "linear-gradient(135deg, rgba(79,70,229,0.08) 0%, rgba(124,58,237,0.05) 100%)",
-            border: "1px solid rgba(79,70,229,0.25)",
+            background: "radial-gradient(110% 90% at 50% 0%, rgba(99,102,241,0.07) 0%, rgba(99,102,241,0) 60%), rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            boxShadow: "0 14px 32px rgba(0,0,0,0.24)",
           }}
-          variants={fadeUp}
         >
-          <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "#818CF8" }}>
-            Get Started Free
-          </p>
-          <h2
-            className="font-display text-4xl lg:text-5xl font-bold mb-4"
-            style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}
-          >
-            Run a Free AI<br />Visibility Audit
-          </h2>
-          <p className="text-base mb-8 max-w-lg mx-auto" style={{ color: "var(--muted)" }}>
-            Enter your website URL and see how AI engines currently perceive your content , no signup required.
-          </p>
-
-          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto mb-10">
-            <input
-              type="url"
-              value={auditUrl}
-              onChange={(e) => setAuditUrl(e.target.value)}
-              placeholder="https://yoursite.com"
-              className="flex-1 h-12 rounded-xl px-4 text-sm"
-              style={{
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(79,70,229,0.3)",
-                color: "var(--foreground)",
-                outline: "none",
-              }}
-            />
-            <button
-              type="submit"
-              className="btn-primary h-12 px-6 rounded-xl text-sm font-semibold whitespace-nowrap inline-flex items-center gap-2"
-            >
-              Analyze My Site
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </form>
-
-          {/* Preview cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
-            {[
-              { label: "AI Visibility Score", value: 78, valueSuffix: "", valuePrefix: "", sub: "Combined score out of 100", color: "#4F46E5" },
-              { label: "Citation Probability", value: 64, valueSuffix: "%", valuePrefix: "", sub: "Likelihood of being cited", color: "#7C3AED" },
-              { label: "Top Engine", textValue: "ChatGPT", sub: "Best performing AI engine", color: "#0891B2" },
-            ].map((card) => (
-              <motion.div
-                key={card.label}
-                className="rounded-xl p-4"
-                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
-                variants={fadeUp}
-                whileHover={reduceMotion ? undefined : { y: -2, scale: 1.005 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
+          <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-10 items-start">
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-[0.08em] mb-3" style={{ color: "#818CF8" }}>
+                GET STARTED
+              </p>
+              <h2
+                className="font-display text-4xl lg:text-[42px] font-bold mb-4"
+                style={{ color: "#ffffff", letterSpacing: "-0.02em" }}
               >
-                <p className="text-xs mb-2" style={{ color: "var(--muted)" }}>{card.label}</p>
-                <p className="text-2xl font-bold mb-1" style={{ color: card.color }}>
-                  {card.textValue || (
-                    <>
-                      {card.valuePrefix}
-                      <CountUpNumber value={card.value} duration={800} />
-                      {card.valueSuffix}
-                    </>
-                  )}
-                </p>
-                <p className="text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>{card.sub}</p>
-              </motion.div>
-            ))}
+                Start measuring your AI visibility today
+              </h2>
+              <p className="text-base md:text-lg mb-10 max-w-[560px]" style={{ color: "#94A3B8" }}>
+                Free audit. No credit card required.
+              </p>
+
+              <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-lg">
+                <input
+                  type="url"
+                  value={auditUrl}
+                  onChange={(e) => setAuditUrl(e.target.value)}
+                  placeholder="https://yoursite.com"
+                  className="flex-1 h-12 rounded-xl px-4 text-sm"
+                  style={{
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    color: "var(--foreground)",
+                    outline: "none",
+                  }}
+                />
+                <button
+                  type="submit"
+                  className="btn-primary h-12 px-6 rounded-xl text-sm font-semibold whitespace-nowrap inline-flex items-center gap-2"
+                >
+                  Analyze My Site
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </form>
+            </div>
+
+            {/* Preview cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-4 text-left">
+              {[
+                { label: "AI Visibility Score", value: 78, valueSuffix: "", valuePrefix: "", sub: "Combined score out of 100", color: "#4F46E5" },
+                { label: "Citation Probability", value: 64, valueSuffix: "%", valuePrefix: "", sub: "Likelihood of being cited", color: "#7C3AED" },
+                { label: "Top Engine", textValue: "ChatGPT", sub: "Best performing AI engine", color: "#0891B2" },
+              ].map((card) => (
+                <motion.div
+                  key={card.label}
+                  className="rounded-xl p-5"
+                  style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}
+                  variants={fadeUp}
+                  whileHover={reduceMotion ? undefined : { y: -2, scale: 1.005 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                >
+                  <p className="text-xs mb-2" style={{ color: "var(--muted)" }}>{card.label}</p>
+                  <p className="text-2xl font-bold mb-1" style={{ color: card.color }}>
+                    {card.textValue || (
+                      <>
+                        {card.valuePrefix}
+                        <CountUpNumber value={card.value} duration={800} />
+                        {card.valueSuffix}
+                      </>
+                    )}
+                  </p>
+                  <p className="text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>{card.sub}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </SectionWrapper>
   );
@@ -961,16 +1278,18 @@ function PinnacleCLISection({ onNavigate }) {
   }, [reduceMotion]);
 
   return (
-    <SectionWrapper className="px-8 py-24" style={{ borderTop: "1px solid var(--border)" }}>
-      <div className="max-w-6xl mx-auto">
-        <motion.div
-          className="rounded-3xl p-8 lg:p-10"
+    <SectionWrapper className="px-8 pt-16 pb-24" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="max-w-[1120px] mx-auto">
+        <p className="text-[11px] font-medium uppercase tracking-[0.08em] mb-3" style={{ color: "#818CF8" }}>
+          CLI WORKFLOW
+        </p>
+        <div
+          className="rounded-xl p-8 lg:p-10"
           style={{
-            background: "linear-gradient(135deg, rgba(79,70,229,0.12) 0%, rgba(124,58,237,0.09) 55%, rgba(8,145,178,0.08) 100%)",
-            border: "1px solid rgba(124,58,237,0.28)",
-            boxShadow: "0 18px 42px rgba(0,0,0,0.35)",
+            background: "linear-gradient(135deg, rgba(79,70,229,0.08) 0%, rgba(124,58,237,0.06) 55%, rgba(8,145,178,0.05) 100%), rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,255,255,0.08)",
+            boxShadow: "0 14px 32px rgba(0,0,0,0.24)",
           }}
-          variants={fadeUp}
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
 
@@ -1010,20 +1329,19 @@ function PinnacleCLISection({ onNavigate }) {
               </div>
 
               <h2
-                className="font-display text-4xl lg:text-5xl font-bold mb-3"
-                style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}
+                className="font-display text-4xl lg:text-[42px] font-bold mb-4"
+                style={{ color: "#ffffff", letterSpacing: "-0.02em" }}
               >
                 Pinnacle CLI
               </h2>
 
-              <p className="text-lg mb-4" style={{ color: "#C4B5FD" }}>
+              <p className="text-base md:text-lg mb-4" style={{ color: "#94A3B8" }}>
                 Run AI visibility analysis without leaving your workflow.
               </p>
 
               <p className="text-sm leading-relaxed mb-5" style={{ color: "var(--muted)" }}>
-                Instead of waiting for post-launch dashboards, Pinnacle CLI lets you test how AI understands
-                your content before users ever see it. Run checks locally or in CI, catch weak spots early,
-                and ship with confidence.
+                Pinnacle CLI lets you test how AI understands your content before users see it.
+                Run checks locally or in CI, catch weak spots early, and ship with confidence.
               </p>
 
               <div className="space-y-2 mb-5 text-xs" style={{ color: "#D1D5DB" }}>
@@ -1080,7 +1398,6 @@ function PinnacleCLISection({ onNavigate }) {
                 className="rounded-xl p-5 transition-all duration-300"
                 style={{
                   background: "#0B0B14",
-                  borderRadius: "10px",
                   border: "1px solid rgba(255,255,255,0.08)",
                   fontFamily: "monospace",
                   boxShadow: "0 0 40px rgba(124,58,237,0.15)",
@@ -1138,43 +1455,59 @@ function PinnacleCLISection({ onNavigate }) {
               </motion.div>
             </motion.div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </SectionWrapper>
   );
 }
 
-export default function LandingPage({ onGetStarted = () => {}, onNavigate = () => {} }) {
+export default function LandingPage({
+  onGetStarted = () => {},
+  onNavigate = () => {},
+  onSelectPlan = () => {},
+  isCheckoutLoading = false,
+  user = null,
+}) {
+  const isProUser = Boolean(user?.isSubscribed || user?.plan === "pro" || user?.isFoundingUser);
+
   return (
-    <div className="relative overflow-hidden" style={{ background: "transparent" }} data-testid="landing-page">
+    <div className="relative overflow-x-hidden" style={{ background: "transparent" }} data-testid="landing-page">
 
       <HeroSection onGetStarted={onGetStarted} onNavigate={onNavigate} />
+      <AIVisibilityExplainedSection />
+      <HowAIEnginesChooseContentSection />
       <AIEngineGrid />
       <SearchShiftSection />
       <AIVisibilityLabPreview onNavigate={onNavigate} />
       <StrategySimulatorSection onNavigate={onNavigate} />
       <PlatformPillars />
-      <FreeAuditCTA onGetStarted={onGetStarted} onNavigate={onNavigate} />
+      <FeatureDepthSection />
+      <FreeAuditCTA onNavigate={onNavigate} />
       <PinnacleCLISection onNavigate={onNavigate} />
+      <WhoUsesPinnacleSection />
+      <FAQSection />
 
       {/* ── PRICING ──────────────────────────────────────────────────────── */}
-      <section className="py-16 px-8" data-section="pricing" id="pricing" style={{ borderTop: "1px solid var(--border)" }}>
+      <section className="py-24 px-8" data-section="pricing" id="pricing" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
         <div className="max-w-[1120px] mx-auto">
-          <div className="mb-10 text-center">
-            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#4F46E5" }}>
-              Pricing
+          <div className="mb-12 text-left md:text-center">
+            <p className="text-[11px] font-medium uppercase tracking-[0.08em] mb-3" style={{ color: "#818CF8" }}>
+              PRICING
             </p>
             <h2
-              className="font-display text-4xl lg:text-5xl font-bold"
-              style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}
+              className="font-display text-4xl lg:text-[42px] font-bold mb-4"
+              style={{ color: "#ffffff", letterSpacing: "-0.02em" }}
             >
-              Simple, transparent pricing.
+              Simple, transparent pricing
             </h2>
+            <p className="text-base md:text-lg max-w-[560px] md:mx-auto" style={{ color: "#94A3B8" }}>
+              Start free. Upgrade when you need more.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Starter */}
-            <div className="rounded-2xl p-6" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+            <div className="rounded-xl p-6 h-full flex flex-col" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
               <h3 className="text-base font-semibold mb-0.5" style={{ color: "var(--foreground)" }}>Starter</h3>
               <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>For individuals exploring AEO.</p>
               <div className="mb-4">
@@ -1189,27 +1522,28 @@ export default function LandingPage({ onGetStarted = () => {}, onNavigate = () =
                 ))}
               </ul>
               <button
-                onClick={onGetStarted}
-                className="w-full rounded-lg py-2.5 text-sm font-medium transition-colors"
+                onClick={() => onSelectPlan("free")}
+                className="w-full rounded-lg py-2.5 text-sm font-medium transition-colors mt-auto"
                 style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--foreground)" }}
                 onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
                 onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
               >
-                Get started
+                {user?.isLoggedIn ? "Continue" : "Sign in to continue"}
               </button>
             </div>
 
             {/* Pro , featured */}
             <div
-              className="rounded-2xl p-6 relative"
+              className="rounded-xl p-6 relative h-full flex flex-col"
               style={{
                 background: "linear-gradient(135deg, rgba(79,70,229,0.12) 0%, rgba(124,58,237,0.08) 100%)",
-                border: "1px solid rgba(79,70,229,0.4)",
+                border: "1px solid #6366F1",
+                boxShadow: "0 -1px 20px rgba(99,102,241,0.15)",
               }}
             >
               <div
                 className="absolute -top-3 left-6 px-3 py-1 rounded-full font-bold tracking-wide"
-                style={{ background: "#4F46E5", color: "#fff", fontSize: "10px" }}
+                style={{ background: "#6366F1", color: "#fff", fontSize: "11px" }}
               >
                 MOST POPULAR
               </div>
@@ -1234,13 +1568,17 @@ export default function LandingPage({ onGetStarted = () => {}, onNavigate = () =
                   </li>
                 ))}
               </ul>
-              <button onClick={onGetStarted} className="btn-primary w-full justify-center rounded-lg py-2.5 text-sm font-semibold">
-                Start free trial
+              <button
+                onClick={() => onSelectPlan("pro")}
+                disabled={isCheckoutLoading || isProUser}
+                className="btn-primary w-full justify-center rounded-lg py-2.5 text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed mt-auto"
+              >
+                {isProUser ? "Current plan" : isCheckoutLoading ? "Redirecting..." : "Upgrade Plan ->"}
               </button>
             </div>
 
             {/* Enterprise */}
-            <div className="rounded-2xl p-6" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+            <div className="rounded-xl p-6 h-full flex flex-col" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
               <h3 className="text-base font-semibold mb-0.5" style={{ color: "var(--foreground)" }}>Enterprise</h3>
               <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>For large teams with competitive intelligence needs.</p>
               <div className="mb-4">
@@ -1260,7 +1598,7 @@ export default function LandingPage({ onGetStarted = () => {}, onNavigate = () =
                   </li>
                 ))}
               </ul>
-              <div className="rounded-xl p-3 space-y-2" style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}>
+              <div className="rounded-xl p-3 space-y-2 mt-auto" style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}>
                 <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "var(--text-muted)" }}>Get in touch</p>
                 <a
                   href="mailto:pinnacle.ai.support@gmail.com"
@@ -1424,6 +1762,11 @@ export default function LandingPage({ onGetStarted = () => {}, onNavigate = () =
           </div>
         </div>
       </footer>
+
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_PAGE_SCHEMA) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_SCHEMA) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(PRODUCT_SCHEMA) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_SCHEMA) }} />
     </div>
   );
 }

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { getOverview } from "../api";
 import { useAuth } from "../context/AuthContext";
 import { getScoreColor } from "../components/ui/ScoreRing";
@@ -113,7 +115,9 @@ function DashboardSkeleton() {
 }
 
 export default function Dashboard({ onNavigate }) {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [health, setHealth] = useState(null);
   const [overview, setOverview] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -128,6 +132,52 @@ export default function Dashboard({ onNavigate }) {
       setLoading(false);
     });
   }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("success") !== "true") return;
+
+    let cancelled = false;
+    let attempts = 0;
+    const maxAttempts = 5;
+
+    const clearSuccessFlag = () => {
+      if (cancelled) return;
+      navigate("/dashboard", { replace: true });
+    };
+
+    const syncSubscription = async () => {
+      try {
+        const refreshedUser = await refreshUser();
+        if (cancelled) return;
+
+        if (refreshedUser?.isSubscribed) {
+          toast.success("Subscription activated");
+          clearSuccessFlag();
+          return;
+        }
+      } catch {
+        // Continue retry loop for temporary failures.
+      }
+
+      attempts += 1;
+      if (attempts < maxAttempts && !cancelled) {
+        window.setTimeout(syncSubscription, 2500);
+        return;
+      }
+
+      if (!cancelled) {
+        toast.info("Payment received. Subscription activation may take a moment.");
+        clearSuccessFlag();
+      }
+    };
+
+    syncSubscription();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [location.search, navigate, refreshUser]);
 
   if (loading) return <DashboardSkeleton />;
 

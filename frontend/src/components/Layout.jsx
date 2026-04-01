@@ -12,7 +12,7 @@ import Navbar from "./layout/Navbar";
 import Sidebar from "./layout/Sidebar";
 import Footer from "./layout/Footer";
 import AppBackground from "./ui/AppBackground";
-import FeatureLockedModal from "./modals/FeatureLockedModal";
+import UpgradeModal from "./modals/UpgradeModal";
 import {
   getPageIdFromPath,
   getPathFromPageId,
@@ -20,7 +20,6 @@ import {
   PRIVATE_PAGE_IDS,
 } from "../routes/routeConfig";
 import {
-  FEATURE_LABELS,
   PREMIUM_FEATURE_PAGE_MAP,
   canAccessFeature,
 } from "../utils/featureAccess";
@@ -44,14 +43,6 @@ const FEATURE_NAMES = {
   profile: "Profile",
 };
 
-function getLockedFeatureLabel(featureIdOrLabel) {
-  const premiumFeature = PREMIUM_FEATURE_PAGE_MAP[featureIdOrLabel];
-  if (premiumFeature) {
-    return FEATURE_LABELS[premiumFeature] || FEATURE_NAMES[featureIdOrLabel] || featureIdOrLabel;
-  }
-  return FEATURE_NAMES[featureIdOrLabel] || featureIdOrLabel;
-}
-
 export default function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -60,7 +51,6 @@ export default function Layout() {
   const isLandingLike = activePage === "landing" || activePage === "pricing";
 
   const [showFeatureLockedModal, setShowFeatureLockedModal] = useState(false);
-  const [lockedFeature, setLockedFeature] = useState("");
   const [pendingPath, setPendingPath] = useState(null);
 
   const navigateToPage = (pageId) => {
@@ -68,8 +58,6 @@ export default function Layout() {
   };
 
   const handleShowFeatureLocked = (featureIdOrLabel) => {
-    const label = getLockedFeatureLabel(featureIdOrLabel);
-    setLockedFeature(label);
     setShowFeatureLockedModal(true);
 
     if (FEATURE_NAMES[featureIdOrLabel]) {
@@ -138,11 +126,10 @@ export default function Layout() {
 
       {!isLandingLike && <Footer onNavigate={handleNavigate} />}
 
-      <FeatureLockedModal
+      <UpgradeModal
         isOpen={showFeatureLockedModal}
         onClose={() => setShowFeatureLockedModal(false)}
         onUpgrade={handleUpgradeFromModal}
-        feature={lockedFeature}
       />
     </div>
   );
@@ -154,12 +141,10 @@ export function AppShellLayout() {
   const { user, logout: authLogout } = useAuth();
   const activePage = useMemo(() => getPageIdFromPath(location.pathname), [location.pathname]);
   const [showFeatureLockedModal, setShowFeatureLockedModal] = useState(false);
-  const [lockedFeature, setLockedFeature] = useState("");
 
   const handleNavigate = (pageId) => {
     const premiumFeature = PREMIUM_FEATURE_PAGE_MAP[pageId];
     if (premiumFeature && !canAccessFeature(user, premiumFeature)) {
-      setLockedFeature(FEATURE_LABELS[premiumFeature] || pageId);
       setShowFeatureLockedModal(true);
       return;
     }
@@ -167,8 +152,6 @@ export function AppShellLayout() {
   };
 
   const handleFeatureLocked = (featureIdOrLabel) => {
-    const label = getLockedFeatureLabel(featureIdOrLabel);
-    setLockedFeature(label);
     setShowFeatureLockedModal(true);
   };
 
@@ -224,14 +207,13 @@ export function AppShellLayout() {
         </div>
       </nav>
 
-      <FeatureLockedModal
+      <UpgradeModal
         isOpen={showFeatureLockedModal}
         onClose={() => setShowFeatureLockedModal(false)}
         onUpgrade={() => {
           setShowFeatureLockedModal(false);
           navigate("/pricing");
         }}
-        feature={lockedFeature}
       />
     </div>
   );

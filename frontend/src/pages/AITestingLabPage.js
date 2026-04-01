@@ -279,7 +279,7 @@ export default function AITestingLabPage({ onSignUp }) {
                 {loading
                   ? "Analyzing..."
                   : isGuest && hasReachedLimit
-                    ? "Sign In to Continue"
+                    ? "Sign in to continue"
                     : "Analyze"}
               </button>
             </div>

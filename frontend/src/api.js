@@ -87,6 +87,25 @@ export async function generateApiKey() {
   return res.data;
 }
 
+// Billing endpoints
+export async function createCheckoutSession() {
+  const res = await axios.post(
+    `${API_URL}/api/billing/create-checkout-session`,
+    {},
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function createPortalSession() {
+  const res = await axios.post(
+    `${API_URL}/api/billing/create-portal-session`,
+    {},
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
 // Reports endpoints
 export async function getOverview() {
   const res = await axios.get(`${API_URL}/api/reports/overview`, { headers: authHeaders() });
@@ -107,6 +126,29 @@ export async function getCompetitors() {
 // Phase 5 - Advanced Audit
 export async function runAdvancedAudit(url) {
   const res = await axios.post(`${API_URL}/api/audit/advanced`, { url }, { headers: authHeaders() });
+  return res.data;
+}
+
+export async function runAdvancedAuditWithQuery(url, query) {
+  const res = await axios.post(`${API_URL}/api/audit/advanced`, { url, query }, { headers: authHeaders() });
+  return res.data;
+}
+
+export async function fetchAdvancedAuditSkipReason(auditId, query) {
+  const res = await axios.post(
+    `${API_URL}/api/audit/advanced/${auditId}/ai-skip-reason`,
+    { query },
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+export async function fetchAdvancedAuditPriorityFixes(auditId, engineRecommendations = []) {
+  const res = await axios.post(
+    `${API_URL}/api/audit/advanced/${auditId}/priority-fixes`,
+    { engine_recommendations: engineRecommendations },
+    { headers: authHeaders() }
+  );
   return res.data;
 }
 

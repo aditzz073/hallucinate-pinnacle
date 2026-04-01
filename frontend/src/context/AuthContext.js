@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { normalizeUserAccess } from "../utils/featureAccess";
 
@@ -11,44 +11,120 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);
 
+  const normalizeAndSetUser = useCallback((rawUser) => {
+    if (!rawUser) {
+      setUser(null);
+      return null;
+    }
+
+    const normalizedUser = {
+      ...normalizeUserAccess(rawUser),
+      isLoggedIn: true,
+    };
+    setUser(normalizedUser);
+    return normalizedUser;
+  }, []);
+
+  const refreshUser = useCallback(async (activeToken = token) => {
+    if (!activeToken) {
+      setUser(null);
+      return null;
+    }
+
+    const res = await axios.get(`${API_URL}/api/auth/me`, {
+      headers: { Authorization: `Bearer ${activeToken}` },
+    });
+
+    return normalizeAndSetUser(res.data);
+  }, [normalizeAndSetUser, token]);
+
   useEffect(() => {
+    let isCancelled = false;
+
     if (token) {
-      axios
-        .get(`${API_URL}/api/auth/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((res) => {
-          setUser(normalizeUserAccess(res.data));
-        })
+      setLoading(true);
+      refreshUser(token)
         .catch(() => {
+          if (isCancelled) return;
           localStorage.removeItem("token");
           setToken(null);
           setUser(null);
         })
-        .finally(() => setLoading(false));
+        .finally(() => {
+          if (!isCancelled) {
+            setLoading(false);
+          }
+        });
     } else {
+      setUser(null);
       setLoading(false);
     }
-  }, [token]);
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [refreshUser, token]);
+
+  useEffect(() => {
+    if (!token) return undefined;
+
+    const syncUser = () => {
+      refreshUser(token).catch((error) => {
+        if (error?.response?.status === 401) {
+          localStorage.removeItem("token");
+          setToken(null);
+          setUser(null);
+        }
+
+        // Background sync should not interrupt active UX for transient failures.
+      });
+    };
+
+    window.addEventListener("focus", syncUser);
+    const intervalId = window.setInterval(syncUser, 30000);
+
+    return () => {
+      window.removeEventListener("focus", syncUser);
+      window.clearInterval(intervalId);
+    };
+  }, [refreshUser, token]);
 
   const login = async (email, password) => {
     const res = await axios.post(`${API_URL}/api/auth/login`, { email, password });
-    const { access_token, user: userData } = res.data;
+    const { access_token } = res.data;
     localStorage.setItem("token", access_token);
     setToken(access_token);
-    const normalizedUser = normalizeUserAccess(userData);
-    setUser(normalizedUser);
-    return normalizedUser;
+
+    setLoading(true);
+    try {
+      return await refreshUser(access_token);
+    } catch (error) {
+      localStorage.removeItem("token");
+      setToken(null);
+      setUser(null);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const register = async (email, password, nickname = null) => {
     const res = await axios.post(`${API_URL}/api/auth/register`, { email, password, nickname });
-    const { access_token, user: userData } = res.data;
+    const { access_token } = res.data;
     localStorage.setItem("token", access_token);
     setToken(access_token);
-    const normalizedUser = normalizeUserAccess(userData);
-    setUser(normalizedUser);
-    return normalizedUser;
+
+    setLoading(true);
+    try {
+      return await refreshUser(access_token);
+    } catch (error) {
+      localStorage.removeItem("token");
+      setToken(null);
+      setUser(null);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = () => {
@@ -58,7 +134,18 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        loading,
+        isLoggedIn: Boolean(user?.isLoggedIn),
+        login,
+        register,
+        logout,
+        refreshUser,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

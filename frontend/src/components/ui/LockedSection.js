@@ -1,7 +1,7 @@
 import React from 'react';
 import { Lock, Sparkles } from 'lucide-react';
 
-export default function LockedSection({ title, description, onUnlock, children }) {
+export default function LockedSection({ title, description, onUnlock, children, ctaLabel = "Sign in to continue" }) {
   return (
     <div className="relative rounded-xl border border-white/10 bg-white/[0.02] p-6 overflow-hidden">
       {/* Blurred content */}
@@ -29,7 +29,7 @@ export default function LockedSection({ title, description, onUnlock, children }
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white text-sm font-bold hover:shadow-[0_0_30px_rgba(34,211,238,0.4)] transition-all duration-300"
           >
             <Sparkles className="w-4 h-4" />
-            Sign In to Unlock
+            {ctaLabel}
           </button>
         </div>
       </div>

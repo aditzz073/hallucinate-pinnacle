@@ -136,7 +136,7 @@ export default function AuditsPage({ onSignUp }) {
             className="btn-primary h-12 px-6 rounded-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileSearch className="w-4 h-4" />}
-            {loading ? "Auditing..." : (isGuest && hasReachedLimit ? "Sign In to Continue" : "Run Audit")}
+            {loading ? "Auditing..." : (isGuest && hasReachedLimit ? "Sign in to continue" : "Run Audit")}
           </button>
           <button
             type="button"

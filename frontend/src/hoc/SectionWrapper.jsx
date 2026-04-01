@@ -9,7 +9,7 @@ export default function SectionWrapper({ children, className = "", style, ...pro
     <motion.section
       initial={reduceMotion ? false : "hidden"}
       whileInView={reduceMotion ? undefined : "show"}
-      viewport={{ once: true, amount: 0.2 }}
+      viewport={{ once: true, amount: 0.08 }}
       variants={reduceMotion ? undefined : staggerContainer}
       className={className}
       style={style}

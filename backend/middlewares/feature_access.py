@@ -1,4 +1,5 @@
 from bson import ObjectId
+from fastapi import HTTPException
 
 from database.connection import users_collection
 
@@ -74,6 +75,9 @@ async def get_user_access(user_id: str) -> dict:
 
 
 async def enforce_feature_access(current_user: dict, feature: str) -> dict:
+    if not current_user or not current_user.get("user_id"):
+        raise HTTPException(status_code=401, detail="Authentication required")
+
     user_access = await get_user_access(current_user["user_id"])
     if not can_access_feature(user_access, feature):
         raise UpgradeRequiredException()

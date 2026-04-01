@@ -23,6 +23,7 @@ from modules.reports.routes import router as reports_router
 from modules.strategySimulator.routes import router as simulate_router
 from modules.enterprise.routes import router as enterprise_router
 from modules.cli.routes import router as cli_router
+from modules.billing.routes import router as billing_router
 from middlewares.feature_access import UpgradeRequiredException
 
 load_dotenv()
@@ -116,6 +117,7 @@ app.include_router(reports_router, prefix="/api")
 app.include_router(simulate_router, prefix="/api")
 app.include_router(enterprise_router, prefix="/api")
 app.include_router(cli_router, prefix="/api")
+app.include_router(billing_router, prefix="/api")
 
 
 # Health endpoint

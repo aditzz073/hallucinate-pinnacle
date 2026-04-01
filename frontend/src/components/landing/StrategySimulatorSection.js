@@ -32,6 +32,9 @@ export default function StrategySimulatorSection({ onNavigate }) {
 
           {/* ── Left: copy ─────────────────────────────────────────────── */}
           <motion.div variants={slideInLeft}>
+            <p className="text-[11px] font-medium uppercase tracking-[0.08em] mb-3" style={{ color: "#818CF8" }}>
+              STRATEGY SIMULATOR
+            </p>
             <div
               className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6 text-xs font-medium"
               style={{
@@ -45,13 +48,13 @@ export default function StrategySimulatorSection({ onNavigate }) {
             </div>
 
             <h2
-              className="font-display text-4xl lg:text-5xl font-bold mb-4"
-              style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}
+              className="font-display text-4xl lg:text-[42px] font-bold mb-4"
+              style={{ color: "#ffffff", letterSpacing: "-0.02em" }}
             >
               Strategy Simulator
             </h2>
 
-            <p className="text-lg mb-8 leading-relaxed" style={{ color: "var(--muted)" }}>
+            <p className="text-base md:text-lg mb-10 leading-relaxed max-w-[560px]" style={{ color: "#94A3B8" }}>
               Simulate optimization strategies and predict how changes impact AI visibility.
             </p>
 

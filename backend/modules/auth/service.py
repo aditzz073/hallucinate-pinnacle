@@ -42,6 +42,7 @@ def _normalize_access_fields(user_doc: dict, fallback_email: str = "") -> dict:
     return {
         "plan": plan,
         "isSubscribed": is_subscribed,
+        "stripeCustomerId": user_doc.get("stripeCustomerId"),
         "isFoundingUser": is_founding_user,
         "is_privileged": is_founding_user,
     }
@@ -79,12 +80,19 @@ async def register_user(email: str, password: str, nickname: str = None) -> dict
         "isFoundingUser": is_privileged,
         "is_privileged": is_privileged,
     }
+    response_access_fields = {
+        **access_fields,
+        "stripeCustomerId": None,
+    }
     
     user_doc = {
         "email": email,
         "password_hash": hash_password(password),
         "nickname": nickname,
         **access_fields,
+        "stripeSubscriptionId": None,
+        "subscriptionStatus": "inactive",
+        "subscriptionUpdatedAt": now,
         "created_at": now,
     }
     result = await users_collection.insert_one(user_doc)
@@ -98,7 +106,7 @@ async def register_user(email: str, password: str, nickname: str = None) -> dict
             "id": user_id,
             "email": email,
             "nickname": nickname,
-            **access_fields,
+            **response_access_fields,
             "created_at": now
         },
     }

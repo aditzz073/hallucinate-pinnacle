@@ -116,7 +116,7 @@ export default function AITestsPage({ onSignUp }) {
                 className="btn-primary h-12 px-6 rounded-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-                {loading ? "Analyzing..." : (isGuest && hasReachedLimit ? "Sign In to Continue" : "Run Test")}
+                {loading ? "Analyzing..." : (isGuest && hasReachedLimit ? "Sign in to continue" : "Run Test")}
               </button>
             </div>
           </div>

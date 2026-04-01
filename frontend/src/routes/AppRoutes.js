@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect } from "react";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import {
   Navigate,
   Route,
@@ -6,6 +6,8 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
+import { toast } from "sonner";
+import { createCheckoutSession } from "../api";
 import { useAuth } from "../context/AuthContext";
 import { canAccessFeature } from "../utils/featureAccess";
 import Layout, { AppShellLayout } from "../components/Layout";
@@ -14,6 +16,7 @@ import PrivateRoute from "../components/PrivateRoute";
 import LoginPage from "../components/auth/LoginPage";
 import RegisterPage from "../components/auth/RegisterPage";
 import LandingPage from "../pages/LandingPage";
+import PricingPage from "../pages/PricingPage";
 import Dashboard from "../pages/Dashboard";
 import AuditsPage from "../pages/AuditsPage";
 import AITestsPage from "../pages/AITestsPage";
@@ -73,24 +76,84 @@ function RegisterRoute() {
 function PricingRoute() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
 
-  const navigateToPage = (pageId) => navigate(getPathFromPageIdForAuth(pageId, Boolean(user)));
+  const handleSelectPlan = async (plan) => {
+    if (plan !== "pro") {
+      if (user?.isLoggedIn) {
+        navigate("/dashboard");
+      } else {
+        navigate("/register", { state: { from: { pathname: "/pricing" } } });
+      }
+      return;
+    }
 
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  }, []);
+    if (!user?.isLoggedIn) {
+      navigate("/login", { state: { from: { pathname: "/pricing" } } });
+      return;
+    }
 
-  return <LandingPage onGetStarted={() => navigate("/register")} onNavigate={navigateToPage} />;
+    setIsCheckoutLoading(true);
+    try {
+      const session = await createCheckoutSession();
+      window.location.href = session.url;
+    } catch (error) {
+      toast.error(error?.response?.data?.detail || "Unable to start checkout. Please try again.");
+    } finally {
+      setIsCheckoutLoading(false);
+    }
+  };
+
+  return (
+    <PricingPage
+      user={user}
+      isCheckoutLoading={isCheckoutLoading}
+      onSelectPlan={handleSelectPlan}
+    />
+  );
 }
 
 function LandingRoute() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const navigateToPage = (pageId) => navigate(getPathFromPageIdForAuth(pageId, Boolean(user)));
 
-  return <LandingPage onGetStarted={() => navigate(user ? "/dashboard" : "/register")} onNavigate={navigateToPage} />;
+  const handleSelectPlan = async (plan) => {
+    if (plan !== "pro") {
+      if (user?.isLoggedIn) {
+        navigate("/dashboard");
+      } else {
+        navigate("/register", { state: { from: { pathname: "/pricing" } } });
+      }
+      return;
+    }
+
+    if (!user?.isLoggedIn) {
+      navigate("/login", { state: { from: { pathname: "/pricing" } } });
+      return;
+    }
+
+    setIsCheckoutLoading(true);
+    try {
+      const session = await createCheckoutSession();
+      window.location.href = session.url;
+    } catch (error) {
+      toast.error(error?.response?.data?.detail || "Unable to start checkout. Please try again.");
+    } finally {
+      setIsCheckoutLoading(false);
+    }
+  };
+
+  return (
+    <LandingPage
+      onGetStarted={() => navigate(user ? "/dashboard" : "/register")}
+      onNavigate={navigateToPage}
+      onSelectPlan={handleSelectPlan}
+      isCheckoutLoading={isCheckoutLoading}
+      user={user}
+    />
+  );
 }
 
 function DashboardRoute() {
@@ -102,32 +165,46 @@ function DashboardRoute() {
 
 function AuditsRoute() {
   const navigate = useNavigate();
-  return <AuditsPage onSignUp={() => navigate("/register")} />;
+  const { user } = useAuth();
+
+  return <AuditsPage onSignUp={() => navigate(user?.isLoggedIn ? "/pricing" : "/login")} />;
 }
 
 function AITestsRoute() {
   const navigate = useNavigate();
-  return <AITestsPage onSignUp={() => navigate("/register")} />;
+  const { user } = useAuth();
+
+  return <AITestsPage onSignUp={() => navigate(user?.isLoggedIn ? "/pricing" : "/login")} />;
 }
 
 function AITestingLabRoute() {
   const navigate = useNavigate();
-  return <AITestingLabPage onSignUp={() => navigate("/register")} />;
+  const { user } = useAuth();
+
+  return <AITestingLabPage onSignUp={() => navigate(user?.isLoggedIn ? "/pricing" : "/login")} />;
 }
 
 function AIVisibilityLabRoute() {
   const navigate = useNavigate();
-  return <AIVisibilityLabPage onSignUp={() => navigate("/register")} />;
+  const { user } = useAuth();
+
+  return <AIVisibilityLabPage onSignUp={() => navigate(user?.isLoggedIn ? "/pricing" : "/login")} />;
 }
 
 function CLIRoute() {
   const navigate = useNavigate();
-  return <CLIPage onGetStarted={() => navigate("/register")} />;
+  const { user } = useAuth();
+
+  return <CLIPage onGetStarted={() => navigate(user?.isLoggedIn ? "/pricing" : "/login")} />;
 }
 
 function PremiumFeatureRoute({ feature, children }) {
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  if (!user?.isLoggedIn) {
+    return <Navigate to="/login" replace />;
+  }
 
   if (canAccessFeature(user, feature)) {
     return children;
@@ -143,29 +220,29 @@ function PremiumFeatureRoute({ feature, children }) {
           Premium Feature
         </p>
         <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--foreground)" }}>
-          Upgrade to access this feature
+          Upgrade to unlock
         </h2>
         <p className="text-sm mb-5" style={{ color: "var(--text-muted)" }}>
-          This feature is available on paid plans.
+          This feature is available on Pinnacle Pro.
         </p>
         <div
           className="rounded-xl px-4 py-3 mb-5"
           style={{ background: "rgba(79,70,229,0.08)", border: "1px solid rgba(79,70,229,0.22)" }}
         >
           <p className="text-sm" style={{ color: "#C7D2FE" }}>
-            You're seeing a preview. Upgrade to unlock full access.
+            Your account is on the free plan. Upgrade to unlock full access.
           </p>
         </div>
         <div className="flex items-center gap-3">
           <button className="btn-primary rounded-lg px-4 py-2.5 text-sm font-semibold" onClick={() => navigate("/pricing")}>
-            See Premium Plan
+            Upgrade Plan -&gt;
           </button>
           <button
             className="rounded-lg px-4 py-2.5 text-sm font-medium"
             style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--foreground)" }}
             onClick={() => navigate("/dashboard")}
           >
-            Maybe Later
+            Cancel
           </button>
         </div>
       </div>

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { useAuth } from "../context/AuthContext";
 import { getOverview } from "../api";
-import { changePassword, generateApiKey } from "../api";
+import { changePassword, createPortalSession, generateApiKey } from "../api";
 import { canAccessFeature } from "../utils/featureAccess";
 import {
   User,
@@ -42,12 +43,31 @@ export default function ProfilePage() {
   const [generatedKey, setGeneratedKey] = useState(null);
   const [keyCopied, setKeyCopied] = useState(false);
   const [apiKeyError, setApiKeyError] = useState("");
+  const [openingBillingPortal, setOpeningBillingPortal] = useState(false);
   const [openSettings, setOpenSettings] = useState({
     security: false,
     billing: false,
     preferences: false,
   });
   const canUseCliTool = canAccessFeature(user, "cli_tool");
+  const canManageSubscription = Boolean(user?.isSubscribed && user?.stripeCustomerId);
+
+  const handleOpenBilling = async () => {
+    if (!canManageSubscription) {
+      navigate("/pricing");
+      return;
+    }
+
+    setOpeningBillingPortal(true);
+    try {
+      const session = await createPortalSession();
+      window.location.href = session.url;
+    } catch (err) {
+      toast.error(err?.response?.data?.detail || "Unable to open billing portal right now.");
+    } finally {
+      setOpeningBillingPortal(false);
+    }
+  };
 
   const openSettingsPanel = (panel) => {
     setOpenSettings((prev) => ({ ...prev, [panel]: true }));
@@ -258,13 +278,15 @@ export default function ProfilePage() {
 
           <button
             type="button"
-            onClick={() => navigate("/pricing")}
+            onClick={handleOpenBilling}
             className="rounded-xl border p-4 text-left transition-all duration-200 hover:-translate-y-[2px]"
             style={{ background: "#181824", borderColor: "rgba(255,255,255,0.06)" }}
           >
             <CreditCard className="w-4 h-4 mb-2" style={{ color: "#FBBF24" }} />
             <p className="text-sm font-semibold text-white">Billing</p>
-            <p className="text-xs mt-1 text-zinc-400">Plan and subscription settings</p>
+            <p className="text-xs mt-1 text-zinc-400">
+              {canManageSubscription ? "Manage subscription and payments" : "Plan and subscription settings"}
+            </p>
           </button>
         </div>
       </section>
@@ -298,11 +320,11 @@ export default function ProfilePage() {
                 </p>
                 <button
                   type="button"
-                  onClick={() => navigate("/pricing")}
+                  onClick={handleOpenBilling}
                   className="h-9 px-3 rounded-lg text-xs font-semibold text-white"
                   style={{ background: "#4F46E5" }}
                 >
-                  See Premium Plan
+                  {canManageSubscription ? "Manage Subscription" : "See Premium Plan"}
                 </button>
               </div>
             ) : !generatedKey ? (
@@ -460,11 +482,16 @@ export default function ProfilePage() {
                 <p className="text-sm text-zinc-300 mt-3 mb-3">Manage billing details and feature access from pricing.</p>
                 <button
                   type="button"
-                  onClick={() => navigate("/pricing")}
-                  className="h-9 px-3 rounded-lg text-xs font-semibold text-white"
+                  onClick={handleOpenBilling}
+                  disabled={openingBillingPortal}
+                  className="h-9 px-3 rounded-lg text-xs font-semibold text-white disabled:opacity-60"
                   style={{ background: "#4F46E5" }}
                 >
-                  Open Billing
+                  {openingBillingPortal
+                    ? "Opening..."
+                    : canManageSubscription
+                      ? "Manage Subscription"
+                      : "Open Billing"}
                 </button>
               </div>
             )}
