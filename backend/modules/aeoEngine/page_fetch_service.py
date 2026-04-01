@@ -188,6 +188,29 @@ async def fetch_page_content(url: str, requester_id: Optional[str] = None) -> Di
         logger.info("page_fetch cache hit: %s (source=%s)", url, cached.get("source"))
         return cached
 
+    async def _degraded_fetch_payload(fetch_data: Dict[str, Any], reason: str) -> Optional[Dict[str, Any]]:
+        # If initial fetch produced HTML, return it instead of failing hard when browser fallback is unavailable.
+        html = fetch_data.get("html", "")
+        if not html:
+            return None
+
+        blocked_reasons = list(fetch_data.get("blocked_reasons", []))
+        blocked_reasons.append(f"browser_unavailable:{reason}")
+        payload = {
+            "html": html,
+            "source": "fetch",
+            "success": True,
+            "error": None,
+            "status_code": fetch_data.get("status_code", 0),
+            "headers": fetch_data.get("headers", {}),
+            "blocked_reasons": blocked_reasons,
+            "degraded": True,
+            "degraded_reason": reason,
+        }
+        await _cache_set(url, payload)
+        logger.warning("Using degraded fetch result for %s (%s)", url, reason)
+        return payload
+
     # Step 1: fast fetch path
     try:
         fetch_result = await _try_fetch(url)
@@ -223,6 +246,10 @@ async def fetch_page_content(url: str, requester_id: Optional[str] = None) -> Di
     # Step 2: browser fallback
     if not await _can_use_browser(requester_id):
         logger.warning("Browser render rate limit exceeded for requester=%s", requester_id or "anonymous")
+        degraded = await _degraded_fetch_payload(fetch_result, "rate_limit_exceeded")
+        if degraded:
+            return degraded
+
         return {
             "html": "",
             "source": "browser",
@@ -251,12 +278,17 @@ async def fetch_page_content(url: str, requester_id: Optional[str] = None) -> Di
         logger.info("page_fetch success via browser: %s render_time_ms=%s", url, payload.get("render_time_ms", 0))
         return payload
 
+    browser_error = browser_result.get("error") or "browser_render_failed"
+    degraded = await _degraded_fetch_payload(fetch_result, browser_error)
+    if degraded:
+        return degraded
+
     logger.error("Unable to fetch content for %s using fetch and browser fallback", url)
     return {
         "html": "",
         "source": "browser",
         "success": False,
-        "error": "Unable to fetch content",
+        "error": f"Unable to fetch content ({browser_error})",
         "status_code": fetch_result.get("status_code", 0),
         "headers": fetch_result.get("headers", {}),
         "blocked_reasons": fetch_result.get("blocked_reasons", []),
