@@ -4,7 +4,7 @@ services:
     runtime: python
     rootDir: backend
     plan: free
-    buildCommand: pip install -r requirements.txt && python -m playwright install chromium
+    buildCommand: pip install -r requirements.txt && python -m playwright install chromium chromium-headless-shell
     startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT --workers 1
     healthCheckPath: /api/health
     autoDeploy: true
