@@ -711,11 +711,6 @@ function SearchShiftSection() {
         </motion.div>
 
         <div className="relative">
-          <div
-            className="hidden md:block absolute left-[16%] right-[16%] top-12 h-px"
-            style={{ background: "rgba(255,255,255,0.06)" }}
-            aria-hidden="true"
-          />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {SHIFT_STEPS.map((step) => (
               <motion.div
