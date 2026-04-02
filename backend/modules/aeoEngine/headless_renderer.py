@@ -3,6 +3,8 @@ import asyncio
 import ipaddress
 import socket
 import logging
+import os
+from glob import glob
 from urllib.parse import urlparse
 from typing import Optional
 from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeout
@@ -32,6 +34,36 @@ REACT_ROOT_TIMEOUT_MS = 10000
 
 # Global semaphore for concurrency control
 _browser_semaphore = asyncio.Semaphore(CONCURRENT_LIMIT)
+
+
+def _find_playwright_chromium_executable() -> Optional[str]:
+    candidates = []
+
+    env_base = (os.getenv("PLAYWRIGHT_BROWSERS_PATH") or "").strip()
+    if env_base:
+        candidates.append(env_base)
+
+    candidates.extend(
+        [
+            "/opt/render/project/.cache/ms-playwright",
+            "/opt/render/.cache/ms-playwright",
+        ]
+    )
+
+    patterns = [
+        "chromium_headless_shell-*/chrome-headless-shell-linux64/chrome-headless-shell",
+        "chromium-*/chrome-linux/chrome",
+    ]
+
+    for base in candidates:
+        if not base:
+            continue
+        for pattern in patterns:
+            matches = sorted(glob(os.path.join(base, pattern)), reverse=True)
+            for match in matches:
+                if os.path.isfile(match):
+                    return match
+    return None
 
 
 def _is_private_ip(hostname: str) -> bool:
@@ -118,19 +150,36 @@ async def render_with_headless(url: str, timeout: int = MAX_TOTAL_TIMEOUT) -> di
         try:
             async with async_playwright() as p:
                 # Launch browser with security options
-                browser = await p.chromium.launch(
-                    headless=True,
-                    args=[
-                        "--no-sandbox",
-                        "--disable-setuid-sandbox",
-                        "--disable-dev-shm-usage",
-                        "--disable-accelerated-2d-canvas",
-                        "--disable-gpu",
-                        "--disable-web-security",  # For CORS issues
-                        "--disable-features=IsolateOrigins,site-per-process",
-                        "--disable-blink-features=AutomationControlled",
-                    ],
-                )
+                launch_args = [
+                    "--no-sandbox",
+                    "--disable-setuid-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-accelerated-2d-canvas",
+                    "--disable-gpu",
+                    "--disable-web-security",  # For CORS issues
+                    "--disable-features=IsolateOrigins,site-per-process",
+                    "--disable-blink-features=AutomationControlled",
+                ]
+
+                try:
+                    browser = await p.chromium.launch(
+                        headless=True,
+                        args=launch_args,
+                    )
+                except Exception as launch_error:
+                    chromium_executable = _find_playwright_chromium_executable()
+                    if chromium_executable:
+                        logger.warning(
+                            "Default Playwright launch failed, retrying with explicit executable: %s",
+                            chromium_executable,
+                        )
+                        browser = await p.chromium.launch(
+                            headless=True,
+                            args=launch_args,
+                            executable_path=chromium_executable,
+                        )
+                    else:
+                        raise launch_error
                 
                 # Create context with security settings
                 context = await browser.new_context(
