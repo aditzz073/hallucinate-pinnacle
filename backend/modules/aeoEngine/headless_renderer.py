@@ -23,10 +23,12 @@ PRIVATE_IP_RANGES = [
 ]
 
 # Performance Configuration
-MAX_NAVIGATION_TIMEOUT = 15000  # 15 seconds
-MAX_TOTAL_TIMEOUT = 20000       # 20 seconds
+MAX_NAVIGATION_TIMEOUT = 30000  # 30 seconds
+MAX_TOTAL_TIMEOUT = 45000       # 45 seconds
 NETWORK_IDLE_TIMEOUT = 5000     # 5 seconds for network idle
 CONCURRENT_LIMIT = 5            # Max concurrent browsers
+REACT_SETTLE_TIMEOUT_MS = 2500
+REACT_ROOT_TIMEOUT_MS = 10000
 
 # Global semaphore for concurrency control
 _browser_semaphore = asyncio.Semaphore(CONCURRENT_LIMIT)
@@ -147,6 +149,13 @@ async def render_with_headless(url: str, timeout: int = MAX_TOTAL_TIMEOUT) -> di
                 """)
                 
                 page = await context.new_page()
+
+                # Present a realistic browser header profile before navigation.
+                await page.set_extra_http_headers(
+                    {
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                    }
+                )
                 
                 # Block unnecessary resources for performance
                 await page.route("**/*", lambda route: (
@@ -163,16 +172,18 @@ async def render_with_headless(url: str, timeout: int = MAX_TOTAL_TIMEOUT) -> di
                 try:
                     await page.goto(
                         url,
-                        wait_until="domcontentloaded",
+                        wait_until="networkidle",
                         timeout=MAX_NAVIGATION_TIMEOUT,
                     )
-                    
-                    # Wait for network to be idle (with max timeout)
+
+                    # Give client-side apps additional time to hydrate after network settles.
+                    await page.wait_for_timeout(REACT_SETTLE_TIMEOUT_MS)
+
+                    # For React/Next apps, wait for mounted root children when available.
                     try:
-                        await page.wait_for_load_state("networkidle", timeout=NETWORK_IDLE_TIMEOUT)
+                        await page.wait_for_selector("#root > *, #__next > *", timeout=REACT_ROOT_TIMEOUT_MS)
                     except PlaywrightTimeout:
-                        # Network didn't idle within 5s, proceed anyway
-                        logger.info(f"Network didn't idle for {url}, proceeding with current state")
+                        logger.info("Root selector not found for %s, continuing with captured DOM", url)
                     
                     # Extract rendered HTML
                     html = await page.content()

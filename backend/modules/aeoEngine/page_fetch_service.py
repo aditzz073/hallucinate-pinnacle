@@ -2,6 +2,7 @@
 import asyncio
 import ipaddress
 import logging
+import re
 import socket
 import time
 from collections import defaultdict, deque
@@ -40,6 +41,8 @@ USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
 ]
+
+MIN_MEANINGFUL_HTML_LENGTH = 2000
 
 _html_cache: Dict[str, Dict[str, Any]] = {}
 _cache_lock = asyncio.Lock()
@@ -81,6 +84,19 @@ def _fetch_headers() -> Dict[str, str]:
     }
 
 
+def _looks_like_empty_shell_or_thin_content(html: str) -> bool:
+    html_text = html or ""
+    if len(html_text.strip()) < MIN_MEANINGFUL_HTML_LENGTH:
+        return True
+
+    shell_patterns = [
+        r'<div[^>]+id=["\']root["\'][^>]*>\s*</div>',
+        r'<div[^>]+id=["\']__next["\'][^>]*>\s*</div>',
+    ]
+    lowered = html_text.lower()
+    return any(re.search(pattern, lowered, flags=re.IGNORECASE) for pattern in shell_patterns)
+
+
 def _detect_block_or_incomplete(html: str, status_code: int) -> Dict[str, Any]:
     reasons = []
 
@@ -95,6 +111,9 @@ def _detect_block_or_incomplete(html: str, status_code: int) -> Dict[str, Any]:
 
     if len(html) < MIN_HTML_LENGTH:
         reasons.append("html_too_short")
+
+    if _looks_like_empty_shell_or_thin_content(html):
+        reasons.append("client_shell_or_thin_content")
 
     soup = BeautifulSoup(html, "lxml")
     body = soup.find("body")
@@ -193,6 +212,8 @@ async def fetch_page_content(url: str, requester_id: Optional[str] = None) -> Di
         html = fetch_data.get("html", "")
         if not html:
             return None
+        if _looks_like_empty_shell_or_thin_content(html):
+            return None
 
         blocked_reasons = list(fetch_data.get("blocked_reasons", []))
         blocked_reasons.append(f"browser_unavailable:{reason}")
@@ -263,7 +284,7 @@ async def fetch_page_content(url: str, requester_id: Optional[str] = None) -> Di
     browser_result = await render_with_timeout(url, max_timeout=BROWSER_TIMEOUT_MS)
     browser_html = browser_result.get("html", "")
 
-    if browser_html:
+    if browser_html and not _looks_like_empty_shell_or_thin_content(browser_html):
         payload = {
             "html": browser_html,
             "source": "browser",
@@ -279,6 +300,9 @@ async def fetch_page_content(url: str, requester_id: Optional[str] = None) -> Di
         return payload
 
     browser_error = browser_result.get("error") or "browser_render_failed"
+    if browser_html and _looks_like_empty_shell_or_thin_content(browser_html):
+        browser_error = "rendered_html_is_empty_shell_or_too_thin"
+
     degraded = await _degraded_fetch_payload(fetch_result, browser_error)
     if degraded:
         return degraded
