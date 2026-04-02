@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
@@ -34,6 +34,7 @@ logging.basicConfig(
     format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
 )
 logger = logging.getLogger("pinnacle_ai")
+DEBUG_FETCH_ENABLED = os.getenv("DEBUG_FETCH_ENABLED", "false").strip().lower() in {"1", "true", "yes", "on"}
 
 
 @asynccontextmanager
@@ -136,6 +137,35 @@ async def health():
         "database": db_status,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
+
+
+@app.get("/api/debug/fetch")
+async def debug_fetch(url: str, include_html: bool = True):
+    if not DEBUG_FETCH_ENABLED:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    from modules.aeoEngine.page_fetch_service import fetch_page_content
+
+    result = await fetch_page_content(url)
+    html = result.get("html", "")
+
+    payload = {
+        "success": result.get("success", False),
+        "url": url,
+        "html_length": len(html),
+        "fetch_method": result.get("source"),
+        "status_code": result.get("status_code", 0),
+        "html_preview": html[:500],
+        "blocked_reasons": result.get("blocked_reasons", []),
+        "degraded": result.get("degraded", False),
+        "degraded_reason": result.get("degraded_reason"),
+        "error": result.get("error"),
+    }
+
+    if include_html:
+        payload["html"] = html
+
+    return payload
 
 
 if __name__ == "__main__":
