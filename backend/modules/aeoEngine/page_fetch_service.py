@@ -300,6 +300,7 @@ async def fetch_page_content(url: str, requester_id: Optional[str] = None) -> Di
         return payload
 
     browser_error = browser_result.get("error") or "browser_render_failed"
+    browser_error = str(browser_error).strip().splitlines()[0]
     if browser_html and _looks_like_empty_shell_or_thin_content(browser_html):
         browser_error = "rendered_html_is_empty_shell_or_too_thin"
 

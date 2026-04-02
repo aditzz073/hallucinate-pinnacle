@@ -168,6 +168,45 @@ async def debug_fetch(url: str, include_html: bool = True):
     return payload
 
 
+@app.get("/api/debug/browser-runtime")
+async def debug_browser_runtime():
+    if not DEBUG_FETCH_ENABLED:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    from glob import glob
+    from modules.aeoEngine.headless_renderer import _find_playwright_chromium_executable
+
+    configured_base = (os.getenv("PLAYWRIGHT_BROWSERS_PATH") or "").strip()
+    scan_bases = [
+        configured_base,
+        "/opt/render/project/.cache/ms-playwright",
+        "/opt/render/.cache/ms-playwright",
+    ]
+
+    entries = []
+    for base in scan_bases:
+        if not base:
+            continue
+        matches = sorted(
+            glob(f"{base}/chromium*/*/*") + glob(f"{base}/chromium_headless_shell*/*/*"),
+            reverse=True,
+        )
+        entries.append(
+            {
+                "base": base,
+                "exists": os.path.isdir(base),
+                "match_count": len(matches),
+                "sample_matches": matches[:5],
+            }
+        )
+
+    return {
+        "playwright_browsers_path": configured_base or None,
+        "detected_executable": _find_playwright_chromium_executable(),
+        "scan_results": entries,
+    }
+
+
 if __name__ == "__main__":
     import uvicorn
     
