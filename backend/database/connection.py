@@ -36,10 +36,15 @@ async def setup_indexes() -> bool:
     try:
         # Users
         await users_collection.create_index("email", unique=True)
+        # Normalize legacy empty string IDs so partial unique index remains valid.
+        await users_collection.update_many(
+            {"stripeCustomerId": ""},
+            {"$set": {"stripeCustomerId": None}},
+        )
+
         desired_partial_filter = {
             "stripeCustomerId": {
                 "$type": "string",
-                "$ne": "",
             }
         }
 
@@ -84,5 +89,5 @@ async def setup_indexes() -> bool:
 
         return True
     except Exception as e:
-        logger.warning("Could not create MongoDB indexes (DB unavailable): %s", e)
+        logger.warning("Could not create MongoDB indexes at startup: %s", e)
         return False

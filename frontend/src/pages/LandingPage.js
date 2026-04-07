@@ -53,7 +53,7 @@ const FEATURE_DEPTH_CARDS = [
   {
     title: "AI Visibility Audit",
     description:
-      "Analyzes your page across 23 signals including structure, schema, trust, and technical factors to calculate your AEO score. Pinnacle fetches the page, parses its content, and scores each signal. The result shows exactly where your page loses AI visibility points.",
+      "Analyzes your page across 23+ signals including structure, schema, trust, and technical factors to calculate your AEO score. Pinnacle fetches the page, parses its content, and scores each signal. The result shows exactly where your page loses AI visibility points.",
   },
   {
     title: "Citation Probability",
@@ -101,7 +101,7 @@ const FAQ_ITEMS = [
   {
     question: "What is an AI Visibility Score?",
     answer:
-      "An AI Visibility Score is a 0-100 measure of citation readiness. Pinnacle calculates it from 23 signals across structure, trust, media, schema, and technical categories.",
+      "An AI Visibility Score is a 0-100 measure of citation readiness. Pinnacle calculates it from 23+ signals across structure, trust, media, schema, and technical categories.",
   },
   {
     question: "How can I improve my AI visibility?",
