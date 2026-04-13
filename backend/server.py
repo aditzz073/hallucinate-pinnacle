@@ -24,7 +24,11 @@ from modules.strategySimulator.routes import router as simulate_router
 from modules.enterprise.routes import router as enterprise_router
 from modules.cli.routes import router as cli_router
 from modules.billing.routes import router as billing_router
-from middlewares.feature_access import UpgradeRequiredException
+from middlewares.feature_access import (
+    UpgradeRequiredException,
+    UsageLimitReachedException,
+    NoActivePlanException,
+)
 
 load_dotenv()
 
@@ -105,8 +109,40 @@ async def upgrade_required_exception_handler(request: Request, exc: UpgradeRequi
             "error": "feature_locked",
             "feature": exc.feature,
             "required_plan": exc.required_plan,
-            "upgrade_message": exc.message,
             "current_plan": exc.current_plan,
+            "upgrade_message": exc.message,
+            "upgrade_url": "/pricing",
+        },
+    )
+
+
+@app.exception_handler(UsageLimitReachedException)
+async def usage_limit_exception_handler(request: Request, exc: UsageLimitReachedException):
+    return JSONResponse(
+        status_code=429,
+        content={
+            "error": "usage_limit_reached",
+            "feature": exc.feature,
+            "used": exc.used,
+            "limit": exc.limit,
+            "resets_at": exc.resets_at,
+            "upgrade_message": exc.upgrade_message,
+            "current_plan": exc.current_plan,
+            "upgrade_url": "/pricing",
+        },
+    )
+
+
+@app.exception_handler(NoActivePlanException)
+async def no_plan_exception_handler(request: Request, exc: NoActivePlanException):
+    return JSONResponse(
+        status_code=403,
+        content={
+            "error": "no_active_plan",
+            "feature": exc.feature,
+            "message": "Choose a plan to access this feature",
+            "required_plan": exc.required_plan,
+            "upgrade_url": "/pricing",
         },
     )
 

@@ -3,7 +3,19 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from middlewares.auth_middleware import verify_token
-from middlewares.feature_access import enforce_feature_access, UpgradeRequiredException
+from middlewares.feature_access import (
+    enforce_feature_access,
+    enforce_usage_limit,
+    reset_monthly_usage_if_needed,
+    ensure_usage_doc,
+    increment_usage,
+    UpgradeRequiredException,
+    UsageLimitReachedException,
+    NoActivePlanException,
+    PLAN_LIMITS,
+    _normalize_plan,
+    get_user_access,
+)
 
 router = APIRouter(prefix="/enterprise", tags=["Enterprise"])
 
@@ -23,19 +35,53 @@ class SensitivityTestRequest(BaseModel):
 @router.post("/compare")
 async def compare_competitors(req: CompareRequest, current_user: dict = Depends(verify_token)):
     from modules.enterprise.competitor import compare_competitors as _compare
+    from database.connection import users_collection
+    from bson import ObjectId
 
     if not req.competitor_urls:
         raise HTTPException(status_code=400, detail="At least one competitor URL required")
-    if len(req.competitor_urls) > 5:
-        raise HTTPException(status_code=400, detail="Maximum 5 competitor URLs allowed")
+
+    user_id = current_user["user_id"]
+
+    # 1. Ensure usage doc
+    await ensure_usage_doc(user_id)
+
+    # 2. Reset if new month
+    user_doc = await reset_monthly_usage_if_needed(user_id)
+    if user_doc is None:
+        user_doc = await users_collection.find_one({"_id": ObjectId(user_id)})
+
+    # 3. Feature access (requires optimize+)
+    await enforce_feature_access(current_user, "competitor_intel")
+
+    # 4. Enforce per-query competitor URL limit based on plan
+    user_access = await get_user_access(user_id)
+    plan = user_access.get("plan", "free")
+    competitor_limit = PLAN_LIMITS.get(plan, PLAN_LIMITS["free"]).get("competitor_intel", 0)
+    if competitor_limit == 999999:
+        competitor_limit = 10  # safety cap
+    if len(req.competitor_urls) > competitor_limit:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Your {plan.title()} plan allows up to {competitor_limit} competitor URLs per query."
+        )
+
+    # 5. Usage limit check
+    await enforce_usage_limit(user_id, user_doc, "competitor_intel", "competitor_intel")
+
     try:
-        await enforce_feature_access(current_user, "competitor_intel")
-        result = await _compare(req.query.strip(), str(req.primary_url), [str(u) for u in req.competitor_urls])
+        result = await _compare(
+            req.query.strip(), str(req.primary_url), [str(u) for u in req.competitor_urls]
+        )
+
+        # 6. Increment
+        await increment_usage(user_id, "competitor_intel_used")
+
         return result
+    except (UpgradeRequiredException, UsageLimitReachedException, NoActivePlanException):
+        raise
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    except UpgradeRequiredException:
-        raise
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Comparison failed: {str(e)}")
 
@@ -76,10 +122,7 @@ async def sensitivity_test(req: SensitivityTestRequest, current_user: dict = Dep
             "content_depth": calculate_content_depth(parsed),
         }
 
-        # Default probability
         default_prob = calculate_citation_probability(**scores)
-
-        # Mode-adjusted probability
         mode_result = calculate_with_mode(scores, req.mode)
 
         return {
@@ -105,5 +148,8 @@ async def sensitivity_test(req: SensitivityTestRequest, current_user: dict = Dep
 @router.get("/executive-summary")
 async def executive_summary(current_user: dict = Depends(verify_token)):
     from modules.enterprise.executive_summary import generate_executive_summary
+
+    # Requires dominate+
+    await enforce_feature_access(current_user, "executive_summary")
 
     return await generate_executive_summary(current_user["user_id"])

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { getOverview } from "../api";
+import { getOverview, getBillingStatus } from "../api";
 import { useAuth } from "../context/AuthContext";
 import { getScoreColor } from "../components/ui/ScoreRing";
+import { isFreeTier } from "../utils/featureAccess";
+import UsageWidget from "../components/ui/UsageWidget";
 import {
   FileSearch, Search, Eye, Activity,
-  ArrowRight, Zap, Target, ChevronRight, Sparkles,
+  ArrowRight, Zap, Target, ChevronRight, Sparkles, Rocket,
 } from "lucide-react";
 import axios from "axios";
 
@@ -120,15 +122,18 @@ export default function Dashboard({ onNavigate }) {
   const navigate = useNavigate();
   const [health, setHealth] = useState(null);
   const [overview, setOverview] = useState(null);
+  const [billingStatus, setBillingStatus] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
       axios.get(`${API_URL}/api/health`).then(r => r.data).catch(() => ({ status: "error", database: "disconnected" })),
       getOverview().catch(() => null),
-    ]).then(([h, o]) => {
+      getBillingStatus().catch(() => null),
+    ]).then(([h, o, b]) => {
       setHealth(h);
       setOverview(o);
+      setBillingStatus(b);
       setLoading(false);
     });
   }, []);
@@ -208,6 +213,41 @@ export default function Dashboard({ onNavigate }) {
   const userName = user?.nickname || user?.email?.split("@")[0] || "there";
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const isFree = isFreeTier(user);
+  const hasRunAudit = (s.total_audits ?? 0) > 0;
+
+  // Billing usage data
+  const usage = billingStatus?.usage || null;
+  const plan = user?.plan || "free";
+  const resetsAt = usage?.current_period_end || null;
+
+  // Preview cards for free users
+  const previewCards = [
+    {
+      title: "Strategy Simulator",
+      desc: "See exactly which changes will lift your citation probability before implementing them.",
+      plan: "Optimize",
+      feature: "strategy_simulator",
+    },
+    {
+      title: "Competitor Intelligence",
+      desc: "Discover why competitors appear more in AI-generated answers than you do.",
+      plan: "Optimize",
+      feature: "competitor_intel",
+    },
+    {
+      title: "AI Testing Lab",
+      desc: "Test your content across ChatGPT, Claude, Gemini, and Perplexity simultaneously.",
+      plan: "Discover",
+      feature: "ai_testing_lab",
+    },
+    {
+      title: "Page Monitoring",
+      desc: "Automatically track when your AI visibility score changes over time.",
+      plan: "Discover",
+      feature: "monitoring",
+    },
+  ];
 
   return (
     <div className="space-y-8" data-testid="dashboard-page">
@@ -360,9 +400,60 @@ export default function Dashboard({ onNavigate }) {
         </div>
       )}
 
+      {/* ── USAGE WIDGET (all plans) ─────────────────────── */}
+      {usage && (
+        <UsageWidget plan={plan} usage={usage} resetsAt={resetsAt} />
+      )}
+
+      {/* ── FREE USER: GET STARTED ────────────────────────── */}
+      {isFree && (
+        <div data-testid="free-user-get-started">
+          <div className="flex items-center gap-2 mb-4">
+            <Rocket className="w-4 h-4" style={{ color: "#818CF8" }} />
+            <h2 className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>
+              Unlock more with a plan
+            </h2>
+            <span className="text-xs" style={{ color: "var(--muted)" }}>
+              — Choose a plan to access these features
+            </span>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+            {previewCards.map((card) => (
+              <button
+                key={card.feature}
+                onClick={() => navigate("/pricing")}
+                className="text-left metric-card hover:border-indigo-500/30 transition-all group relative overflow-hidden"
+                style={{ opacity: 0.85 }}
+              >
+                {/* Lock overlay */}
+                <div
+                  className="absolute top-2.5 right-2.5 flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold"
+                  style={{ background: "rgba(79,70,229,0.15)", color: "#818CF8" }}
+                >
+                  🔒 {card.plan}
+                </div>
+                <h3 className="text-sm font-medium mb-1.5 pr-16" style={{ color: "var(--foreground)" }}>
+                  {card.title}
+                </h3>
+                <p className="text-xs line-clamp-2" style={{ color: "var(--muted)" }}>
+                  {card.desc}
+                </p>
+                <span
+                  className="mt-3 text-xs font-medium flex items-center gap-1 group-hover:gap-2 transition-all"
+                  style={{ color: "#818CF8" }}
+                >
+                  View plans <ChevronRight className="w-3 h-3" />
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* ── ACTIVITY COUNTS ──────────────────────────────── */}
       <div data-testid="operational-data">
         <h2 className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "var(--muted)" }}>Activity</h2>
+
         <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
           {operationalCards.map((card) => {
             const Icon = card.icon;

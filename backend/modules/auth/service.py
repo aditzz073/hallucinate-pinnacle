@@ -16,21 +16,20 @@ PRIVILEGED_EMAILS = {
     "pujeradi@gmail.com",
 }
 
-# Legacy plan name migration (applied on read, not a hard migration)
 LEGACY_PLAN_MAP = {
-    "free": "discover",
     "pro": "optimize",
     "premium": "dominate",
 }
 
-VALID_PLANS = {"discover", "optimize", "dominate", "founder", "custom"}
+VALID_PLANS = {"free", "discover", "optimize", "dominate", "founder", "custom"}
 
 PLAN_DISPLAY_NAMES = {
+    "free":     "Free",
     "discover": "Discover",
     "optimize": "Optimize",
     "dominate": "Dominate",
-    "founder": "Founder",
-    "custom": "Custom",
+    "founder":  "Founder",
+    "custom":   "Custom",
 }
 
 
@@ -48,7 +47,7 @@ def _normalize_plan(raw_plan: str | None, is_founding_user: bool = False, is_sub
         return raw_plan
     if is_subscribed:
         return "optimize"
-    return "discover"
+    return "free"
 
 
 def _normalize_access_fields(user_doc: dict, fallback_email: str = "") -> dict:
@@ -98,9 +97,10 @@ async def register_user(email: str, password: str, nickname: str = None) -> dict
     if existing:
         raise ValueError("Email already registered")
 
-    now = datetime.now(timezone.utc).isoformat()
+    now_dt = datetime.now(timezone.utc)
+    now_iso = now_dt.isoformat()
     is_privileged = is_privileged_email(email)
-    plan = "founder" if is_privileged else "discover"
+    plan = "founder" if is_privileged else "free"
     plan_name = PLAN_DISPLAY_NAMES[plan]
 
     access_fields = {
@@ -116,7 +116,12 @@ async def register_user(email: str, password: str, nickname: str = None) -> dict
         "subscription_status": "none",
         "billing_cycle": "monthly",
     }
-    
+
+    period_start = now_dt.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    next_month = period_start.month % 12 + 1
+    next_year = period_start.year + (1 if next_month == 1 else 0)
+    period_end = period_start.replace(year=next_year, month=next_month, day=1)
+
     user_doc = {
         "email": email,
         "password_hash": hash_password(password),
@@ -128,8 +133,19 @@ async def register_user(email: str, password: str, nickname: str = None) -> dict
         "billing_cycle": "monthly",
         "plan_expires_at": None,
         "custom_plan": False,
-        "subscriptionUpdatedAt": now,
-        "created_at": now,
+        "subscriptionUpdatedAt": now_iso,
+        "created_at": now_iso,
+        "usage": {
+            "current_period_start": period_start.isoformat(),
+            "current_period_end":   period_end.isoformat(),
+            "aeo_audits_used":          0,
+            "ai_lab_tests_used":        0,
+            "advanced_audits_used":     0,
+            "ai_testing_lab_used":      0,
+            "strategy_simulator_used":  0,
+            "competitor_intel_used":    0,
+            "monitoring_urls_count":    0,
+        },
     }
     result = await users_collection.insert_one(user_doc)
     user_id = str(result.inserted_id)
@@ -143,7 +159,7 @@ async def register_user(email: str, password: str, nickname: str = None) -> dict
             "email": email,
             "nickname": nickname,
             **response_access_fields,
-            "created_at": now
+            "created_at": now_iso
         },
     }
 

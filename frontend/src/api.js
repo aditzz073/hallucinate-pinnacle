@@ -12,13 +12,13 @@ function authHeaders() {
 }
 
 // ---------------------------------------------------------------------------
-// Global 403 feature_locked interceptor
+// Global feature-locked / usage-limit interceptor
 // ---------------------------------------------------------------------------
 let onFeatureLockedCallback = null;
 
 /**
- * Register a global callback that fires when any API call returns a 403
- * with error === "feature_locked". The UpgradeModal uses this.
+ * Register a global callback that fires when any API call returns a gated response.
+ * The UpgradeModal uses this. Pass null to deregister.
  */
 export function setOnFeatureLocked(cb) {
   onFeatureLockedCallback = cb;
@@ -27,20 +27,40 @@ export function setOnFeatureLocked(cb) {
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (
-      error?.response?.status === 403 &&
-      error?.response?.data?.error === "feature_locked"
-    ) {
-      const data = error.response.data;
-      if (onFeatureLockedCallback) {
+    const status = error?.response?.status;
+    const data = error?.response?.data || {};
+
+    if (status === 403) {
+      if (data.error === "feature_locked" && onFeatureLockedCallback) {
         onFeatureLockedCallback({
+          errorType: "feature_locked",
           feature: data.feature,
           requiredPlan: data.required_plan,
           currentPlan: data.current_plan,
           upgradeMessage: data.upgrade_message,
         });
+      } else if (data.error === "no_active_plan" && onFeatureLockedCallback) {
+        onFeatureLockedCallback({
+          errorType: "no_active_plan",
+          feature: data.feature,
+          requiredPlan: data.required_plan,
+          upgradeMessage: data.message,
+        });
       }
     }
+
+    if (status === 429 && data.error === "usage_limit_reached" && onFeatureLockedCallback) {
+      onFeatureLockedCallback({
+        errorType: "usage_limit_reached",
+        feature: data.feature,
+        usedCount: data.used,
+        limitCount: data.limit,
+        resetsAt: data.resets_at,
+        upgradeMessage: data.upgrade_message,
+        currentPlan: data.current_plan,
+      });
+    }
+
     return Promise.reject(error);
   },
 );

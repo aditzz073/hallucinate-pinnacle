@@ -197,17 +197,23 @@ async def billing_status(current_user: dict = Depends(verify_token)):
     user_id = current_user.get("user_id")
     now = datetime.now(timezone.utc)
     month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0).isoformat()
+    # Use embedded usage doc if available; fall back to live counts
+    embedded_usage = user_doc.get("usage") or {}
 
-    audits_this_month = await audits_collection.count_documents({
-        "user_id": user_id,
-        "created_at": {"$gte": month_start},
-    })
-    ai_tests_this_month = await ai_tests_collection.count_documents({
-        "user_id": user_id,
-        "created_at": {"$gte": month_start},
-    })
+    # Ensure the embedded doc is initialised
+    from middlewares.feature_access import ensure_usage_doc, reset_monthly_usage_if_needed
+    await ensure_usage_doc(user_id)
+    refreshed = await reset_monthly_usage_if_needed(user_id)
+    if refreshed:
+        embedded_usage = refreshed.get("usage") or {}
+        user_doc = refreshed
 
-    limits = PLAN_LIMITS.get(plan, PLAN_LIMITS["discover"])
+    # Re-read if needed
+    if not embedded_usage:
+        user_doc_fresh = await _get_user_or_404(user_id)
+        embedded_usage = user_doc_fresh.get("usage") or {}
+
+    limits = PLAN_LIMITS.get(plan, PLAN_LIMITS.get("free", {}))
 
     return {
         "plan": plan,
@@ -218,12 +224,17 @@ async def billing_status(current_user: dict = Depends(verify_token)):
         "stripe_subscription_id": stripe_sub_id,
         "features": build_feature_map(plan),
         "usage": {
-            "audits_this_month": audits_this_month,
-            "audits_limit": limits.get("max_audits_per_month"),
-            "ai_tests_this_month": ai_tests_this_month,
-            "ai_tests_limit": limits.get("max_ai_tests_per_month"),
+            **embedded_usage,
+            # Convenience fields for the frontend
+            "aeo_audits_limit":        limits.get("aeo_audits"),
+            "ai_lab_tests_limit":      limits.get("ai_lab_tests"),
+            "advanced_audits_limit":   limits.get("advanced_audits"),
+            "ai_testing_lab_limit":    limits.get("ai_testing_lab"),
+            "strategy_simulator_limit": limits.get("strategy_simulator"),
+            "monitoring_urls_limit":   limits.get("monitoring_urls"),
         },
     }
+
 
 
 # ---------------------------------------------------------------------------

@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useAuth } from "../context/AuthContext";
 import { getOverview, getBillingStatus } from "../api";
 import { changePassword, createPortalSession, generateApiKey } from "../api";
-import { canAccessFeature, PLAN_DISPLAY_NAMES } from "../utils/featureAccess";
+import { canAccessFeature, PLAN_DISPLAY_NAMES, getUsageBarColor } from "../utils/featureAccess";
 import {
   User,
   Mail,
@@ -123,7 +123,7 @@ export default function ProfilePage() {
   
   // Determine role display
   const getRoleInfo = () => {
-    const plan = user?.plan || "discover";
+    const plan = user?.plan || "free";
     if (user?.isFoundingUser) {
       return { text: "Founding Access", color: "from-amber-300 to-yellow-500", icon: Shield };
     }
@@ -133,8 +133,11 @@ export default function ProfilePage() {
     if (plan === "optimize") {
       return { text: "Optimize", color: "from-blue-400 to-cyan-400", icon: Shield };
     }
-    if (user) {
-      return { text: "Discover", color: "from-slate-300 to-slate-500", icon: User };
+    if (plan === "discover") {
+      return { text: "Discover", color: "from-indigo-400 to-violet-400", icon: Shield };
+    }
+    if (plan === "free" && user) {
+      return { text: "Free", color: "from-slate-300 to-slate-500", icon: User };
     }
     return { text: "Guest", color: "from-gray-400 to-gray-500", icon: User };
   };
@@ -144,10 +147,19 @@ export default function ProfilePage() {
 
   // Usage data
   const usage = billingData?.usage || {};
-  const auditsUsed = usage.audits_this_month || 0;
-  const auditsLimit = usage.audits_limit;
-  const aiTestsUsed = usage.ai_tests_this_month || 0;
-  const aiTestsLimit = usage.ai_tests_limit;
+  // New embedded doc fields
+  const auditsUsed    = usage.aeo_audits_used    || usage.audits_this_month    || 0;
+  const auditsLimit   = usage.aeo_audits_limit   ?? usage.audits_limit;
+  const aiTestsUsed   = usage.ai_lab_tests_used  || usage.ai_tests_this_month  || 0;
+  const aiTestsLimit  = usage.ai_lab_tests_limit ?? usage.ai_tests_limit;
+  const advancedUsed  = usage.advanced_audits_used  || 0;
+  const advancedLimit = usage.advanced_audits_limit ?? null;
+  const simUsed       = usage.strategy_simulator_used || 0;
+  const simLimit      = usage.strategy_simulator_limit ?? null;
+  const resetsAt      = usage.current_period_end || null;
+  const resetsLabel   = resetsAt
+    ? new Date(resetsAt).toLocaleDateString("en-IN", { month: "short", day: "numeric" })
+    : null;
   const subscriptionStatus = billingData?.status || user?.subscription_status || "none";
   const nextBillingDate = billingData?.next_billing_date;
   const planName = billingData?.plan_name || PLAN_DISPLAY_NAMES[user?.plan] || "Discover";

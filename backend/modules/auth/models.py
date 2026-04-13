@@ -19,8 +19,8 @@ class UserResponse(BaseModel):
     id: str
     email: str
     nickname: Optional[str] = None
-    plan: Literal["discover", "optimize", "dominate", "founder", "custom"] = "discover"
-    plan_name: str = "Discover"
+    plan: Literal["free", "discover", "optimize", "dominate", "founder", "custom"] = "free"
+    plan_name: str = "Free"
     isSubscribed: bool = False
     stripeCustomerId: Optional[str] = None
     isFoundingUser: bool = False

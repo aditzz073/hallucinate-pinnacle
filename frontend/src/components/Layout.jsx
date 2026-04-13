@@ -45,21 +45,33 @@ export default function Layout() {
   // Upgrade modal state
   const [modalState, setModalState] = useState({
     open: false,
+    errorType: "feature_locked",
     featureName: "",
     requiredPlan: "",
     currentPlan: "",
     upgradeMessage: "",
+    usedCount: 0,
+    limitCount: 0,
+    resetsAt: null,
   });
   const [pendingPath, setPendingPath] = useState(null);
 
-  // Register global 403 interceptor callback
-  const handleApiFeatureLocked = useCallback(({ feature, requiredPlan, currentPlan, upgradeMessage }) => {
+  // Register global interceptor callback
+  const handleApiFeatureLocked = useCallback(({
+    errorType = "feature_locked",
+    feature, requiredPlan, currentPlan, upgradeMessage,
+    usedCount, limitCount, resetsAt,
+  }) => {
     setModalState({
       open: true,
+      errorType,
       featureName: feature || "",
-      requiredPlan: requiredPlan || "optimize",
-      currentPlan: currentPlan || user?.plan || "discover",
+      requiredPlan: requiredPlan || "discover",
+      currentPlan: currentPlan || user?.plan || "free",
       upgradeMessage: upgradeMessage || "",
+      usedCount: usedCount || 0,
+      limitCount: limitCount || 0,
+      resetsAt: resetsAt || null,
     });
   }, [user]);
 
@@ -152,10 +164,14 @@ export default function Layout() {
         isOpen={modalState.open}
         onClose={() => setModalState((s) => ({ ...s, open: false }))}
         onUpgrade={handleUpgradeFromModal}
+        errorType={modalState.errorType}
         featureName={modalState.featureName}
         requiredPlan={modalState.requiredPlan}
         currentPlan={modalState.currentPlan}
         upgradeMessage={modalState.upgradeMessage}
+        usedCount={modalState.usedCount}
+        limitCount={modalState.limitCount}
+        resetsAt={modalState.resetsAt}
       />
     </div>
   );
@@ -169,20 +185,32 @@ export function AppShellLayout() {
 
   const [modalState, setModalState] = useState({
     open: false,
+    errorType: "feature_locked",
     featureName: "",
     requiredPlan: "",
     currentPlan: "",
     upgradeMessage: "",
+    usedCount: 0,
+    limitCount: 0,
+    resetsAt: null,
   });
 
-  // Register global 403 interceptor callback for app shell too
-  const handleApiFeatureLocked = useCallback(({ feature, requiredPlan, currentPlan, upgradeMessage }) => {
+  // Register global interceptor callback for app shell too
+  const handleApiFeatureLocked = useCallback(({
+    errorType = "feature_locked",
+    feature, requiredPlan, currentPlan, upgradeMessage,
+    usedCount, limitCount, resetsAt,
+  }) => {
     setModalState({
       open: true,
+      errorType,
       featureName: feature || "",
-      requiredPlan: requiredPlan || "optimize",
-      currentPlan: currentPlan || user?.plan || "discover",
+      requiredPlan: requiredPlan || "discover",
+      currentPlan: currentPlan || user?.plan || "free",
       upgradeMessage: upgradeMessage || "",
+      usedCount: usedCount || 0,
+      limitCount: limitCount || 0,
+      resetsAt: resetsAt || null,
     });
   }, [user]);
 
@@ -213,10 +241,14 @@ export function AppShellLayout() {
     const requiredPlan = getMinimumPlanForFeature(feature);
     setModalState({
       open: true,
+      errorType: "feature_locked",
       featureName: feature,
       requiredPlan,
-      currentPlan: user?.plan || "discover",
+      currentPlan: user?.plan || "free",
       upgradeMessage: FEATURE_UPGRADE_MESSAGES[feature] || "",
+      usedCount: 0,
+      limitCount: 0,
+      resetsAt: null,
     });
   };
 
@@ -279,10 +311,14 @@ export function AppShellLayout() {
           setModalState((s) => ({ ...s, open: false }));
           navigate("/pricing");
         }}
+        errorType={modalState.errorType}
         featureName={modalState.featureName}
         requiredPlan={modalState.requiredPlan}
         currentPlan={modalState.currentPlan}
         upgradeMessage={modalState.upgradeMessage}
+        usedCount={modalState.usedCount}
+        limitCount={modalState.limitCount}
+        resetsAt={modalState.resetsAt}
       />
     </div>
   );
