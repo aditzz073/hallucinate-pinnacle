@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   ArrowRight, ChevronDown, Eye, Settings2,
-  TrendingUp, CheckCircle, BarChart2, Cpu, Mail, MessageSquare,
+  TrendingUp, CheckCircle, BarChart2, Cpu,
   Microscope, Crown,
 } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
@@ -1468,7 +1468,7 @@ export default function LandingPage({
   isCheckoutLoading = false,
   user = null,
 }) {
-  const isProUser = Boolean(user?.isSubscribed || user?.plan === "pro" || user?.isFoundingUser);
+  const isSubscribed = Boolean(user?.isSubscribed || user?.isFoundingUser);
 
   return (
     <div className="relative overflow-x-hidden" style={{ background: "transparent" }} data-testid="landing-page">
@@ -1506,15 +1506,16 @@ export default function LandingPage({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Starter */}
+            {/* Discover */}
             <div className="rounded-xl p-6 h-full flex flex-col" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
-              <h3 className="text-base font-semibold mb-0.5" style={{ color: "var(--foreground)" }}>Starter</h3>
-              <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>For individuals exploring AEO.</p>
+              <h3 className="text-base font-semibold mb-0.5" style={{ color: "var(--foreground)" }}>Discover</h3>
+              <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>Understand your AI visibility.</p>
               <div className="mb-4">
-                <span className="text-4xl font-bold" style={{ color: "var(--foreground)" }}>Free</span>
+                <span className="text-4xl font-bold" style={{ color: "var(--foreground)" }}>₹8,000</span>
+                <span className="text-sm ml-1" style={{ color: "var(--muted)" }}>/month</span>
               </div>
               <ul className="space-y-2 mb-6">
-                {["5 audits/month", "10 AI tests/month", "Basic analytics"].map(item => (
+                {["5 audits/month", "3 AI tests/month", "Basic audit & score", "3-record history"].map(item => (
                   <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: "var(--text-muted)" }}>
                     <CheckCircle className="w-4 h-4 shrink-0" style={{ color: "#4F46E5" }} />
                     {item}
@@ -1522,23 +1523,23 @@ export default function LandingPage({
                 ))}
               </ul>
               <button
-                onClick={() => onSelectPlan("free")}
+                onClick={() => onSelectPlan("discover")}
                 className="w-full rounded-lg py-2.5 text-sm font-medium transition-colors mt-auto"
                 style={{ background: "var(--surface-2)", border: "1px solid var(--border)", color: "var(--foreground)" }}
                 onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
                 onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
               >
-                {user?.isLoggedIn ? "Continue" : "Sign in to continue"}
+                Start with Discover
               </button>
             </div>
 
-            {/* Pro , featured */}
+            {/* Optimize — featured */}
             <div
               className="rounded-xl p-6 relative h-full flex flex-col"
               style={{
                 background: "linear-gradient(135deg, rgba(79,70,229,0.12) 0%, rgba(124,58,237,0.08) 100%)",
-                border: "1px solid #6366F1",
-                boxShadow: "0 -1px 20px rgba(99,102,241,0.15)",
+                border: "2px solid #6366F1",
+                boxShadow: "0 -2px 20px rgba(99,102,241,0.2)",
               }}
             >
               <div
@@ -1547,20 +1548,20 @@ export default function LandingPage({
               >
                 MOST POPULAR
               </div>
-              <h3 className="text-base font-semibold mb-0.5" style={{ color: "var(--foreground)" }}>Professional</h3>
-              <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>For teams scaling AI visibility with premium workflows.</p>
+              <h3 className="text-base font-semibold mb-0.5" style={{ color: "var(--foreground)" }}>Optimize</h3>
+              <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>Fix and improve what AI can't see.</p>
               <div className="mb-4">
-                <span className="text-4xl font-bold" style={{ color: "#818CF8" }}>$100</span>
+                <span className="text-4xl font-bold" style={{ color: "#818CF8" }}>₹15,000</span>
                 <span className="text-sm ml-1" style={{ color: "var(--muted)" }}>/month</span>
               </div>
               <ul className="space-y-2 mb-6">
                 {[
-                  "Unlimited audits",
-                  "Unlimited AI tests",
-                  "Advanced Audit access",
-                  "Strategy Simulator access",
-                  "CLI Tool access",
-                  "Priority support",
+                  "30 audits/month",
+                  "20 AI tests/month",
+                  "Advanced Audit",
+                  "Strategy Simulator",
+                  "Competitor intel (2 per query)",
+                  "Full history",
                 ].map(item => (
                   <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: "var(--text-muted)" }}>
                     <CheckCircle className="w-4 h-4 shrink-0" style={{ color: "#818CF8" }} />
@@ -1569,70 +1570,47 @@ export default function LandingPage({
                 ))}
               </ul>
               <button
-                onClick={() => onSelectPlan("pro")}
-                disabled={isCheckoutLoading || isProUser}
+                onClick={() => onSelectPlan("optimize")}
+                disabled={isCheckoutLoading || isSubscribed}
                 className="btn-primary w-full justify-center rounded-lg py-2.5 text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed mt-auto"
               >
-                {isProUser ? "Current plan" : isCheckoutLoading ? "Redirecting..." : "Upgrade Plan ->"}
+                {isSubscribed ? "Current plan" : isCheckoutLoading ? "Redirecting..." : "Start Optimizing"}
               </button>
             </div>
 
-            {/* Enterprise */}
-            <div className="rounded-xl p-6 h-full flex flex-col" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
-              <h3 className="text-base font-semibold mb-0.5" style={{ color: "var(--foreground)" }}>Enterprise</h3>
-              <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>For large teams with competitive intelligence needs.</p>
+            {/* Dominate */}
+            <div className="rounded-xl p-6 h-full flex flex-col" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(139,92,246,0.3)" }}>
+              <h3 className="text-base font-semibold mb-0.5" style={{ color: "var(--foreground)" }}>Dominate</h3>
+              <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>Scale and outperform competitors.</p>
               <div className="mb-4">
-                <span className="text-2xl font-semibold" style={{ color: "var(--text-muted)" }}>Custom pricing</span>
+                <span className="text-4xl font-bold" style={{ color: "var(--foreground)" }}>₹40,000</span>
+                <span className="text-sm ml-1" style={{ color: "var(--muted)" }}>/month</span>
               </div>
               <ul className="space-y-2 mb-5">
                 {[
-                  "Everything in Professional",
-                  "Competitor Intel",
-                  "Executive reports",
-                  "Dedicated support",
-                  "Custom integrations",
+                  "Everything in Optimize",
+                  "Unlimited audits & AI tests",
+                  "Full competitor intel (5)",
+                  "Monitoring + alerts",
+                  "CLI access",
+                  "Enterprise reports",
                 ].map(item => (
                   <li key={item} className="flex items-center gap-2.5 text-sm" style={{ color: "var(--text-muted)" }}>
-                    <CheckCircle className="w-4 h-4 shrink-0" style={{ color: "#4F46E5" }} />
+                    <CheckCircle className="w-4 h-4 shrink-0" style={{ color: "#8B5CF6" }} />
                     {item}
                   </li>
                 ))}
               </ul>
-              <div className="rounded-xl p-3 space-y-2 mt-auto" style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}>
-                <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "var(--text-muted)" }}>Get in touch</p>
-                <a
-                  href="mailto:pinnacle.ai.support@gmail.com"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
-                  style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
-                >
-                  <div className="w-6 h-6 rounded-md flex items-center justify-center shrink-0" style={{ background: "rgba(79,70,229,0.12)" }}>
-                    <Mail className="w-3 h-3" style={{ color: "#818CF8" }} />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-xs font-medium" style={{ color: "var(--foreground)" }}>pinnacle.ai.support@gmail.com</div>
-                    <div className="text-xs" style={{ color: "var(--text-muted)" }}>Email our team</div>
-                  </div>
-                </a>
-                <a
-                  href="https://calendly.com/pinnacle-sales"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
-                  style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
-                >
-                  <div className="w-6 h-6 rounded-md flex items-center justify-center shrink-0" style={{ background: "rgba(79,70,229,0.12)" }}>
-                    <MessageSquare className="w-3 h-3" style={{ color: "#818CF8" }} />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-xs font-medium" style={{ color: "var(--foreground)" }}>Book a demo</div>
-                    <div className="text-xs" style={{ color: "var(--text-muted)" }}>Schedule a 30-min call</div>
-                  </div>
-                </a>
-              </div>
+              <button
+                onClick={() => onSelectPlan("dominate")}
+                disabled={isCheckoutLoading}
+                className="w-full rounded-lg py-2.5 text-sm font-medium transition-colors mt-auto disabled:opacity-60 disabled:cursor-not-allowed"
+                style={{ background: "transparent", border: "1px solid rgba(139,92,246,0.5)", color: "var(--foreground)" }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(139,92,246,0.8)"}
+                onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(139,92,246,0.5)"}
+              >
+                {isCheckoutLoading ? "Redirecting..." : "Dominate AI Search"}
+              </button>
             </div>
           </div>
         </div>

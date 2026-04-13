@@ -1,12 +1,33 @@
 import React from "react";
-import { X } from "lucide-react";
+import { Lock, X } from "lucide-react";
+import {
+  FEATURE_UPGRADE_MESSAGES,
+  PLAN_DISPLAY_NAMES,
+} from "../../utils/featureAccess";
 
-export default function UpgradeModal({ isOpen, onClose, onUpgrade }) {
+const DEFAULT_MESSAGE = "Unlock this feature by upgrading your plan.";
+
+export default function UpgradeModal({
+  isOpen,
+  onClose,
+  onUpgrade,
+  featureName = "",
+  requiredPlan = "optimize",
+  currentPlan = "discover",
+  upgradeMessage = "",
+}) {
   if (!isOpen) return null;
+
+  const displayPlan =
+    PLAN_DISPLAY_NAMES[requiredPlan] || requiredPlan || "Optimize";
+  const message =
+    upgradeMessage ||
+    FEATURE_UPGRADE_MESSAGES[featureName] ||
+    DEFAULT_MESSAGE;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-      <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-black/90 backdrop-blur-xl shadow-2xl">
+      <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#111122] shadow-2xl">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 transition-colors"
@@ -16,22 +37,36 @@ export default function UpgradeModal({ isOpen, onClose, onUpgrade }) {
         </button>
 
         <div className="p-8 text-center">
-          <h2 className="text-2xl font-bold text-white mb-2">Unlock this feature</h2>
-          <p className="text-gray-400 text-sm mb-8">This feature is available on Pinnacle Pro.</p>
+          {/* Lock icon */}
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500/20 to-violet-500/20 border border-indigo-500/30 mb-6">
+            <Lock className="w-8 h-8 text-indigo-400" />
+          </div>
 
+          {/* Title */}
+          <h2 className="text-2xl font-bold text-white mb-2">
+            This feature requires {displayPlan}
+          </h2>
+
+          {/* Contextual subtext */}
+          <p className="text-gray-400 text-sm mb-8 max-w-sm mx-auto leading-relaxed">
+            {message}
+          </p>
+
+          {/* CTA Buttons */}
           <div className="space-y-3">
             <button
-              onClick={onUpgrade}
-              className="btn-primary w-full py-3 rounded-lg text-sm font-bold"
+              onClick={() => onUpgrade(requiredPlan)}
+              className="w-full py-3 rounded-lg text-sm font-bold text-white transition-all duration-200 hover:brightness-110"
+              style={{ background: "#4F46E5" }}
             >
-              Upgrade Plan -&gt;
+              Upgrade to {displayPlan}
             </button>
             <button
               onClick={onClose}
               className="w-full py-3 rounded-lg border text-sm font-medium text-white transition-all duration-200 hover:bg-white/5"
-              style={{ borderColor: "var(--border)" }}
+              style={{ borderColor: "rgba(255,255,255,0.12)" }}
             >
-              Cancel
+              Maybe later
             </button>
           </div>
         </div>

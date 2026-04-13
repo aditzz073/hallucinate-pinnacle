@@ -11,7 +11,43 @@ function authHeaders() {
   return {};
 }
 
+// ---------------------------------------------------------------------------
+// Global 403 feature_locked interceptor
+// ---------------------------------------------------------------------------
+let onFeatureLockedCallback = null;
+
+/**
+ * Register a global callback that fires when any API call returns a 403
+ * with error === "feature_locked". The UpgradeModal uses this.
+ */
+export function setOnFeatureLocked(cb) {
+  onFeatureLockedCallback = cb;
+}
+
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (
+      error?.response?.status === 403 &&
+      error?.response?.data?.error === "feature_locked"
+    ) {
+      const data = error.response.data;
+      if (onFeatureLockedCallback) {
+        onFeatureLockedCallback({
+          feature: data.feature,
+          requiredPlan: data.required_plan,
+          currentPlan: data.current_plan,
+          upgradeMessage: data.upgrade_message,
+        });
+      }
+    }
+    return Promise.reject(error);
+  },
+);
+
+// ---------------------------------------------------------------------------
 // Audit endpoints
+// ---------------------------------------------------------------------------
 export async function runAudit(url) {
   const res = await axios.post(`${API_URL}/api/audit`, { url }, { headers: authHeaders() });
   return res.data;
@@ -27,7 +63,9 @@ export async function getAuditDetail(id) {
   return res.data;
 }
 
+// ---------------------------------------------------------------------------
 // AI Test endpoints
+// ---------------------------------------------------------------------------
 export async function runAITest(url, query) {
   const res = await axios.post(`${API_URL}/api/ai-test`, { url, query }, { headers: authHeaders() });
   return res.data;
@@ -43,7 +81,9 @@ export async function getAITestDetail(id) {
   return res.data;
 }
 
+// ---------------------------------------------------------------------------
 // Monitor endpoints
+// ---------------------------------------------------------------------------
 export async function addMonitor(url) {
   const res = await axios.post(`${API_URL}/api/monitor`, { url }, { headers: authHeaders() });
   return res.data;
@@ -68,7 +108,9 @@ export async function deleteMonitor(pageId) {
   await axios.delete(`${API_URL}/api/monitor/${pageId}`, { headers: authHeaders() });
 }
 
+// ---------------------------------------------------------------------------
 // Auth endpoints
+// ---------------------------------------------------------------------------
 export async function changePassword(currentPassword, newPassword) {
   const res = await axios.post(
     `${API_URL}/api/auth/change-password`,
@@ -87,11 +129,13 @@ export async function generateApiKey() {
   return res.data;
 }
 
-// Billing endpoints
-export async function createCheckoutSession() {
+// ---------------------------------------------------------------------------
+// Billing / Payments endpoints
+// ---------------------------------------------------------------------------
+export async function createCheckoutSession(plan = "optimize") {
   const res = await axios.post(
-    `${API_URL}/api/billing/create-checkout-session`,
-    {},
+    `${API_URL}/api/billing/checkout`,
+    { plan },
     { headers: authHeaders() }
   );
   return res.data;
@@ -99,14 +143,24 @@ export async function createCheckoutSession() {
 
 export async function createPortalSession() {
   const res = await axios.post(
-    `${API_URL}/api/billing/create-portal-session`,
+    `${API_URL}/api/billing/portal`,
     {},
     { headers: authHeaders() }
   );
   return res.data;
 }
 
+export async function getBillingStatus() {
+  const res = await axios.get(
+    `${API_URL}/api/billing/status`,
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+// ---------------------------------------------------------------------------
 // Reports endpoints
+// ---------------------------------------------------------------------------
 export async function getOverview() {
   const res = await axios.get(`${API_URL}/api/reports/overview`, { headers: authHeaders() });
   return res.data;
@@ -123,7 +177,9 @@ export async function getCompetitors() {
   return res.data;
 }
 
+// ---------------------------------------------------------------------------
 // Phase 5 - Advanced Audit
+// ---------------------------------------------------------------------------
 export async function runAdvancedAudit(url) {
   const res = await axios.post(`${API_URL}/api/audit/advanced`, { url }, { headers: authHeaders() });
   return res.data;
@@ -152,19 +208,25 @@ export async function fetchAdvancedAuditPriorityFixes(auditId, engineRecommendat
   return res.data;
 }
 
+// ---------------------------------------------------------------------------
 // Phase 6 - Content Compiler
+// ---------------------------------------------------------------------------
 export async function compileContent(url) {
   const res = await axios.post(`${API_URL}/api/compile`, { url }, { headers: authHeaders() });
   return res.data;
 }
 
+// ---------------------------------------------------------------------------
 // Phase 7 - Strategy Simulator
+// ---------------------------------------------------------------------------
 export async function simulateStrategy(url, query, strategy) {
   const res = await axios.post(`${API_URL}/api/simulate-strategy`, { url, query, strategy }, { headers: authHeaders() });
   return res.data;
 }
 
+// ---------------------------------------------------------------------------
 // Phase 9 - Enterprise
+// ---------------------------------------------------------------------------
 export async function compareCompetitors(query, primaryUrl, competitorUrls) {
   const res = await axios.post(`${API_URL}/api/enterprise/compare`, { query, primary_url: primaryUrl, competitor_urls: competitorUrls }, { headers: authHeaders() });
   return res.data;
@@ -180,7 +242,9 @@ export async function getExecutiveSummary() {
   return res.data;
 }
 
+// ---------------------------------------------------------------------------
 // AI Testing Lab endpoints
+// ---------------------------------------------------------------------------
 export async function runAITestingLab(query, url, engines) {
   const res = await axios.post(
     `${API_URL}/api/ai-testing-lab/run`,

@@ -17,7 +17,7 @@ import {
   Microscope,
   Lock,
 } from "lucide-react";
-import { PREMIUM_FEATURE_PAGE_MAP, canAccessFeature } from "../../utils/featureAccess";
+import { PREMIUM_FEATURE_PAGE_MAP, canAccessFeature, getMinimumPlanForFeature } from "../../utils/featureAccess";
 
 const NAV_SECTIONS = [
   {
@@ -118,7 +118,7 @@ export default function Sidebar({ activePage, onNavigate, onFeatureLocked, onLog
                       collapsed
                         ? item.label
                         : isPremiumLocked
-                          ? "Available on Premium plan"
+                          ? `Available in ${getMinimumPlanForFeature(premiumFeature)}`
                           : undefined
                     }
                     className={`w-full flex items-center gap-2.5 rounded-md text-sm font-medium transition-all duration-200 ease-out hover:-translate-y-[1px] group relative ${
@@ -156,7 +156,7 @@ export default function Sidebar({ activePage, onNavigate, onFeatureLocked, onLog
                       <Lock
                         className="ml-auto shrink-0"
                         style={{ width: "13px", height: "13px", color: "#A5B4FC" }}
-                        aria-label="Premium feature locked"
+                        aria-label={`Available in ${getMinimumPlanForFeature(premiumFeature)}`}
                       />
                     )}
                     {/* Tooltip for collapsed */}

@@ -9,7 +9,7 @@ import {
   Sparkles, FlaskConical, Swords, Crown, LogOut, ChevronDown,
   Layers, Beaker, User, Microscope, Lock,
 } from "lucide-react";
-import { canAccessFeature } from "../../utils/featureAccess";
+import { canAccessFeature, getMinimumPlanForFeature } from "../../utils/featureAccess";
 
 const CORE_NAV = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, requiresAuth: true },
@@ -88,7 +88,7 @@ function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate, onShow
                 key={item.id}
                 data-testid={`nav-${item.id}`}
                 onClick={() => handleItemClick(item)}
-                title={isPremiumLocked ? "Available on Premium plan" : undefined}
+                title={isPremiumLocked ? `Available in ${getMinimumPlanForFeature(item.premiumFeature)}` : undefined}
                 className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all duration-200 ${
                   isItemActive
                     ? "bg-white/10 text-white font-semibold"

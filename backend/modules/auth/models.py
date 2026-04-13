@@ -19,11 +19,14 @@ class UserResponse(BaseModel):
     id: str
     email: str
     nickname: Optional[str] = None
-    plan: Literal["free", "pro", "founder"] = "free"
+    plan: Literal["discover", "optimize", "dominate", "founder", "custom"] = "discover"
+    plan_name: str = "Discover"
     isSubscribed: bool = False
     stripeCustomerId: Optional[str] = None
     isFoundingUser: bool = False
     is_privileged: bool = False
+    subscription_status: str = "none"
+    billing_cycle: str = "monthly"
     created_at: str
 
 

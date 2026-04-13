@@ -101,7 +101,13 @@ async def global_exception_handler(request: Request, exc: Exception):
 async def upgrade_required_exception_handler(request: Request, exc: UpgradeRequiredException):
     return JSONResponse(
         status_code=403,
-        content={"error": exc.message},
+        content={
+            "error": "feature_locked",
+            "feature": exc.feature,
+            "required_plan": exc.required_plan,
+            "upgrade_message": exc.message,
+            "current_plan": exc.current_plan,
+        },
     )
 
 

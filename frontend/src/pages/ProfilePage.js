@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "../context/AuthContext";
-import { getOverview } from "../api";
+import { getOverview, getBillingStatus } from "../api";
 import { changePassword, createPortalSession, generateApiKey } from "../api";
-import { canAccessFeature } from "../utils/featureAccess";
+import { canAccessFeature, PLAN_DISPLAY_NAMES } from "../utils/featureAccess";
 import {
   User,
   Mail,
@@ -26,12 +26,14 @@ import {
   PencilLine,
   CreditCard,
   SlidersHorizontal,
+  ArrowUpRight,
 } from "lucide-react";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [overview, setOverview] = useState(null);
+  const [billingData, setBillingData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [pwForm, setPwForm] = useState({ current: "", next: "", confirm: "" });
@@ -49,7 +51,7 @@ export default function ProfilePage() {
     billing: false,
     preferences: false,
   });
-  const canUseCliTool = canAccessFeature(user, "cli_tool");
+  const canUseCliTool = canAccessFeature(user, "cli_access");
   const canManageSubscription = Boolean(user?.isSubscribed && user?.stripeCustomerId);
 
   const handleOpenBilling = async () => {
@@ -61,7 +63,7 @@ export default function ProfilePage() {
     setOpeningBillingPortal(true);
     try {
       const session = await createPortalSession();
-      window.location.href = session.url;
+      window.location.href = session.url || session.portal_url;
     } catch (err) {
       toast.error(err?.response?.data?.detail || "Unable to open billing portal right now.");
     } finally {
@@ -108,21 +110,31 @@ export default function ProfilePage() {
   };
 
   useEffect(() => {
-    getOverview().then(setOverview).catch(() => {}).finally(() => setLoading(false));
+    Promise.all([
+      getOverview().catch(() => null),
+      getBillingStatus().catch(() => null),
+    ]).then(([overviewData, billing]) => {
+      setOverview(overviewData);
+      setBillingData(billing);
+    }).finally(() => setLoading(false));
   }, []);
 
   const stats = overview?.summary || {};
   
   // Determine role display
   const getRoleInfo = () => {
+    const plan = user?.plan || "discover";
     if (user?.isFoundingUser) {
       return { text: "Founding Access", color: "from-amber-300 to-yellow-500", icon: Shield };
     }
-    if (user?.isSubscribed || user?.plan === "pro") {
-      return { text: "Pro User", color: "from-blue-400 to-cyan-400", icon: Shield };
+    if (plan === "dominate") {
+      return { text: "Dominate", color: "from-violet-400 to-purple-400", icon: Shield };
+    }
+    if (plan === "optimize") {
+      return { text: "Optimize", color: "from-blue-400 to-cyan-400", icon: Shield };
     }
     if (user) {
-      return { text: "Free User", color: "from-slate-300 to-slate-500", icon: User };
+      return { text: "Discover", color: "from-slate-300 to-slate-500", icon: User };
     }
     return { text: "Guest", color: "from-gray-400 to-gray-500", icon: User };
   };
@@ -130,12 +142,32 @@ export default function ProfilePage() {
   const roleInfo = getRoleInfo();
   const RoleIcon = roleInfo.icon;
 
+  // Usage data
+  const usage = billingData?.usage || {};
+  const auditsUsed = usage.audits_this_month || 0;
+  const auditsLimit = usage.audits_limit;
+  const aiTestsUsed = usage.ai_tests_this_month || 0;
+  const aiTestsLimit = usage.ai_tests_limit;
+  const subscriptionStatus = billingData?.status || user?.subscription_status || "none";
+  const nextBillingDate = billingData?.next_billing_date;
+  const planName = billingData?.plan_name || PLAN_DISPLAY_NAMES[user?.plan] || "Discover";
+
   const statItems = [
     { icon: FileSearch, label: "Total Audits", value: stats.total_audits || 0, tint: "#60A5FA" },
     { icon: Search, label: "AI Tests", value: stats.total_ai_tests || 0, tint: "#C084FC" },
     { icon: TrendingUp, label: "Avg Score", value: stats.avg_score || "N/A", tint: "#34D399" },
     { icon: Clock, label: "Last Active", value: "Today", tint: "#FBBF24" },
   ];
+
+  const statusColors = {
+    active: { bg: "rgba(16,185,129,0.12)", border: "rgba(16,185,129,0.3)", text: "#34D399" },
+    past_due: { bg: "rgba(251,191,36,0.12)", border: "rgba(251,191,36,0.3)", text: "#FBBF24" },
+    canceled: { bg: "rgba(239,68,68,0.12)", border: "rgba(239,68,68,0.3)", text: "#F87171" },
+    trialing: { bg: "rgba(99,102,241,0.12)", border: "rgba(99,102,241,0.3)", text: "#818CF8" },
+    none: { bg: "rgba(161,161,170,0.08)", border: "rgba(161,161,170,0.2)", text: "#A1A1AA" },
+    pending: { bg: "rgba(251,191,36,0.12)", border: "rgba(251,191,36,0.3)", text: "#FBBF24" },
+  };
+  const statusStyle = statusColors[subscriptionStatus] || statusColors.none;
 
   return (
     <div className="mx-auto w-full max-w-[1100px] space-y-6 pb-6" data-testid="profile-page">
@@ -198,6 +230,102 @@ export default function ProfilePage() {
               <Settings className="w-4 h-4" />
               Settings
             </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Billing Section ─── */}
+      <section className="mt-6">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.12em] mb-3" style={{ color: "#9CA3AF" }}>
+          Billing & Plan
+        </h2>
+        <div
+          className="rounded-xl border p-5"
+          style={{ background: "#181824", borderColor: "rgba(255,255,255,0.06)" }}
+        >
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex items-center gap-4">
+              {/* Plan badge */}
+              <div
+                className="px-3 py-1.5 rounded-lg border text-sm font-bold"
+                style={{ background: "rgba(79,70,229,0.12)", borderColor: "rgba(79,70,229,0.3)", color: "#A5B4FC" }}
+              >
+                {planName}
+              </div>
+
+              {/* Status badge */}
+              <div
+                className="px-2.5 py-1 rounded-md border text-xs font-semibold capitalize"
+                style={{ background: statusStyle.bg, borderColor: statusStyle.border, color: statusStyle.text }}
+              >
+                {subscriptionStatus}
+              </div>
+
+              {nextBillingDate && (
+                <p className="text-xs text-zinc-400">
+                  Next billing: {nextBillingDate}
+                </p>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleOpenBilling}
+                disabled={openingBillingPortal}
+                className="h-9 px-4 rounded-lg text-xs font-semibold text-white inline-flex items-center gap-2 disabled:opacity-60 transition-all hover:brightness-110"
+                style={{ background: "#4F46E5" }}
+              >
+                {openingBillingPortal ? "Opening..." : "Manage Billing"}
+                <ArrowUpRight className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate("/pricing")}
+                className="h-9 px-4 rounded-lg border text-xs font-semibold text-white transition-all hover:bg-white/5"
+                style={{ borderColor: "rgba(255,255,255,0.12)" }}
+              >
+                Upgrade Plan
+              </button>
+            </div>
+          </div>
+
+          {/* Usage bars */}
+          <div className="mt-5 grid sm:grid-cols-2 gap-4">
+            <div>
+              <div className="flex items-center justify-between text-xs mb-1.5">
+                <span className="text-zinc-400">Audits this month</span>
+                <span className="text-zinc-300 font-medium">
+                  {auditsUsed} / {auditsLimit ?? "∞"}
+                </span>
+              </div>
+              <div className="h-2 rounded-full bg-zinc-800 overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: auditsLimit ? `${Math.min((auditsUsed / auditsLimit) * 100, 100)}%` : "5%",
+                    background: auditsLimit && auditsUsed >= auditsLimit ? "#F87171" : "#818CF8",
+                  }}
+                />
+              </div>
+            </div>
+            <div>
+              <div className="flex items-center justify-between text-xs mb-1.5">
+                <span className="text-zinc-400">AI Tests this month</span>
+                <span className="text-zinc-300 font-medium">
+                  {aiTestsUsed} / {aiTestsLimit ?? "∞"}
+                </span>
+              </div>
+              <div className="h-2 rounded-full bg-zinc-800 overflow-hidden">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{
+                    width: aiTestsLimit ? `${Math.min((aiTestsUsed / aiTestsLimit) * 100, 100)}%` : "5%",
+                    background: aiTestsLimit && aiTestsUsed >= aiTestsLimit ? "#F87171" : "#34D399",
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -316,7 +444,7 @@ export default function ProfilePage() {
                 style={{ background: "rgba(99,102,241,0.08)", borderColor: "rgba(99,102,241,0.25)" }}
               >
                 <p className="text-xs mb-2" style={{ color: "#C4B5FD" }}>
-                  Premium required for CLI Tool
+                  Available in Dominate
                 </p>
                 <button
                   type="button"
@@ -324,7 +452,7 @@ export default function ProfilePage() {
                   className="h-9 px-3 rounded-lg text-xs font-semibold text-white"
                   style={{ background: "#4F46E5" }}
                 >
-                  {canManageSubscription ? "Manage Subscription" : "See Premium Plan"}
+                  {canManageSubscription ? "Manage Subscription" : "Unlock Dominate"}
                 </button>
               </div>
             ) : !generatedKey ? (
@@ -472,7 +600,7 @@ export default function ProfilePage() {
                 <CreditCard className="w-4 h-4 text-amber-300" />
                 <div className="text-left">
                   <p className="text-sm font-semibold text-white">Billing</p>
-                  <p className="text-xs text-zinc-400">Plans, premium features, invoices</p>
+                  <p className="text-xs text-zinc-400">Plans, features, invoices</p>
                 </div>
               </div>
               <ChevronDown className={`w-4 h-4 text-zinc-400 transition-transform ${openSettings.billing ? "rotate-180" : ""}`} />
@@ -491,7 +619,7 @@ export default function ProfilePage() {
                     ? "Opening..."
                     : canManageSubscription
                       ? "Manage Subscription"
-                      : "Open Billing"}
+                      : "Choose your plan"}
                 </button>
               </div>
             )}

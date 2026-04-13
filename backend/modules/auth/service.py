@@ -16,10 +16,39 @@ PRIVILEGED_EMAILS = {
     "pujeradi@gmail.com",
 }
 
+# Legacy plan name migration (applied on read, not a hard migration)
+LEGACY_PLAN_MAP = {
+    "free": "discover",
+    "pro": "optimize",
+    "premium": "dominate",
+}
+
+VALID_PLANS = {"discover", "optimize", "dominate", "founder", "custom"}
+
+PLAN_DISPLAY_NAMES = {
+    "discover": "Discover",
+    "optimize": "Optimize",
+    "dominate": "Dominate",
+    "founder": "Founder",
+    "custom": "Custom",
+}
+
 
 def is_privileged_email(email: str) -> bool:
     """Check if email has privileged founding access"""
     return email.lower() in PRIVILEGED_EMAILS
+
+
+def _normalize_plan(raw_plan: str | None, is_founding_user: bool = False, is_subscribed: bool = False) -> str:
+    if is_founding_user:
+        return "founder"
+    if raw_plan in LEGACY_PLAN_MAP:
+        return LEGACY_PLAN_MAP[raw_plan]
+    if raw_plan in VALID_PLANS:
+        return raw_plan
+    if is_subscribed:
+        return "optimize"
+    return "discover"
 
 
 def _normalize_access_fields(user_doc: dict, fallback_email: str = "") -> dict:
@@ -30,21 +59,18 @@ def _normalize_access_fields(user_doc: dict, fallback_email: str = "") -> dict:
     )
     is_subscribed = bool(user_doc.get("isSubscribed", False))
 
-    plan = user_doc.get("plan")
-    if plan not in {"free", "pro", "founder"}:
-        if is_founding_user:
-            plan = "founder"
-        elif is_subscribed:
-            plan = "pro"
-        else:
-            plan = "free"
+    plan = _normalize_plan(user_doc.get("plan"), is_founding_user, is_subscribed)
+    plan_name = PLAN_DISPLAY_NAMES.get(plan, plan.title())
 
     return {
         "plan": plan,
+        "plan_name": plan_name,
         "isSubscribed": is_subscribed,
         "stripeCustomerId": user_doc.get("stripeCustomerId"),
         "isFoundingUser": is_founding_user,
         "is_privileged": is_founding_user,
+        "subscription_status": user_doc.get("subscription_status", user_doc.get("subscriptionStatus", "none")),
+        "billing_cycle": user_doc.get("billing_cycle", "monthly"),
     }
 
 
@@ -74,8 +100,12 @@ async def register_user(email: str, password: str, nickname: str = None) -> dict
 
     now = datetime.now(timezone.utc).isoformat()
     is_privileged = is_privileged_email(email)
+    plan = "founder" if is_privileged else "discover"
+    plan_name = PLAN_DISPLAY_NAMES[plan]
+
     access_fields = {
-        "plan": "founder" if is_privileged else "free",
+        "plan": plan,
+        "plan_name": plan_name,
         "isSubscribed": False,
         "isFoundingUser": is_privileged,
         "is_privileged": is_privileged,
@@ -83,6 +113,8 @@ async def register_user(email: str, password: str, nickname: str = None) -> dict
     response_access_fields = {
         **access_fields,
         "stripeCustomerId": None,
+        "subscription_status": "none",
+        "billing_cycle": "monthly",
     }
     
     user_doc = {
@@ -91,7 +123,11 @@ async def register_user(email: str, password: str, nickname: str = None) -> dict
         "nickname": nickname,
         **access_fields,
         "stripeSubscriptionId": None,
-        "subscriptionStatus": "inactive",
+        "stripeCustomerId": None,
+        "subscription_status": "none",
+        "billing_cycle": "monthly",
+        "plan_expires_at": None,
+        "custom_plan": False,
         "subscriptionUpdatedAt": now,
         "created_at": now,
     }

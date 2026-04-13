@@ -9,7 +9,7 @@ import {
 import { toast } from "sonner";
 import { createCheckoutSession } from "../api";
 import { useAuth } from "../context/AuthContext";
-import { canAccessFeature } from "../utils/featureAccess";
+import { canAccessFeature, getMinimumPlanForFeature, PLAN_DISPLAY_NAMES } from "../utils/featureAccess";
 import Layout, { AppShellLayout } from "../components/Layout";
 import ScrollToTop from "../components/ScrollToTop";
 import PrivateRoute from "../components/PrivateRoute";
@@ -79,7 +79,8 @@ function PricingRoute() {
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
 
   const handleSelectPlan = async (plan) => {
-    if (plan !== "pro") {
+    // If user picks discover (lowest tier), just redirect
+    if (plan === "discover") {
       if (user?.isLoggedIn) {
         navigate("/dashboard");
       } else {
@@ -95,8 +96,8 @@ function PricingRoute() {
 
     setIsCheckoutLoading(true);
     try {
-      const session = await createCheckoutSession();
-      window.location.href = session.url;
+      const session = await createCheckoutSession(plan);
+      window.location.href = session.url || session.checkout_url;
     } catch (error) {
       toast.error(error?.response?.data?.detail || "Unable to start checkout. Please try again.");
     } finally {
@@ -120,7 +121,7 @@ function LandingRoute() {
   const navigateToPage = (pageId) => navigate(getPathFromPageIdForAuth(pageId, Boolean(user)));
 
   const handleSelectPlan = async (plan) => {
-    if (plan !== "pro") {
+    if (plan === "discover") {
       if (user?.isLoggedIn) {
         navigate("/dashboard");
       } else {
@@ -136,8 +137,8 @@ function LandingRoute() {
 
     setIsCheckoutLoading(true);
     try {
-      const session = await createCheckoutSession();
-      window.location.href = session.url;
+      const session = await createCheckoutSession(plan);
+      window.location.href = session.url || session.checkout_url;
     } catch (error) {
       toast.error(error?.response?.data?.detail || "Unable to start checkout. Please try again.");
     } finally {
@@ -210,6 +211,8 @@ function PremiumFeatureRoute({ feature, children }) {
     return children;
   }
 
+  const requiredPlan = getMinimumPlanForFeature(feature);
+
   return (
     <div className="max-w-[760px] mx-auto pt-12">
       <div
@@ -217,25 +220,25 @@ function PremiumFeatureRoute({ feature, children }) {
         style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
       >
         <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#818CF8" }}>
-          Premium Feature
+          Available in {requiredPlan}
         </p>
         <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--foreground)" }}>
           Upgrade to unlock
         </h2>
         <p className="text-sm mb-5" style={{ color: "var(--text-muted)" }}>
-          This feature is available on Pinnacle Pro.
+          This feature is available on the {requiredPlan} plan.
         </p>
         <div
           className="rounded-xl px-4 py-3 mb-5"
           style={{ background: "rgba(79,70,229,0.08)", border: "1px solid rgba(79,70,229,0.22)" }}
         >
           <p className="text-sm" style={{ color: "#C7D2FE" }}>
-            Your account is on the free plan. Upgrade to unlock full access.
+            Your account is on the {PLAN_DISPLAY_NAMES[user?.plan] || "Discover"} plan. Upgrade to unlock full access.
           </p>
         </div>
         <div className="flex items-center gap-3">
           <button className="btn-primary rounded-lg px-4 py-2.5 text-sm font-semibold" onClick={() => navigate("/pricing")}>
-            Upgrade Plan -&gt;
+            Choose your plan
           </button>
           <button
             className="rounded-lg px-4 py-2.5 text-sm font-medium"
@@ -297,14 +300,14 @@ export default function AppRoutes() {
             <Route path="/dashboard" element={<DashboardRoute />} />
             <Route path="/audits" element={<AuditsRoute />} />
             <Route path="/ai-visibility-lab" element={<AIVisibilityLabRoute />} />
-            <Route path="/cli" element={<PremiumFeatureRoute feature="cli_tool"><CLIRoute /></PremiumFeatureRoute>} />
-            <Route path="/monitor" element={<MonitoringPage />} />
-            <Route path="/changes" element={<MonitoringPage />} />
+            <Route path="/cli" element={<PremiumFeatureRoute feature="cli_access"><CLIRoute /></PremiumFeatureRoute>} />
+            <Route path="/monitor" element={<PremiumFeatureRoute feature="monitoring"><MonitoringPage /></PremiumFeatureRoute>} />
+            <Route path="/changes" element={<PremiumFeatureRoute feature="monitoring"><MonitoringPage /></PremiumFeatureRoute>} />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/advanced-audit" element={<PremiumFeatureRoute feature="advanced_audit"><AdvancedAuditPage /></PremiumFeatureRoute>} />
             <Route path="/simulator" element={<PremiumFeatureRoute feature="strategy_simulator"><SimulatorPage /></PremiumFeatureRoute>} />
-            <Route path="/competitor-intel" element={<PremiumFeatureRoute feature="competitor_intel"><CompetitorPage /></PremiumFeatureRoute>} />
-            <Route path="/executive-summary" element={<ExecutiveSummaryPage />} />
+            <Route path="/competitor-intel" element={<PremiumFeatureRoute feature="competitor_intel_limited"><CompetitorPage /></PremiumFeatureRoute>} />
+            <Route path="/executive-summary" element={<PremiumFeatureRoute feature="executive_summary"><ExecutiveSummaryPage /></PremiumFeatureRoute>} />
             <Route path="/profile" element={<ProfilePage />} />
           </Route>
         </Route>

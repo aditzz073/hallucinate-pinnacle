@@ -44,7 +44,7 @@ export default function StrategySimulatorSection({ onNavigate }) {
               }}
             >
               <Target className="w-3.5 h-3.5" />
-              Premium Feature
+              Optimize Feature
             </div>
 
             <h2
@@ -92,7 +92,7 @@ export default function StrategySimulatorSection({ onNavigate }) {
               whileTap={reduceMotion ? undefined : { scale: 0.97 }}
               transition={{ duration: 0.15, ease: "easeOut" }}
             >
-              Open Premium Preview
+              Try Strategy Simulator
               <ArrowRight className="w-4 h-4" />
             </motion.button>
           </motion.div>

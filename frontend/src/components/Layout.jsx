@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   BarChart3,
@@ -13,6 +13,7 @@ import Sidebar from "./layout/Sidebar";
 import Footer from "./layout/Footer";
 import AppBackground from "./ui/AppBackground";
 import UpgradeModal from "./modals/UpgradeModal";
+import { setOnFeatureLocked } from "../api";
 import {
   getPageIdFromPath,
   getPathFromPageId,
@@ -22,6 +23,8 @@ import {
 import {
   PREMIUM_FEATURE_PAGE_MAP,
   canAccessFeature,
+  getMinimumPlanForFeature,
+  FEATURE_UPGRADE_MESSAGES,
 } from "../utils/featureAccess";
 
 const MOBILE_NAV = [
@@ -32,17 +35,6 @@ const MOBILE_NAV = [
   { id: "reports", label: "Reports", icon: BarChart3 },
 ];
 
-const FEATURE_NAMES = {
-  dashboard: "Dashboard",
-  monitor: "Monitor Pages",
-  reports: "Reports",
-  advanced: "Advanced Audit",
-  simulator: "Strategy Simulator",
-  compare: "Competitor Intel",
-  executive: "Executive Summary",
-  profile: "Profile",
-};
-
 export default function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -50,19 +42,49 @@ export default function Layout() {
   const activePage = useMemo(() => getPageIdFromPath(location.pathname), [location.pathname]);
   const isLandingLike = activePage === "landing" || activePage === "pricing";
 
-  const [showFeatureLockedModal, setShowFeatureLockedModal] = useState(false);
+  // Upgrade modal state
+  const [modalState, setModalState] = useState({
+    open: false,
+    featureName: "",
+    requiredPlan: "",
+    currentPlan: "",
+    upgradeMessage: "",
+  });
   const [pendingPath, setPendingPath] = useState(null);
+
+  // Register global 403 interceptor callback
+  const handleApiFeatureLocked = useCallback(({ feature, requiredPlan, currentPlan, upgradeMessage }) => {
+    setModalState({
+      open: true,
+      featureName: feature || "",
+      requiredPlan: requiredPlan || "optimize",
+      currentPlan: currentPlan || user?.plan || "discover",
+      upgradeMessage: upgradeMessage || "",
+    });
+  }, [user]);
+
+  useEffect(() => {
+    setOnFeatureLocked(handleApiFeatureLocked);
+    return () => setOnFeatureLocked(null);
+  }, [handleApiFeatureLocked]);
 
   const navigateToPage = (pageId) => {
     navigate(getPathFromPageIdForAuth(pageId, Boolean(user)));
   };
 
   const handleShowFeatureLocked = (featureIdOrLabel) => {
-    setShowFeatureLockedModal(true);
+    const feature = PREMIUM_FEATURE_PAGE_MAP[featureIdOrLabel] || featureIdOrLabel;
+    const requiredPlan = getMinimumPlanForFeature(feature);
+    const message = FEATURE_UPGRADE_MESSAGES[feature] || "";
 
-    if (FEATURE_NAMES[featureIdOrLabel]) {
-      setPendingPath(getPathFromPageId(featureIdOrLabel));
-    }
+    setModalState({
+      open: true,
+      featureName: feature,
+      requiredPlan,
+      currentPlan: user?.plan || "discover",
+      upgradeMessage: message,
+    });
+    setPendingPath(getPathFromPageId(featureIdOrLabel));
   };
 
   const handleNavigate = (pageId) => {
@@ -83,8 +105,8 @@ export default function Layout() {
     navigateToPage(pageId);
   };
 
-  const handleUpgradeFromModal = () => {
-    setShowFeatureLockedModal(false);
+  const handleUpgradeFromModal = (plan) => {
+    setModalState((s) => ({ ...s, open: false }));
     navigate("/pricing", {
       state: pendingPath ? { from: { pathname: pendingPath } } : undefined,
     });
@@ -127,9 +149,13 @@ export default function Layout() {
       {!isLandingLike && <Footer onNavigate={handleNavigate} />}
 
       <UpgradeModal
-        isOpen={showFeatureLockedModal}
-        onClose={() => setShowFeatureLockedModal(false)}
+        isOpen={modalState.open}
+        onClose={() => setModalState((s) => ({ ...s, open: false }))}
         onUpgrade={handleUpgradeFromModal}
+        featureName={modalState.featureName}
+        requiredPlan={modalState.requiredPlan}
+        currentPlan={modalState.currentPlan}
+        upgradeMessage={modalState.upgradeMessage}
       />
     </div>
   );
@@ -140,19 +166,58 @@ export function AppShellLayout() {
   const navigate = useNavigate();
   const { user, logout: authLogout } = useAuth();
   const activePage = useMemo(() => getPageIdFromPath(location.pathname), [location.pathname]);
-  const [showFeatureLockedModal, setShowFeatureLockedModal] = useState(false);
+
+  const [modalState, setModalState] = useState({
+    open: false,
+    featureName: "",
+    requiredPlan: "",
+    currentPlan: "",
+    upgradeMessage: "",
+  });
+
+  // Register global 403 interceptor callback for app shell too
+  const handleApiFeatureLocked = useCallback(({ feature, requiredPlan, currentPlan, upgradeMessage }) => {
+    setModalState({
+      open: true,
+      featureName: feature || "",
+      requiredPlan: requiredPlan || "optimize",
+      currentPlan: currentPlan || user?.plan || "discover",
+      upgradeMessage: upgradeMessage || "",
+    });
+  }, [user]);
+
+  useEffect(() => {
+    setOnFeatureLocked(handleApiFeatureLocked);
+    return () => setOnFeatureLocked(null);
+  }, [handleApiFeatureLocked]);
 
   const handleNavigate = (pageId) => {
     const premiumFeature = PREMIUM_FEATURE_PAGE_MAP[pageId];
     if (premiumFeature && !canAccessFeature(user, premiumFeature)) {
-      setShowFeatureLockedModal(true);
+      const feature = premiumFeature;
+      const requiredPlan = getMinimumPlanForFeature(feature);
+      setModalState({
+        open: true,
+        featureName: feature,
+        requiredPlan,
+        currentPlan: user?.plan || "discover",
+        upgradeMessage: FEATURE_UPGRADE_MESSAGES[feature] || "",
+      });
       return;
     }
     navigate(getPathFromPageIdForAuth(pageId, true));
   };
 
   const handleFeatureLocked = (featureIdOrLabel) => {
-    setShowFeatureLockedModal(true);
+    const feature = PREMIUM_FEATURE_PAGE_MAP[featureIdOrLabel] || featureIdOrLabel;
+    const requiredPlan = getMinimumPlanForFeature(feature);
+    setModalState({
+      open: true,
+      featureName: feature,
+      requiredPlan,
+      currentPlan: user?.plan || "discover",
+      upgradeMessage: FEATURE_UPGRADE_MESSAGES[feature] || "",
+    });
   };
 
   const logout = () => {
@@ -208,12 +273,16 @@ export function AppShellLayout() {
       </nav>
 
       <UpgradeModal
-        isOpen={showFeatureLockedModal}
-        onClose={() => setShowFeatureLockedModal(false)}
+        isOpen={modalState.open}
+        onClose={() => setModalState((s) => ({ ...s, open: false }))}
         onUpgrade={() => {
-          setShowFeatureLockedModal(false);
+          setModalState((s) => ({ ...s, open: false }));
           navigate("/pricing");
         }}
+        featureName={modalState.featureName}
+        requiredPlan={modalState.requiredPlan}
+        currentPlan={modalState.currentPlan}
+        upgradeMessage={modalState.upgradeMessage}
       />
     </div>
   );
