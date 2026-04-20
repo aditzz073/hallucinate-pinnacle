@@ -7,7 +7,7 @@ import Logo from "../ui/Logo";
 import {
   LayoutDashboard, FileSearch, Eye, BarChart3,
   Sparkles, FlaskConical, Swords, Crown, LogOut, ChevronDown,
-  Layers, Beaker, User, Microscope, Lock,
+  Layers, Beaker, User, Microscope, Lock, ArrowRight,
 } from "lucide-react";
 import { canAccessFeature, getMinimumPlanForFeature } from "../../utils/featureAccess";
 
@@ -180,81 +180,93 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
     </div>
   );
 
-  // Landing page navbar - show full nav for guests to access Audits and AI Tests
+  // Landing page navbar - floating pill specifically matching the new design
   if (isLanding) {
+    const LANDING_NAV = [
+      { id: "platform", label: "Platform" },
+      { id: "how-it-works", label: "How it works" },
+      { id: "cli", label: "CLI" },
+      { id: "pricing", label: "Pricing" },
+      { id: "faq", label: "FAQ" },
+    ];
+
     return (
       <motion.header
-        className="fixed top-0 left-0 right-0 z-50 flex justify-center py-4 px-4 transition-all duration-300 ease-out"
+        className="fixed top-0 left-0 right-0 z-50 flex justify-center py-5 px-8 transition-all duration-300 ease-out"
         data-testid="navbar"
         style={{ transform: 'translateZ(0)' }}
         initial={reduceMotion ? false : { opacity: 0, y: -8 }}
         animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
       >
-        <nav className={`flex items-center gap-1 rounded-full border px-6 py-2.5 transition-all duration-300 ease-out ${
-          scrolled 
-            ? 'bg-black/70 backdrop-blur-xl border-white/25 shadow-2xl' 
-            : 'bg-black/30 backdrop-blur-lg border-white/15 shadow-lg'
-        }`} style={{ opacity: scrolled ? 1 : 0.94 }}>
-          {/* Logo */}
-          <div 
-            className="flex items-center gap-2 pr-4 border-r border-white/10 mr-3 cursor-pointer hover:opacity-85 transition-all duration-200 ease-out"
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            data-testid="nav-logo-landing"
-          >
-            <Logo size="sm" />
-            <span className="font-display font-bold text-sm tracking-tight text-white whitespace-nowrap">
-              Pinnacle<span className="text-indigo-400">.ai</span>
-            </span>
+        <div className="flex items-center justify-between w-full max-w-[1120px]">
+          {/* Left: Logo & Live Badge */}
+          <div className="flex items-center gap-5">
+            <div 
+              className="flex items-center gap-2 cursor-pointer hover:opacity-85 transition-opacity"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              data-testid="nav-logo-landing"
+            >
+              <Logo size="sm" />
+              <span className="font-display font-bold text-[18px] tracking-tight text-white whitespace-nowrap">
+                Pinnacle<span className="font-light text-primary">.ai</span>
+              </span>
+            </div>
+            
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/5">
+              <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+              <span className="text-[10px] font-mono text-muted-foreground tracking-wider uppercase">6 engines online</span>
+            </div>
           </div>
 
-          {/* Core Navigation - accessible to guests */}
-          <div className="flex items-center gap-0.5">
-            {CORE_NAV.map((item) => {
-              const Icon = item.icon;
-              const isActive = resolvedActivePage === item.id;
-              return (
-                <button
-                  key={item.id}
-                  data-testid={`nav-${item.id}`}
-                  onClick={() => handleNavClickWithAuth(item.id, item.requiresAuth)}
-                  className={`flex items-center gap-2 px-3.5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                    isActive
-                      ? "bg-white/10 text-white font-semibold"
-                      : "text-gray-400 hover:text-white hover:bg-white/5"
-                  }`}
-                  style={isActive ? { borderLeft: "2px solid #4F46E5", paddingLeft: "calc(0.875rem - 2px)" } : undefined}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span className="hidden md:inline">{item.label}</span>
-                </button>
-              );
-            })}
-
-            {/* Tools Dropdown */}
-            <DropdownMenu
-              label="Tools"
-              icon={Layers}
-              items={TOOLS_DROPDOWN}
-              activePage={resolvedActivePage}
-              onNavigate={onNavigate}
-              onShowFeatureLocked={onShowFeatureLocked}
-            />
-
-            {/* Enterprise Dropdown */}
-            <DropdownMenu
-              label="Enterprise"
-              icon={Beaker}
-              items={ENTERPRISE_DROPDOWN}
-              activePage={resolvedActivePage}
-              onNavigate={onNavigate}
-              onShowFeatureLocked={onShowFeatureLocked}
-            />
+          {/* Center: Scroll-spy Navigation */}
+          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/5 bg-[#09090b]/80 backdrop-blur-md">
+            {LANDING_NAV.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  const el = document.getElementById(item.id);
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="px-3.5 py-1.5 rounded-full text-[13px] font-medium text-[#c0c0c6] hover:text-white transition-colors"
+              >
+                {item.label}
+              </button>
+            ))}
           </div>
 
-          {/* Auth Buttons */}
-          {!user && renderGuestActions()}
-        </nav>
+          {/* Right: Actions */}
+          <div className="flex items-center gap-5">
+            {!user ? (
+              <button
+                data-testid="nav-login-btn"
+                onClick={() => onNavigate("login")}
+                className="text-[13px] font-medium text-muted-foreground hover:text-white transition-colors hidden sm:block"
+              >
+                Sign in
+              </button>
+            ) : (
+              <button
+                data-testid="nav-dashboard-btn"
+                onClick={() => onNavigate("dashboard")}
+                className="text-[13px] font-medium text-muted-foreground hover:text-white transition-colors hidden sm:block"
+              >
+                Dashboard
+              </button>
+            )}
+            
+            <button
+              data-testid="nav-get-started-btn"
+              onClick={() => onNavigate("audits")}
+              className="group flex items-center gap-3 bg-primary hover:bg-primary-hover text-[#09090b] pl-5 pr-1.5 py-1.5 rounded-full text-[13px] font-bold transition-all"
+            >
+              Run Audit
+              <span className="bg-[#09090b] text-primary p-1.5 rounded-full group-hover:rotate-45 transition-transform duration-300">
+                <ArrowRight className="w-3.5 h-3.5" />
+              </span>
+            </button>
+          </div>
+        </div>
       </motion.header>
     );
   }

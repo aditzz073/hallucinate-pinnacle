@@ -21,7 +21,7 @@ import {
   Check,
   Key,
   Copy,
-  UserRound,
+  UserCircle,
   Settings,
   PencilLine,
   CreditCard,
@@ -192,7 +192,7 @@ export default function ProfilePage() {
                 className="h-12 w-12 md:h-14 md:w-14 rounded-full border flex items-center justify-center"
                 style={{ background: "rgba(255,255,255,0.05)", borderColor: "rgba(255,255,255,0.12)" }}
               >
-                <UserRound className="w-6 h-6 md:w-7 md:h-7 text-white" strokeWidth={1.8} />
+                <UserCircle className="w-6 h-6 md:w-7 md:h-7 text-white" strokeWidth={1.8} />
               </div>
             </div>
 

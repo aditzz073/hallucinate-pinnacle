@@ -36,11 +36,11 @@ export default function StrategySimulatorSection({ onNavigate }) {
               STRATEGY SIMULATOR
             </p>
             <div
-              className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6 text-xs font-medium"
+              className="inline-flex items-center gap-2 rounded-full px-3 py-1 mb-6 text-[11px] font-mono tracking-wider"
               style={{
-                background: "rgba(79,70,229,0.12)",
-                border: "1px solid rgba(79,70,229,0.3)",
-                color: "#A5B4FC",
+                background: "rgba(163,230,53,0.1)",
+                border: "1px solid rgba(163,230,53,0.3)",
+                color: "var(--primary)",
               }}
             >
               <Target className="w-3.5 h-3.5" />
@@ -84,16 +84,12 @@ export default function StrategySimulatorSection({ onNavigate }) {
 
             <motion.button
               onClick={() => onNavigate?.("simulator")}
-              className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-medium text-white transition-transform hover:scale-[1.02]"
-              style={{
-                background: "linear-gradient(135deg, #4F46E5, #7C3AED)",
-              }}
+              className="group inline-flex items-center gap-2 rounded-full px-6 py-3.5 text-[15px] font-bold transition-all shadow-[0_0_20px_rgba(163,230,53,0.15)] bg-primary text-black hover:bg-primary-hover"
               whileHover={reduceMotion ? undefined : { y: -2 }}
               whileTap={reduceMotion ? undefined : { scale: 0.97 }}
-              transition={{ duration: 0.15, ease: "easeOut" }}
             >
               Try Strategy Simulator
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </motion.button>
           </motion.div>
 
@@ -103,57 +99,58 @@ export default function StrategySimulatorSection({ onNavigate }) {
             variants={slideInRight}
           >
             <div
-              className="rounded-2xl overflow-hidden"
+              className="rounded-2xl overflow-hidden shadow-2xl"
               style={{
-                background: "var(--surface)",
-                border: "1px solid rgba(79,70,229,0.25)",
-                boxShadow: "0 0 60px rgba(79,70,229,0.08)",
+                background: "#09090b",
+                border: "1px solid rgba(255,255,255,0.1)",
+                boxShadow: "0 0 60px rgba(163,230,53,0.08)",
               }}
             >
               {/* Title bar */}
               <div
                 className="flex items-center gap-2 px-4 py-3"
-                style={{ borderBottom: "1px solid var(--border)", background: "var(--surface-2)" }}
+                style={{ borderBottom: "1px solid rgba(255,255,255,0.08)", background: "#141418" }}
               >
                 <div className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
                 <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50" />
                 <div className="w-2.5 h-2.5 rounded-full bg-green-500/50" />
-                <span className="ml-2 text-xs font-mono" style={{ color: "var(--muted)" }}>
-                  Strategy Simulator
+                <span className="ml-2 text-[10px] font-mono tracking-wider text-muted-foreground uppercase">
+                  Pinnacle // Simulator
                 </span>
               </div>
 
-              <div className="p-5 space-y-4">
+              <div className="p-6 space-y-5">
                 {/* Input fields */}
                 <div
-                  className="rounded-xl p-4 space-y-3"
-                  style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}
+                  className="rounded-[12px] p-5 space-y-4 relative overflow-hidden"
+                  style={{ background: "#141418", border: "1px solid rgba(255,255,255,0.05)" }}
                 >
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/0 via-primary/50 to-primary/0" />
                   <div>
-                    <p className="text-xs mb-1.5 font-medium" style={{ color: "var(--muted)" }}>Enter the URL</p>
+                    <p className="text-[10px] font-mono tracking-widest text-muted-foreground uppercase mb-2">Target URL</p>
                     <div
-                      className="h-8 rounded-lg flex items-center px-3"
-                      style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border)" }}
+                      className="h-10 rounded flex items-center px-4"
+                      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}
                     >
-                      <span className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
-                        https://yoursite.com...
+                      <span className="text-[13px] text-white">
+                        https://yoursite.com/pricing
                       </span>
                     </div>
                   </div>
                   <div>
-                    <p className="text-xs mb-1.5 font-medium" style={{ color: "var(--muted)" }}>Target Query</p>
+                    <p className="text-[10px] font-mono tracking-widest text-muted-foreground uppercase mb-2">Simulated Change</p>
                     <div
-                      className="h-8 rounded-lg flex items-center px-3"
-                      style={{ background: "rgba(255,255,255,0.04)", border: "1px solid var(--border)" }}
+                      className="h-10 rounded flex items-center px-4"
+                      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}
                     >
-                      <span className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
-                        Best Macbook for professionals
+                      <span className="text-[13px] text-white">
+                        Added nested FAQ schema blocks
                       </span>
                     </div>
                   </div>
                   <div
-                    className="h-9 rounded-lg flex items-center justify-center text-xs font-semibold"
-                    style={{ background: "linear-gradient(135deg, #4F46E5, #7C3AED)", color: "#fff" }}
+                    className="h-11 rounded flex items-center justify-center text-[13px] font-bold mt-6 cursor-pointer shadow-[0_0_15px_rgba(163,230,53,0.15)] transition-transform hover:scale-[1.02]"
+                    style={{ background: "var(--primary)", color: "#000" }}
                   >
                     Run Simulation
                   </div>
@@ -162,44 +159,41 @@ export default function StrategySimulatorSection({ onNavigate }) {
                 {/* Before → After metrics */}
                 <div className="grid grid-cols-2 gap-3">
                   <div
-                    className="rounded-xl p-4"
-                    style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}
+                    className="rounded-[12px] p-4 flex flex-col items-center justify-center"
+                    style={{ background: "#141418", border: "1px solid rgba(255,255,255,0.05)" }}
                   >
-                    <p className="text-xs mb-2" style={{ color: "var(--muted)" }}>AI Visibility</p>
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="text-base font-semibold" style={{ color: "var(--text-muted)" }}>72</span>
-                      <span className="text-xs" style={{ color: "var(--text-muted)" }}>→</span>
-                      <span className="text-2xl font-bold" style={{ color: "#818CF8" }}>86</span>
+                    <p className="text-[10px] font-mono tracking-widest text-muted-foreground uppercase mb-3 text-center">AI Visibility</p>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-xl font-medium text-muted-foreground line-through opacity-60">72</span>
+                      <span className="text-xs text-primary">→</span>
+                      <span className="text-3xl font-display font-bold text-white">86</span>
                     </div>
                   </div>
                   <div
-                    className="rounded-xl p-4"
-                    style={{ background: "var(--surface-2)", border: "1px solid rgba(79,70,229,0.2)" }}
+                    className="rounded-[12px] p-4 flex flex-col items-center justify-center relative overflow-hidden"
+                    style={{ background: "rgba(163,230,53,0.05)", border: "1px solid rgba(163,230,53,0.3)" }}
                   >
-                    <p className="text-xs mb-2" style={{ color: "var(--muted)" }}>Citation Prob.</p>
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="text-base font-semibold" style={{ color: "var(--text-muted)" }}>58%</span>
-                      <span className="text-xs" style={{ color: "var(--text-muted)" }}>→</span>
-                      <span className="text-2xl font-bold" style={{ color: "#34d399" }}>79%</span>
+                    <p className="text-[10px] font-mono tracking-widest text-primary uppercase mb-3 text-center font-bold">Citation Prob.</p>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-xl font-medium text-muted-foreground line-through opacity-60">58%</span>
+                      <span className="text-xs text-primary">→</span>
+                      <span className="text-3xl font-display font-bold text-primary">79%</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Engine impact bars */}
                 <div
-                  className="rounded-xl p-4 space-y-2.5"
-                  style={{ background: "var(--surface-2)", border: "1px solid var(--border)" }}
+                  className="rounded-[12px] p-5 space-y-3"
+                  style={{ background: "#141418", border: "1px solid rgba(255,255,255,0.05)" }}
                 >
-                  <p className="text-xs font-semibold mb-3" style={{ color: "var(--muted)" }}>
-                    Engine Impact
+                  <p className="text-[10px] font-mono tracking-widest text-muted-foreground uppercase mb-4 text-center">
+                    Projected Engine Impact
                   </p>
                   {ENGINE_DELTAS.map((e) => (
-                    <div key={e.name} className="flex items-center gap-2">
-                      <div className="flex items-center gap-1 w-20 shrink-0">
-                        <div className="bg-white rounded-md p-1 flex items-center justify-center shadow-sm shrink-0">
-                          <img src={e.logo} alt={e.name} className="w-3.5 h-3.5 object-contain" />
-                        </div>
-                        <span className="text-xs truncate" style={{ color: "var(--muted)" }}>{e.name}</span>
+                    <div key={e.name} className="flex items-center gap-3">
+                      <div className="flex items-center gap-1.5 w-24 shrink-0">
+                        <span className="text-[11px] truncate text-muted-foreground">{e.name}</span>
                       </div>
                       <div className="flex-1 h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.05)" }}>
                         <div
@@ -207,7 +201,7 @@ export default function StrategySimulatorSection({ onNavigate }) {
                           style={{ width: `${e.delta * 7}%`, background: e.color }}
                         />
                       </div>
-                      <span className="text-xs w-8 text-right font-bold" style={{ color: e.color }}>
+                      <span className="text-[12px] w-8 text-right font-bold" style={{ color: e.color }}>
                         +{e.delta}
                       </span>
                     </div>

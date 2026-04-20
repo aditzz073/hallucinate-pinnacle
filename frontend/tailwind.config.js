@@ -6,45 +6,45 @@ module.exports = {
     extend: {
       colors: {
         // -- Layered surface system --
-        background: "#08081A",       // page background
-        surface: "#0E0E1F",          // section containers
-        "surface-2": "#14142A",      // elevated cards
-        "surface-3": "#1A1A30",      // hover / pressed state
-
+        background: "#09090b",       // zinc-950, deep near black
+        surface: "#0e0e11",          // slight elevation
+        "surface-2": "#141418",      // elevated cards
+        "surface-3": "#1d1d22",      // hover / pressed state
+        
         // -- Text --
-        foreground: "#F0F0FF",
-        "muted-foreground": "#7070A0",
-        "subtle-foreground": "#4A4A70",
+        foreground: "#fafafa",
+        "muted-foreground": "#a1a1aa",
+        "subtle-foreground": "#71717a",
 
-        // -- Primary accent: Indigo --
-        primary: "#4F46E5",
-        "primary-hover": "#4338CA",
-        "primary-light": "rgba(79,70,229,0.15)",
-        "primary-foreground": "#FFFFFF",
+        // -- Primary accent: Electric Lime --
+        primary: "#a3e635",
+        "primary-hover": "#84cc16",
+        "primary-light": "rgba(163, 230, 53, 0.15)",
+        "primary-foreground": "#000000",
 
         // -- Border / divider --
-        border: "rgba(255,255,255,0.07)",
-        "border-strong": "rgba(255,255,255,0.12)",
+        border: "rgba(255,255,255,0.08)",
+        "border-strong": "rgba(255,255,255,0.15)",
 
         // -- Status --
-        success: "#10B981",
-        warning: "#F59E0B",
-        danger: "#EF4444",
-        info: "#3B82F6",
+        success: "#a3e635",
+        warning: "#fbbf24",
+        danger: "#f87171",
+        info: "#38bdf8",
 
         // -- Semantic --
-        card: "#14142A",
-        "card-foreground": "#F0F0FF",
-        secondary: "#1A1A30",
-        "secondary-foreground": "#F0F0FF",
-        muted: "#1A1A30",
-        accent: "#1A1A30",
-        "accent-foreground": "#F0F0FF",
-        destructive: "#EF4444",
-        input: "#14142A",
-        ring: "#4F46E5",
+        card: "#141418",
+        "card-foreground": "#fafafa",
+        secondary: "#1d1d22",
+        "secondary-foreground": "#fafafa",
+        muted: "#1d1d22",
+        accent: "#1d1d22",
+        "accent-foreground": "#fafafa",
+        destructive: "#ef4444",
+        input: "#141418",
+        ring: "#a3e635",
 
-        // -- Legacy brand kept for backwards compat --
+        // -- Legacy brand kept for backwards compat (dashboard) --
         brand: {
           blue: "#4F46E5",
           teal: "#22D3EE",
@@ -56,15 +56,16 @@ module.exports = {
         content: "1120px",
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
-        display: ["Syne", "Inter", "system-ui", "sans-serif"],
+        sans: ["Manrope", "Inter", "system-ui", "sans-serif"],
+        display: ["Chivo", "Syne", "system-ui", "sans-serif"],
+        mono: ["'JetBrains Mono'", "Courier", "monospace"],
       },
       fontSize: {
-        display: ["4.5rem", { lineHeight: "1.05", letterSpacing: "-0.04em", fontWeight: "700" }],
+        display: ["5rem", { lineHeight: "1.05", letterSpacing: "-0.04em", fontWeight: "700" }],
         h1: ["3rem", { lineHeight: "1.1", letterSpacing: "-0.03em", fontWeight: "700" }],
-        h2: ["2rem", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "600" }],
-        h3: ["1.25rem", { lineHeight: "1.3", letterSpacing: "-0.01em", fontWeight: "600" }],
-        h4: ["1rem", { lineHeight: "1.4", letterSpacing: "-0.01em", fontWeight: "600" }],
+        h2: ["2.25rem", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "600" }],
+        h3: ["1.5rem", { lineHeight: "1.3", letterSpacing: "-0.01em", fontWeight: "600" }],
+        h4: ["1.125rem", { lineHeight: "1.4", letterSpacing: "-0.01em", fontWeight: "600" }],
       },
       keyframes: {
         fadeInUp: {
@@ -91,6 +92,10 @@ module.exports = {
           from: { opacity: "0", transform: "translateX(-8px)" },
           to: { opacity: "1", transform: "translateX(0)" },
         },
+        marquee: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
       },
       animation: {
         "fade-in-up": "fadeInUp 0.4s ease-out forwards",
@@ -104,6 +109,7 @@ module.exports = {
         shimmer: "shimmer 1.5s linear infinite",
         "count-up": "count-up 0.4s ease-out forwards",
         "slide-in": "slide-in 0.3s ease-out forwards",
+        marquee: "marquee 25s linear infinite",
         // legacy
         "fade-in-up-delay-1": "fadeInUp 0.4s ease-out 0.1s forwards",
         "fade-in-up-delay-2": "fadeInUp 0.4s ease-out 0.2s forwards",
