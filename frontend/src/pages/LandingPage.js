@@ -6,10 +6,8 @@ import {
 } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import StrategySimulatorSection from "../components/landing/StrategySimulatorSection";
-import ENGINE_LOGOS from "../utils/engineLogos";
-import IconContainer from "../components/ui/IconContainer";
 import SectionWrapper from "../hoc/SectionWrapper";
-import { fadeIn, fadeUp, slideInLeft, slideInRight } from "../utils/motion";
+import { fadeUp, slideInLeft, slideInRight } from "../utils/motion";
 
 const VISIBILITY_TREND_SERIES = [
   { key: "citation",      label: "Citation Probability", color: "#a3e635" },
@@ -29,47 +27,7 @@ const VISIBILITY_TREND_DATA = [
   { day: "Apr 18", citation: 68, readiness: 60, summarization: 78, brand: 40, schema: 34 },
 ];
 
-const AI_SELECTION_SIGNALS = [
-  {
-    title: "Heading structure",
-    description: "Structured content with clear H1/H2/H3 headings scores higher for extractability",
-  },
-  {
-    title: "Schema support",
-    description: "Pages with schema markup are easier for AI systems to interpret and cite",
-  },
-  {
-    title: "Direct definitions",
-    description: "Short, direct definitions improve citation probability by 20-40 points",
-  },
-  {
-    title: "Authority signals",
-    description: "Authority signals like org schema and external citations increase trust scoring",
-  },
-];
 
-const FEATURE_DEPTH_CARDS = [
-  {
-    title: "AI Visibility Audit",
-    description:
-      "Analyzes your page across 23+ signals including structure, schema, trust, and technical factors to calculate your AEO score. Pinnacle fetches the page, parses its content, and scores each signal. The result shows exactly where your page loses AI visibility points.",
-  },
-  {
-    title: "Citation Probability",
-    description:
-      "Measures how likely your page is cited by AI systems for a specific query. Scoring uses intent match, extractability, authority, schema support, and content depth. Higher citation probability means your page is more likely to appear in generated answers.",
-  },
-  {
-    title: "Strategy Simulator",
-    description:
-      "Simulates the impact of content changes before you make them. Choose a strategy, like FAQ schema or better headings, and see projected citation score changes. This helps prioritize fixes that deliver measurable impact first.",
-  },
-  {
-    title: "Competitor Intelligence",
-    description:
-      "Compares your page against up to five competitors for the same query. It shows where competitors score higher and why AI systems may prefer them. This helps you close exact gaps that reduce AI visibility.",
-  },
-];
 
 const FAQ_ITEMS = [
   {
@@ -189,37 +147,7 @@ function CountUpNumber({ value, duration = 800 }) {
   return <>{display}</>;
 }
 
-function VisibilityTrendTooltip({ active, payload, label }) {
-  if (!active || !payload?.length) return null;
 
-  const pointByKey = new Map(payload.map((item) => [item.dataKey, item.value]));
-
-  return (
-    <div
-      className="rounded-lg px-3 py-2"
-      style={{
-        background: "rgba(12,12,38,0.96)",
-        border: "1px solid rgba(99,102,241,0.35)",
-        boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
-      }}
-    >
-      <p className="text-[11px] font-semibold mb-2" style={{ color: "#c7d2fe" }}>{label}</p>
-      <div className="space-y-1">
-        {VISIBILITY_TREND_SERIES.map((series) => (
-          <div key={series.key} className="flex items-center justify-between gap-3 text-[11px]">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full" style={{ background: series.color }} />
-              <span style={{ color: "#94a3b8" }}>{series.label}</span>
-            </div>
-            <span className="font-semibold" style={{ color: "#f8fafc" }}>
-              {pointByKey.get(series.key)}%
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 // ── Dashboard mockup ─────────────────────────────────────────────────────────
 function DashboardMockup() {
@@ -603,7 +531,7 @@ function AIVisibilityExplainedSection() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
             <div>
               <p className="text-[10px] font-mono tracking-[0.1em] mb-4 text-primary uppercase">
-                // AI VISIBILITY
+                {"// AI VISIBILITY"}
               </p>
               <h2 className="font-display text-4xl lg:text-[50px] font-bold mb-4 text-white leading-tight">
                 What is <span className="text-primary">AI Visibility</span>?
@@ -639,7 +567,7 @@ function AIVisibilityExplainedSection() {
       <SectionWrapper className="py-24 px-8 border-t border-white/5 bg-transparent">
         <div className="max-w-[1120px] mx-auto">
           <p className="text-[10px] font-mono tracking-[0.15em] mb-4 text-primary uppercase">
-            // WHY IT MATTERS
+            {"// WHY IT MATTERS"}
           </p>
           <h2 className="font-display text-4xl lg:text-[50px] font-bold mb-6 text-white leading-tight">
             Traditional SEO <span className="text-muted-foreground font-light italic">is not enough.</span>
@@ -690,7 +618,7 @@ function HowAIEnginesChooseContentSection() {
       <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid rgba(255,255,255,0.05)", background: "transparent" }}>
         <div className="max-w-[1120px] mx-auto">
           <p className="text-[10px] font-mono tracking-[0.1em] mb-4 text-primary uppercase text-center">
-            // AI UNDERSTANDING
+            {"// AI UNDERSTANDING"}
           </p>
           <h2 className="font-display text-4xl lg:text-[42px] font-bold mb-4 text-center text-white">
             How AI engines evaluate content
@@ -726,7 +654,7 @@ function HowAIEnginesChooseContentSection() {
       <SectionWrapper id="how-it-works" className="py-24 px-8 border-t border-white/5 bg-transparent">
         <div className="max-w-[1120px] mx-auto">
           <p className="text-[10px] font-mono tracking-[0.1em] mb-4 text-primary uppercase">
-            // HOW IT WORKS
+            {"// HOW IT WORKS"}
           </p>
           <h2 className="font-display text-4xl lg:text-[50px] font-bold mb-16 text-white leading-tight">
             Analyze. Understand. <span className="text-muted-foreground italic font-light">Improve.</span>
@@ -779,7 +707,7 @@ function AIEngineMarquee() {
     <div className="py-10 bg-transparent overflow-hidden" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
       <div className="flex justify-center mb-6">
         <p className="text-[10px] font-mono tracking-[0.2em] text-muted-foreground uppercase">
-          // tracked across every major AI engine
+          {"// tracked across every major AI engine"}
         </p>
       </div>
       <div className="relative flex overflow-hidden">
@@ -874,7 +802,7 @@ function PlatformBentoGrid() {
     <SectionWrapper className="py-24 px-8 bg-transparent" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
       <div className="max-w-[1120px] mx-auto">
         <p className="text-[10px] font-mono tracking-[0.1em] mb-4 text-primary uppercase text-center">
-          // PLATFORM FEATURES
+          {"// PLATFORM FEATURES"}
         </p>
         <h2 className="font-display text-4xl lg:text-[50px] font-bold mb-16 text-center text-white">
           Everything you need to <span className="text-primary italic font-light">dominate AI answers</span>
@@ -962,7 +890,7 @@ function DeveloperCLISection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
             <p className="text-[10px] font-mono tracking-[0.1em] mb-4 text-primary uppercase">
-              // FOR DEVELOPERS
+              {"// FOR DEVELOPERS"}
             </p>
             <h2 className="font-display text-4xl lg:text-[42px] font-bold mb-6 text-white leading-tight">
               Integrate AI Visibility into your <span className="text-primary font-mono bg-primary/10 px-2 py-1 rounded">CI/CD</span> pipeline
@@ -1033,7 +961,7 @@ function WhoUsesPinnacleSection() {
     <SectionWrapper className="py-24 px-8 bg-transparent" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
       <div className="max-w-[1120px] mx-auto">
         <p className="text-[10px] font-mono tracking-[0.1em] mb-4 text-primary uppercase text-center">
-          // BUILT FOR SCALE
+          {"// BUILT FOR SCALE"}
         </p>
         <h2 className="font-display text-4xl lg:text-[50px] font-bold mb-6 text-center text-white leading-tight">
           Who uses Pinnacle AI?
@@ -1088,7 +1016,7 @@ function FAQSection() {
     <SectionWrapper className="py-24 px-8 bg-transparent" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
       <div className="max-w-[800px] mx-auto">
         <p className="text-[10px] font-mono tracking-[0.1em] mb-4 text-primary uppercase text-center">
-          // FAQ
+          {"// FAQ"}
         </p>
         <h2 className="font-display text-4xl lg:text-[42px] font-bold mb-12 text-white text-center">
           Common questions
@@ -1288,7 +1216,6 @@ function AIVisibilityLabPreview({ onNavigate }) {
 // ── 7. Free Audit CTA ─────────────────────────────────────────────────────────
 function FreeAuditCTA({ onNavigate }) {
   const [auditUrl, setAuditUrl] = useState("");
-  const reduceMotion = useReducedMotion();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -1311,7 +1238,7 @@ function FreeAuditCTA({ onNavigate }) {
           <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-12 items-center relative z-10">
             <div>
               <p className="text-[10px] font-mono tracking-widest mb-4 text-primary uppercase">
-                // GET STARTED
+                {"// GET STARTED"}
               </p>
               <h2
                 className="font-display text-4xl lg:text-[42px] font-bold mb-4 text-white leading-tight"
@@ -1416,7 +1343,7 @@ export default function LandingPage({
         <div className="max-w-[1120px] mx-auto">
           <div className="mb-16 text-center">
             <p className="text-[10px] font-mono tracking-[0.1em] mb-4 text-primary uppercase text-center">
-              // PRICING
+              {"// PRICING"}
             </p>
             <h2 className="font-display text-4xl lg:text-[50px] font-bold mb-4 text-white leading-tight">
               Simple, transparent pricing
