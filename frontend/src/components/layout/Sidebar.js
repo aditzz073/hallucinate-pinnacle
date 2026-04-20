@@ -23,23 +23,23 @@ const NAV_SECTIONS = [
   {
     label: "Overview",
     items: [
-      { id: "dashboard",  label: "Dashboard",         icon: LayoutDashboard },
-      { id: "executive",  label: "Executive Summary",  icon: Crown },
+      { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { id: "executive", label: "Executive Summary", icon: Crown },
     ],
   },
   {
     label: "Analysis",
     items: [
-      { id: "audits",           label: "Page Audits",      icon: FileSearch },
+      { id: "audits", label: "Page Audits", icon: FileSearch },
       { id: "ai-visibility-lab", label: "AI Visibility Lab", icon: Microscope },
-      { id: "advanced",          label: "Advanced Audit",    icon: Sparkles },
+      { id: "advanced", label: "Advanced Audit", icon: Sparkles },
     ],
   },
   {
     label: "Strategy",
     items: [
       { id: "simulator", label: "Strategy Simulator", icon: FlaskConical },
-      { id: "compare",   label: "Competitor Intel",   icon: Swords },
+      { id: "compare", label: "Competitor Intel", icon: Swords },
     ],
   },
   {
@@ -51,8 +51,8 @@ const NAV_SECTIONS = [
   {
     label: "Infrastructure",
     items: [
-      { id: "monitor",  label: "Monitor Pages", icon: Eye },
-      { id: "reports",  label: "Reports",       icon: BarChart3 },
+      { id: "monitor", label: "Monitor Pages", icon: Eye },
+      { id: "reports", label: "Reports", icon: BarChart3 },
     ],
   },
 ];
@@ -64,9 +64,8 @@ export default function Sidebar({ activePage, onNavigate, onFeatureLocked, onLog
   return (
     <aside
       data-testid="sidebar"
-      className={`fixed top-0 left-0 h-screen flex flex-col z-40 transition-all duration-300 ${
-        collapsed ? "w-16" : "w-[220px]"
-      }`}
+      className={`fixed top-0 left-0 h-screen flex flex-col z-40 transition-all duration-300 ${collapsed ? "w-16" : "w-[220px]"
+        }`}
       style={{
         background: "var(--surface)",
         borderRight: "1px solid var(--border)",
@@ -93,7 +92,7 @@ export default function Sidebar({ activePage, onNavigate, onFeatureLocked, onLog
           <div key={section.label}>
             {!collapsed && (
               <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-widest"
-                 style={{ color: "var(--text-subtle)" }}>
+                style={{ color: "var(--text-subtle)" }}>
                 {section.label}
               </p>
             )}
@@ -121,32 +120,29 @@ export default function Sidebar({ activePage, onNavigate, onFeatureLocked, onLog
                           ? `Available in ${getMinimumPlanForFeature(premiumFeature)}`
                           : undefined
                     }
-                    className={`w-full flex items-center gap-2.5 rounded-md text-sm font-medium transition-all duration-200 ease-out hover:-translate-y-[1px] group relative ${
-                      collapsed ? "justify-center px-0 py-2.5" : "px-3 py-2"
-                    } ${
-                      isActive
+                    className={`w-full flex items-center gap-2.5 rounded-md text-sm font-medium transition-all duration-200 ease-out hover:-translate-y-[1px] group relative ${collapsed ? "justify-center px-0 py-2.5" : "px-3 py-2"
+                      } ${isActive
                         ? "text-white"
                         : "text-muted-foreground hover:text-white"
-                    }`}
+                      }`}
                     style={
                       isActive
                         ? {
-                            background: "var(--primary-light)",
-                            borderLeft: "2px solid var(--primary)",
-                            paddingLeft: collapsed ? undefined : "calc(0.75rem - 2px)",
-                            opacity: isPremiumLocked ? 0.62 : 1,
-                          }
+                          background: "var(--primary-light)",
+                          borderLeft: "2px solid var(--primary)",
+                          paddingLeft: collapsed ? undefined : "calc(0.75rem - 2px)",
+                          opacity: isPremiumLocked ? 0.62 : 1,
+                        }
                         : {
-                            background: "transparent",
-                            borderLeft: "2px solid transparent",
-                            opacity: isPremiumLocked ? 0.62 : 1,
-                          }
+                          background: "transparent",
+                          borderLeft: "2px solid transparent",
+                          opacity: isPremiumLocked ? 0.62 : 1,
+                        }
                     }
                   >
                     <Icon
-                      className={`shrink-0 transition-colors ${collapsed ? "w-4.5 h-4.5" : "w-4 h-4"} ${
-                        isActive ? "text-primary" : "text-subtle-foreground group-hover:text-muted-foreground"
-                      }`}
+                      className={`shrink-0 transition-colors ${collapsed ? "w-4.5 h-4.5" : "w-4 h-4"} ${isActive ? "text-primary" : "text-subtle-foreground group-hover:text-muted-foreground"
+                        }`}
                       style={{ width: "16px", height: "16px" }}
                     />
                     {!collapsed && (
@@ -179,9 +175,8 @@ export default function Sidebar({ activePage, onNavigate, onFeatureLocked, onLog
         <button
           data-testid="nav-profile"
           onClick={() => onNavigate("profile")}
-          className={`w-full flex items-center gap-2.5 rounded-md text-sm font-medium transition-all duration-200 ease-out hover:-translate-y-[1px] group ${
-            collapsed ? "justify-center px-0 py-2.5" : "px-3 py-2"
-          } ${activePage === "profile" ? "text-white" : "text-muted-foreground hover:text-white hover:bg-white/5"}`}
+          className={`w-full flex items-center gap-2.5 rounded-md text-sm font-medium transition-all duration-200 ease-out hover:-translate-y-[1px] group ${collapsed ? "justify-center px-0 py-2.5" : "px-3 py-2"
+            } ${activePage === "profile" ? "text-white" : "text-muted-foreground hover:text-white hover:bg-white/5"}`}
           style={activePage === "profile" ? { background: "var(--primary-light)", borderLeft: "2px solid var(--primary)", paddingLeft: collapsed ? undefined : "calc(0.75rem - 2px)" } : { borderLeft: "2px solid transparent" }}
         >
           <User style={{ width: "16px", height: "16px" }} className="shrink-0" />
@@ -191,9 +186,8 @@ export default function Sidebar({ activePage, onNavigate, onFeatureLocked, onLog
         <button
           data-testid="logout-button"
           onClick={onLogout}
-          className={`w-full flex items-center gap-2.5 rounded-md text-sm font-medium transition-all duration-200 ease-out hover:-translate-y-[1px] ${
-            collapsed ? "justify-center px-0 py-2.5" : "px-3 py-2"
-          } text-muted-foreground hover:text-red-400 hover:bg-red-500/10`}
+          className={`w-full flex items-center gap-2.5 rounded-md text-sm font-medium transition-all duration-200 ease-out hover:-translate-y-[1px] ${collapsed ? "justify-center px-0 py-2.5" : "px-3 py-2"
+            } text-muted-foreground hover:text-red-400 hover:bg-red-500/10`}
           style={{ borderLeft: "2px solid transparent" }}
         >
           <LogOut style={{ width: "16px", height: "16px" }} className="shrink-0" />
@@ -216,7 +210,7 @@ export default function Sidebar({ activePage, onNavigate, onFeatureLocked, onLog
         >
           {collapsed
             ? <ChevronRight style={{ width: "14px", height: "14px" }} />
-            : <ChevronLeft  style={{ width: "14px", height: "14px" }} />
+            : <ChevronLeft style={{ width: "14px", height: "14px" }} />
           }
         </button>
       </div>

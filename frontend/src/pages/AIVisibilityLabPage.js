@@ -15,35 +15,35 @@ import ENGINE_LOGOS from "../utils/engineLogos";
 import { downloadAIVisibilityLabReport } from "../utils/pdfReports";
 
 const ENGINE_ICONS = {
-  chatgpt:    Brain,
+  chatgpt: Brain,
   perplexity: Target,
   google_sge: Search,
-  copilot:    Sparkles,
+  copilot: Sparkles,
 };
 
 const ENGINE_BORDER = {
-  chatgpt:    "rgba(52,211,153,0.2)",
+  chatgpt: "rgba(52,211,153,0.2)",
   perplexity: "rgba(34,211,238,0.2)",
   google_sge: "rgba(99,102,241,0.2)",
-  copilot:    "rgba(167,139,250,0.2)",
+  copilot: "rgba(167,139,250,0.2)",
 };
 
 const GRADE_CLASS = {
   "A+": "text-emerald-400 bg-emerald-500/20",
-  "A":  "text-emerald-400 bg-emerald-500/20",
+  "A": "text-emerald-400 bg-emerald-500/20",
   "B+": "text-green-400 bg-green-500/20",
-  "B":  "text-green-400 bg-green-500/20",
-  "C":  "text-yellow-400 bg-yellow-500/20",
-  "D":  "text-orange-400 bg-orange-500/20",
-  "F":  "text-red-400 bg-red-500/20",
+  "B": "text-green-400 bg-green-500/20",
+  "C": "text-yellow-400 bg-yellow-500/20",
+  "D": "text-orange-400 bg-orange-500/20",
+  "F": "text-red-400 bg-red-500/20",
 };
 
 const POSITION_CLASS = {
-  "Top 3":      "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
-  "Top 5":      "text-green-400 bg-green-500/10 border-green-500/20",
+  "Top 3": "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
+  "Top 5": "text-green-400 bg-green-500/10 border-green-500/20",
   "May Appear": "text-yellow-400 bg-yellow-500/10 border-yellow-500/20",
-  "Low":        "text-orange-400 bg-orange-500/10 border-orange-500/20",
-  "Very Low":   "text-red-400 bg-red-500/10 border-red-500/20",
+  "Low": "text-orange-400 bg-orange-500/10 border-orange-500/20",
+  "Very Low": "text-red-400 bg-red-500/10 border-red-500/20",
 };
 
 const ALL_ENGINES = ["chatgpt", "perplexity", "google_sge", "copilot"];
@@ -124,13 +124,13 @@ export default function AIVisibilityLabPage({ onSignUp }) {
     showLimitModal, setShowLimitModal,
   } = useGuestMode("ai_visibility_lab");
 
-  const [query, setQuery]                   = useState("");
-  const [url, setUrl]                       = useState("");
-  const [loading, setLoading]               = useState(false);
+  const [query, setQuery] = useState("");
+  const [url, setUrl] = useState("");
+  const [loading, setLoading] = useState(false);
   const [citationResult, setCitationResult] = useState(null);
-  const [engineResult, setEngineResult]     = useState(null);
-  const [error, setError]                   = useState("");
-  const [activeTab, setActiveTab]           = useState("citation");
+  const [engineResult, setEngineResult] = useState(null);
+  const [error, setError] = useState("");
+  const [activeTab, setActiveTab] = useState("citation");
   const [showGeoDetails, setShowGeoDetails] = useState(false);
   const [expandedEngines, setExpandedEngines] = useState({});
   const [downloadingReport, setDownloadingReport] = useState(false);
@@ -141,8 +141,8 @@ export default function AIVisibilityLabPage({ onSignUp }) {
   const visibilityScore =
     citationResult && engineResult
       ? Math.round(
-          (citationResult.citation_probability + engineResult.overall_stats.average_score) / 2
-        )
+        (citationResult.citation_probability + engineResult.overall_stats.average_score) / 2
+      )
       : null;
 
   const handleSubmit = async (e) => {
@@ -213,7 +213,7 @@ export default function AIVisibilityLabPage({ onSignUp }) {
       </div>
 
       {isGuest && (
-        <GuestBanner remainingUses={remainingUses} onSignUp={onSignUp || (() => {})} />
+        <GuestBanner remainingUses={remainingUses} onSignUp={onSignUp || (() => { })} />
       )}
 
       {/* Input Form */}
@@ -291,7 +291,7 @@ export default function AIVisibilityLabPage({ onSignUp }) {
       <GuestLimitModal
         isOpen={showLimitModal}
         onClose={() => setShowLimitModal(false)}
-        onSignUp={onSignUp || (() => {})}
+        onSignUp={onSignUp || (() => { })}
         feature="AI Visibility Lab analyses"
       />
 
@@ -375,16 +375,15 @@ export default function AIVisibilityLabPage({ onSignUp }) {
           >
             {[
               { id: "citation", label: "Citation Probability" },
-              { id: "engine",   label: "Engine Readiness" },
+              { id: "engine", label: "Engine Readiness" },
             ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  activeTab === tab.id
+                className={`px-5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${activeTab === tab.id
                     ? "bg-white/10 text-white"
                     : "text-gray-500 hover:text-gray-400"
-                }`}
+                  }`}
               >
                 {tab.label}
               </button>
@@ -458,11 +457,11 @@ export default function AIVisibilityLabPage({ onSignUp }) {
                   </div>
                   <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
                     {[
-                      { label: "Intent Match",   value: citationResult.breakdown.intent_match    || 0 },
-                      { label: "Extractability", value: citationResult.breakdown.extractability  || 0 },
-                      { label: "Authority",      value: citationResult.breakdown.authority        || 0 },
-                      { label: "Schema Support", value: citationResult.breakdown.schema_support  || 0 },
-                      { label: "Content Depth",  value: citationResult.breakdown.content_depth   || 0 },
+                      { label: "Intent Match", value: citationResult.breakdown.intent_match || 0 },
+                      { label: "Extractability", value: citationResult.breakdown.extractability || 0 },
+                      { label: "Authority", value: citationResult.breakdown.authority || 0 },
+                      { label: "Schema Support", value: citationResult.breakdown.schema_support || 0 },
+                      { label: "Content Depth", value: citationResult.breakdown.content_depth || 0 },
                     ].map((metric, i) => (
                       <div key={i} className="text-center">
                         <div className="text-2xl font-bold mb-1" style={{ color: getScoreColor(metric.value) }}>
@@ -478,10 +477,10 @@ export default function AIVisibilityLabPage({ onSignUp }) {
               {/* GEO Breakdown */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 {[
-                  { label: "Generative Readiness", value: citationResult.generative_readiness           || 0, icon: Brain,    color: "purple" },
-                  { label: "Summarization",         value: citationResult.summarization_resilience       || 0, icon: FileText, color: "cyan"   },
-                  { label: "Brand Retention",       value: citationResult.brand_retention_probability    || 0, icon: Award,    color: "amber"  },
-                  { label: "Schema Support",        value: citationResult.breakdown?.schema_support      || 0, icon: Target,   color: "blue"   },
+                  { label: "Generative Readiness", value: citationResult.generative_readiness || 0, icon: Brain, color: "purple" },
+                  { label: "Summarization", value: citationResult.summarization_resilience || 0, icon: FileText, color: "cyan" },
+                  { label: "Brand Retention", value: citationResult.brand_retention_probability || 0, icon: Award, color: "amber" },
+                  { label: "Schema Support", value: citationResult.breakdown?.schema_support || 0, icon: Target, color: "blue" },
                 ].map((metric, i) => {
                   const Icon = metric.icon;
                   return (
@@ -524,11 +523,10 @@ export default function AIVisibilityLabPage({ onSignUp }) {
                             <Lightbulb className="w-4 h-4 text-cyan-400" />
                             <span className="text-sm font-medium text-white">{s.issue}</span>
                             {s.impact && (
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                                s.impact === "High"
+                              <span className={`text-[10px] px-1.5 py-0.5 rounded ${s.impact === "High"
                                   ? "bg-red-500/20 text-red-400"
                                   : "bg-amber-500/20 text-amber-400"
-                              }`}>
+                                }`}>
                                 {s.impact}
                               </span>
                             )}
@@ -589,9 +587,9 @@ export default function AIVisibilityLabPage({ onSignUp }) {
                   <p className="text-xs" style={{ color: "var(--text-muted)" }}>{engineResult.relevance.feedback}</p>
                   <div className="flex gap-4 pt-0.5">
                     {[
-                      ["Title",    engineResult.relevance.title_match],
+                      ["Title", engineResult.relevance.title_match],
                       ["Headings", engineResult.relevance.heading_match],
-                      ["Content",  engineResult.relevance.content_match],
+                      ["Content", engineResult.relevance.content_match],
                     ].map(([label, val]) => (
                       <span key={label} className="text-xs text-gray-600">
                         {label}: <span className="text-white font-medium">{val}%</span>
@@ -605,11 +603,11 @@ export default function AIVisibilityLabPage({ onSignUp }) {
               <div className="space-y-4">
                 <h2 className="text-base font-semibold text-white">Engine Results</h2>
                 {engineResult.results.map((r) => {
-                  const Icon       = ENGINE_ICONS[r.engine_id] || Brain;
+                  const Icon = ENGINE_ICONS[r.engine_id] || Brain;
                   const isExpanded = expandedEngines[r.engine_id];
-                  const pos        = r.position_estimate;
-                  const posClass   = POSITION_CLASS[pos?.bucket] || "text-gray-400 bg-gray-500/10 border-gray-500/20";
-                  const gradeClass = GRADE_CLASS[r.grade]        || "text-gray-400 bg-gray-500/20";
+                  const pos = r.position_estimate;
+                  const posClass = POSITION_CLASS[pos?.bucket] || "text-gray-400 bg-gray-500/10 border-gray-500/20";
+                  const gradeClass = GRADE_CLASS[r.grade] || "text-gray-400 bg-gray-500/20";
 
                   return (
                     <div
@@ -846,12 +844,12 @@ export default function AIVisibilityLabPage({ onSignUp }) {
               <LockedSection
                 title="Deep Competitive Analysis"
                 description="Compare your citation probability against top-ranking pages and identify optimization gaps."
-                onUnlock={onSignUp || (() => {})}
+                onUnlock={onSignUp || (() => { })}
               />
               <LockedSection
                 title="Save & Track Results"
                 description="Access unlimited test history, trend analysis, and compare performance over time."
-                onUnlock={onSignUp || (() => {})}
+                onUnlock={onSignUp || (() => { })}
               />
             </div>
           )}

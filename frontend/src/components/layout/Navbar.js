@@ -46,7 +46,7 @@ function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate, onShow
 
   const handleItemClick = (item) => {
     setOpen(false);
-    
+
     if (item.requiresAuth && !user) {
       onNavigate("login");
       return;
@@ -56,7 +56,7 @@ function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate, onShow
       onShowFeatureLocked && onShowFeatureLocked(item.id);
       return;
     }
-    
+
     onNavigate(item.id);
   };
 
@@ -65,11 +65,10 @@ function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate, onShow
       <button
         onClick={() => setOpen(!open)}
         data-testid={`nav-dropdown-${label.toLowerCase()}`}
-        className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-          isActive
+        className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${isActive
             ? "bg-white/10 text-white font-semibold"
             : "text-muted-foreground hover:text-white hover:bg-white/5"
-        }`}
+          }`}
         style={isActive ? { borderLeft: "2px solid var(--primary)", paddingLeft: "calc(0.875rem - 2px)" } : undefined}
       >
         <Icon className="w-4 h-4" />
@@ -89,18 +88,17 @@ function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate, onShow
                 data-testid={`nav-${item.id}`}
                 onClick={() => handleItemClick(item)}
                 title={isPremiumLocked ? `Available in ${getMinimumPlanForFeature(item.premiumFeature)}` : undefined}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all duration-200 ${
-                  isItemActive
+                className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all duration-200 ${isItemActive
                     ? "bg-white/10 text-white font-semibold"
                     : "text-muted-foreground hover:text-white hover:bg-white/5"
-                }`}
+                  }`}
                 style={
                   isItemActive
                     ? {
-                        borderLeft: "2px solid var(--primary)",
-                        paddingLeft: "calc(1rem - 2px)",
-                        opacity: isPremiumLocked ? 0.62 : 1,
-                      }
+                      borderLeft: "2px solid var(--primary)",
+                      paddingLeft: "calc(1rem - 2px)",
+                      opacity: isPremiumLocked ? 0.62 : 1,
+                    }
                     : { opacity: isPremiumLocked ? 0.62 : 1 }
                 }
               >
@@ -202,7 +200,7 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
         <div className="flex items-center justify-between w-full max-w-[1120px]">
           {/* Left: Logo & Live Badge */}
           <div className="flex items-center gap-5">
-            <div 
+            <div
               className="flex items-center gap-2 cursor-pointer hover:opacity-85 transition-opacity"
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               data-testid="nav-logo-landing"
@@ -212,7 +210,7 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
                 Pinnacle<span className="font-light text-primary">.ai</span>
               </span>
             </div>
-            
+
 
           </div>
 
@@ -251,7 +249,7 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
                 Dashboard
               </button>
             )}
-            
+
             <button
               data-testid="nav-get-started-btn"
               onClick={() => onNavigate("audits")}
@@ -277,13 +275,12 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
       animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
     >
-      <nav className={`flex items-center gap-1 rounded-full border px-6 py-2.5 transition-all duration-300 ease-out ${
-        scrolled 
-          ? 'bg-black/70 backdrop-blur-xl border-white/25 shadow-2xl' 
+      <nav className={`flex items-center gap-1 rounded-full border px-6 py-2.5 transition-all duration-300 ease-out ${scrolled
+          ? 'bg-black/70 backdrop-blur-xl border-white/25 shadow-2xl'
           : 'bg-black/30 backdrop-blur-lg border-white/15 shadow-lg'
-      }`} style={{ opacity: scrolled ? 1 : 0.94 }}>
+        }`} style={{ opacity: scrolled ? 1 : 0.94 }}>
         {/* Logo */}
-        <div 
+        <div
           className="flex items-center gap-2 pr-4 border-r border-white/10 mr-3 cursor-pointer hover:opacity-85 transition-all duration-200 ease-out"
           onClick={handleLogoClick}
           data-testid="nav-logo-app"
@@ -305,11 +302,10 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
                 key={item.id}
                 data-testid={`nav-${item.id}`}
                 onClick={() => handleNavClickWithAuth(item.id, item.requiresAuth)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                  isActive
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${isActive
                     ? "bg-white/10 text-white font-semibold"
                     : "text-muted-foreground hover:text-white hover:bg-white/5"
-                }`}
+                  }`}
                 style={isActive ? { borderLeft: "2px solid var(--primary)", paddingLeft: "calc(0.875rem - 2px)" } : undefined}
               >
                 <Icon className="w-4 h-4" />
@@ -345,11 +341,10 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
             <button
               data-testid="nav-profile"
               onClick={() => onNavigate("profile")}
-              className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                resolvedActivePage === "profile"
+              className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-all duration-200 ${resolvedActivePage === "profile"
                   ? "bg-white/10 text-white font-semibold"
                   : "text-muted-foreground hover:text-white hover:bg-white/5"
-              }`}
+                }`}
               style={resolvedActivePage === "profile" ? { borderLeft: "2px solid var(--primary)", paddingLeft: "calc(0.75rem - 2px)" } : undefined}
             >
               <User className="w-4 h-4" />

@@ -14,7 +14,7 @@ import { fadeUp, slideInLeft, slideInRight } from "../utils/motion";
 const VISIBILITY_TREND_DATA = [
   { day: "Apr 12", citation: 64, readiness: 84, summarization: 42, brand: 48, schema: 32 },
   { day: "Apr 13", citation: 66, readiness: 59, summarization: 27, brand: 50, schema: 44 },
-  { day: "Apr 14", citation: 57, readiness: 37, summarization: 23, brand: 15, schema: 9  },
+  { day: "Apr 14", citation: 57, readiness: 37, summarization: 23, brand: 15, schema: 9 },
   { day: "Apr 15", citation: 62, readiness: 17, summarization: 46, brand: 24, schema: 18 },
   { day: "Apr 16", citation: 65, readiness: 15, summarization: 74, brand: 62, schema: 56 },
   { day: "Apr 17", citation: 88, readiness: 71, summarization: 53, brand: 58, schema: 52 },
@@ -180,8 +180,8 @@ function DashboardMockup() {
         {/* Score cards row */}
         <div className="grid grid-cols-2 gap-2 p-3">
           {[
-            { label: "AI VISIBILITY",  value: 81, unit: "/ 100", trend: "+4.2 this week",       hasBar: true,  barPct: 81 },
-            { label: "CITATION PROB.", value: 78, unit: "%",     trend: "↗ +12 vs last audit",  hasBar: false },
+            { label: "AI VISIBILITY", value: 81, unit: "/ 100", trend: "+4.2 this week", hasBar: true, barPct: 81 },
+            { label: "CITATION PROB.", value: 78, unit: "%", trend: "↗ +12 vs last audit", hasBar: false },
           ].map((m, i) => (
             <div
               key={m.label}
@@ -235,10 +235,10 @@ function DashboardMockup() {
           </div>
           <div className="space-y-1.5">
             {[
-              { engine: "ChatGPT",    score: 82, color: "#a3e635" },
+              { engine: "ChatGPT", score: 82, color: "#a3e635" },
               { engine: "Perplexity", score: 71, color: "#3b82f6" },
-              { engine: "Gemini",     score: 68, color: "#f59e0b" },
-              { engine: "Copilot",    score: 55, color: "#e879f9" },
+              { engine: "Gemini", score: 68, color: "#f59e0b" },
+              { engine: "Copilot", score: 55, color: "#e879f9" },
             ].map((row) => (
               <div key={row.engine} className="flex items-center gap-2">
                 <span className="text-[10px] w-[58px] shrink-0" style={{ color: "#666" }}>{row.engine}</span>
@@ -264,15 +264,15 @@ function DashboardMockup() {
         }}
       >
         <motion.div
-          animate={reduceMotion ? undefined : { 
+          animate={reduceMotion ? undefined : {
             y: [0, -6, 0],
             x: [0, 4, 0],
             rotate: [0, 1.5, 0]
           }}
-          transition={{ 
-            duration: 12, 
-            repeat: Infinity, 
-            ease: "easeInOut" 
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut"
           }}
           className="rounded-xl p-3"
           style={{
@@ -304,16 +304,16 @@ function DashboardMockup() {
         }}
       >
         <motion.div
-          animate={reduceMotion ? undefined : { 
+          animate={reduceMotion ? undefined : {
             y: [0, -8, 0],
             x: [0, -3, 0],
             rotate: [0, -1, 0]
           }}
-          transition={{ 
-            duration: 15, 
-            repeat: Infinity, 
+          transition={{
+            duration: 15,
+            repeat: Infinity,
             ease: "easeInOut",
-            delay: 1 
+            delay: 1
           }}
           className="rounded-xl p-4"
           style={{
@@ -520,14 +520,14 @@ function AIVisibilityExplainedSection() {
   return (
     <>
       {/* 4. What is AI Visibility? */}
-      <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-        <div className="max-w-[1120px] mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+      <SectionWrapper id="platform" className="py-40 px-8" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+        <div className="max-w-[1280px] mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 mb-16">
             <div>
               <p className="text-[10px] font-mono tracking-[0.1em] mb-4 text-primary uppercase">
                 {"// AI VISIBILITY"}
               </p>
-              <h2 className="font-display text-4xl lg:text-[50px] font-bold mb-4 text-white leading-tight">
+              <h2 className="font-display text-5xl lg:text-[64px] font-bold mb-4 text-white leading-tight">
                 What is <span className="text-primary">AI Visibility</span>?
               </h2>
             </div>
@@ -541,16 +541,16 @@ function AIVisibilityExplainedSection() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               { metric: "6+", label: "ENGINES" },
               { metric: "23", label: "SIGNALS" },
               { metric: "1.2M", label: "QUERIES TRACKED" },
               { metric: "+34%", label: "AVG. LIFT" },
             ].map((item) => (
-              <div key={item.label} className="rounded-xl p-6 bg-[#141418] border border-white/5">
-                <h3 className="text-4xl font-display font-bold text-white mb-2">{item.metric}</h3>
-                <p className="text-[10px] font-mono tracking-widest text-muted-foreground uppercase">{item.label}</p>
+              <div key={item.label} className="rounded-[24px] p-10 bg-[#141418] border border-white/5">
+                <h3 className="text-5xl font-display font-bold text-white mb-2">{item.metric}</h3>
+                <p className="text-[12px] font-mono tracking-widest text-muted-foreground uppercase">{item.label}</p>
               </div>
             ))}
           </div>
@@ -569,7 +569,7 @@ function AIVisibilityExplainedSection() {
           <p className="text-[16px] text-muted-foreground max-w-[600px] mb-12 leading-relaxed">
             AI engines don't rank — they read, summarize, and cite. They use a different set of signals entirely. Pinnacle is built for this shift.
           </p>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="rounded-[20px] p-8 bg-[#141418] border border-white/5 relative overflow-hidden">
               <span className="inline-flex items-center px-2 py-1 rounded-full bg-white/5 text-[9px] font-mono tracking-widest text-white/50 mb-6 uppercase">SEO</span>
@@ -577,17 +577,17 @@ function AIVisibilityExplainedSection() {
               <p className="text-[15px] text-muted-foreground leading-relaxed">Ranking in search engine results pages.</p>
               <div className="mt-16 text-[10px] font-mono text-white/20">01 / 03</div>
             </div>
-            
+
             <div className="rounded-[20px] p-8 bg-primary border-transparent relative overflow-hidden shadow-[0_20px_40px_rgba(163,230,53,0.15)]">
               <span className="inline-flex items-center px-2 py-1 rounded-full bg-black/10 text-[9px] font-mono tracking-widest text-black/60 font-bold mb-6 uppercase">AEO</span>
-              <h3 className="text-2xl font-display font-bold text-black mb-3">AI Engine<br/>Optimization</h3>
+              <h3 className="text-2xl font-display font-bold text-black mb-3">AI Engine<br />Optimization</h3>
               <p className="text-[15px] text-black/80 font-medium leading-relaxed mt-2">Being cited by AI systems inside generated answers.</p>
               <div className="mt-16 text-[10px] font-mono text-black/30 font-bold">02 / 03</div>
             </div>
-            
+
             <div className="rounded-[20px] p-8 bg-[#141418] border border-white/5 relative overflow-hidden">
               <span className="inline-flex items-center px-2 py-1 rounded-full bg-white/5 text-[9px] font-mono tracking-widest text-white/50 mb-6 uppercase">GEO</span>
-              <h3 className="text-2xl font-display font-bold text-white mb-3">Generative Engine<br/>Optimization</h3>
+              <h3 className="text-2xl font-display font-bold text-white mb-3">Generative Engine<br />Optimization</h3>
               <p className="text-[15px] text-muted-foreground leading-relaxed mt-2">Being used inside generative engine responses and summaries.</p>
               <div className="mt-16 text-[10px] font-mono text-white/20">03 / 03</div>
             </div>
@@ -645,8 +645,8 @@ function HowAIEnginesChooseContentSection() {
       </SectionWrapper>
 
       {/* 7. How it Works (Steps) */}
-      <SectionWrapper id="how-it-works" className="py-24 px-8 border-t border-white/5 bg-transparent">
-        <div className="max-w-[1120px] mx-auto">
+      <SectionWrapper id="how-it-works" className="py-40 px-8 border-t border-white/5 bg-transparent">
+        <div className="max-w-[1280px] mx-auto">
           <p className="text-[10px] font-mono tracking-[0.1em] mb-4 text-primary uppercase">
             {"// HOW IT WORKS"}
           </p>
@@ -801,73 +801,73 @@ function PlatformBentoGrid() {
         <h2 className="font-display text-4xl lg:text-[50px] font-bold mb-16 text-center text-white">
           Everything you need to <span className="text-primary italic font-light">dominate AI answers</span>
         </h2>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Large Card: AI Visibility Intelligence */}
           <div className="md:col-span-2 rounded-[24px] p-8 md:p-10 flex flex-col justify-between relative overflow-hidden group" style={{ background: "#141418", border: "1px solid rgba(255,255,255,0.05)" }}>
-             <div className="absolute -top-10 -right-10 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-               <Microscope className="w-64 h-64 text-white" />
-             </div>
-             <div>
-               <div className="w-12 h-12 rounded-lg bg-[#0e0e11] border border-white/5 flex items-center justify-center mb-6 shadow-inner">
-                 <Microscope className="w-6 h-6 text-primary" />
-               </div>
-               <h3 className="text-3xl font-display font-bold text-white mb-3 relative z-10">AI Visibility Intelligence</h3>
-               <p className="text-[16px] text-muted-foreground max-w-sm mb-10 leading-relaxed relative z-10">
-                 Deep-dive auditing into your citation probability across 6+ major AI engines. Uncover exact gaps in your semantic clustering.
-               </p>
-             </div>
-             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10">
-               {["Citation Probability", "Engine Readiness", "SEO/GEO Analysis", "Citation Gap Report"].map((i) => (
-                 <div key={i} className="flex items-center gap-3 text-[14px] text-white/80">
-                   <div className="w-5 h-5 rounded-full flex items-center justify-center bg-primary/10 shrink-0">
-                     <CheckCircle className="w-3.5 h-3.5 text-primary" />
-                   </div>
-                   {i}
-                 </div>
-               ))}
-             </div>
+            <div className="absolute -top-10 -right-10 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+              <Microscope className="w-64 h-64 text-white" />
+            </div>
+            <div>
+              <div className="w-12 h-12 rounded-lg bg-[#0e0e11] border border-white/5 flex items-center justify-center mb-6 shadow-inner">
+                <Microscope className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-3xl font-display font-bold text-white mb-3 relative z-10">AI Visibility Intelligence</h3>
+              <p className="text-[16px] text-muted-foreground max-w-sm mb-10 leading-relaxed relative z-10">
+                Deep-dive auditing into your citation probability across 6+ major AI engines. Uncover exact gaps in your semantic clustering.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 relative z-10">
+              {["Citation Probability", "Engine Readiness", "SEO/GEO Analysis", "Citation Gap Report"].map((i) => (
+                <div key={i} className="flex items-center gap-3 text-[14px] text-white/80">
+                  <div className="w-5 h-5 rounded-full flex items-center justify-center bg-primary/10 shrink-0">
+                    <CheckCircle className="w-3.5 h-3.5 text-primary" />
+                  </div>
+                  {i}
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Medium Card: Optimization */}
           <div className="rounded-[24px] p-8 md:p-10 flex flex-col relative overflow-hidden group" style={{ background: "#141418", border: "1px solid rgba(255,255,255,0.05)" }}>
-             <div className="w-12 h-12 rounded-lg bg-[#0e0e11] border border-white/5 flex items-center justify-center mb-6 shadow-inner">
-               <Settings2 className="w-6 h-6 text-primary" />
-             </div>
-             <h3 className="text-3xl font-display font-bold text-white mb-3">Optimization</h3>
-             <p className="text-[16px] text-muted-foreground mb-10 leading-relaxed">
-               Run strategy simulations and AEO audits to generate content recommendations.
-             </p>
-             <div className="space-y-4 mt-auto">
-               {["Strategy Simulator", "AEO Page Audits", "Content Recs"].map((i) => (
-                 <div key={i} className="flex items-center gap-3 text-[14px] text-white/80">
-                   <div className="w-5 h-5 rounded-full flex items-center justify-center bg-primary/10 shrink-0">
-                     <CheckCircle className="w-3.5 h-3.5 text-primary" />
-                   </div>
-                   {i}
-                 </div>
-               ))}
-             </div>
+            <div className="w-12 h-12 rounded-lg bg-[#0e0e11] border border-white/5 flex items-center justify-center mb-6 shadow-inner">
+              <Settings2 className="w-6 h-6 text-primary" />
+            </div>
+            <h3 className="text-3xl font-display font-bold text-white mb-3">Optimization</h3>
+            <p className="text-[16px] text-muted-foreground mb-10 leading-relaxed">
+              Run strategy simulations and AEO audits to generate content recommendations.
+            </p>
+            <div className="space-y-4 mt-auto">
+              {["Strategy Simulator", "AEO Page Audits", "Content Recs"].map((i) => (
+                <div key={i} className="flex items-center gap-3 text-[14px] text-white/80">
+                  <div className="w-5 h-5 rounded-full flex items-center justify-center bg-primary/10 shrink-0">
+                    <CheckCircle className="w-3.5 h-3.5 text-primary" />
+                  </div>
+                  {i}
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Wide Card: Monitoring */}
           <div className="md:col-span-3 rounded-[24px] p-8 md:p-10 flex flex-col md:flex-row items-center gap-12 relative overflow-hidden" style={{ background: "linear-gradient(to right, #141418, rgba(163,230,53,0.05))", border: "1px solid rgba(163,230,53,0.15)" }}>
             <div className="flex-1">
-               <div className="w-12 h-12 rounded-lg bg-[#0e0e11] border border-white/5 flex items-center justify-center mb-6 shadow-inner">
-                 <Eye className="w-6 h-6 text-primary" />
-               </div>
-               <h3 className="text-3xl font-display font-bold text-white mb-3">Monitoring</h3>
-               <p className="text-[16px] text-muted-foreground max-w-lg mb-0 leading-relaxed">
-                 Continuous AI mention tracking. Watch your competitors and get alerts whenever their visibility surges ahead of yours.
-               </p>
+              <div className="w-12 h-12 rounded-lg bg-[#0e0e11] border border-white/5 flex items-center justify-center mb-6 shadow-inner">
+                <Eye className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-3xl font-display font-bold text-white mb-3">Monitoring</h3>
+              <p className="text-[16px] text-muted-foreground max-w-lg mb-0 leading-relaxed">
+                Continuous AI mention tracking. Watch your competitors and get alerts whenever their visibility surges ahead of yours.
+              </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6 flex-1 w-full bg-[#0e0e11]/50 p-8 rounded-[16px] border border-white/5">
-               {["AI Mention Monitoring", "Competitor Tracking", "Page Change Tracking", "AI Traffic Insights"].map((i) => (
-                 <div key={i} className="flex items-center gap-3 text-[15px] font-medium text-white/90">
-                   <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(163,230,53,0.8)]" /> 
-                   {i}
-                 </div>
-               ))}
+              {["AI Mention Monitoring", "Competitor Tracking", "Page Change Tracking", "AI Traffic Insights"].map((i) => (
+                <div key={i} className="flex items-center gap-3 text-[15px] font-medium text-white/90">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(163,230,53,0.8)]" />
+                  {i}
+                </div>
+              ))}
             </div>
           </div>
 
@@ -879,9 +879,9 @@ function PlatformBentoGrid() {
 
 function DeveloperCLISection() {
   return (
-    <SectionWrapper className="py-24 px-8 bg-transparent border-t border-white/5">
-      <div className="max-w-[1120px] mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+    <SectionWrapper id="cli" className="py-40 px-8 bg-transparent border-t border-white/5">
+      <div className="max-w-[1280px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
           <div>
             <p className="text-[10px] font-mono tracking-[0.1em] mb-4 text-primary uppercase">
               {"// FOR DEVELOPERS"}
@@ -892,7 +892,7 @@ function DeveloperCLISection() {
             <p className="text-[16px] text-muted-foreground mb-8 leading-relaxed">
               Run automated checks before deploying. Ensure that changes to your headings, schema, or body copy never nuke your AI search scores.
             </p>
-            
+
             <div className="space-y-4">
               {[
                 "NPM package available",
@@ -908,36 +908,36 @@ function DeveloperCLISection() {
               ))}
             </div>
           </div>
-          
+
           <div className="rounded-2xl overflow-hidden bg-[#09090b] border border-white/10 shadow-[0_0_50px_rgba(163,230,53,0.05)] transform perspective-[1000px] rotate-y-[-5deg] rotate-x-[2deg]">
             <div className="flex justify-between items-center px-4 py-3 bg-[#141418] border-b border-white/10">
-               <div className="flex gap-2">
-                 <div className="w-3 h-3 rounded-full bg-white/20" />
-                 <div className="w-3 h-3 rounded-full bg-white/20" />
-                 <div className="w-3 h-3 rounded-full bg-white/20" />
-               </div>
-               <span className="text-[11px] font-mono text-muted-foreground">bash</span>
+              <div className="flex gap-2">
+                <div className="w-3 h-3 rounded-full bg-white/20" />
+                <div className="w-3 h-3 rounded-full bg-white/20" />
+                <div className="w-3 h-3 rounded-full bg-white/20" />
+              </div>
+              <span className="text-[11px] font-mono text-muted-foreground">bash</span>
             </div>
             <div className="p-6 font-mono text-[13.5px] leading-relaxed relative">
               <div className="absolute top-0 right-0 w-48 h-48 bg-primary/10 blur-[80px]" />
               <p className="text-white/40 mb-3">$ npx @pinnacle/cli audit ./pages</p>
               <p className="text-white mb-2"><span className="text-primary mr-2">✔</span> Scanned 24 pages in 1.2s</p>
               <p className="text-white mb-6"><span className="text-primary mr-2">✔</span> Simulated extraction (ChatGPT-4o)</p>
-              
+
               <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-lg mb-4">
                 <p className="text-amber-400 mb-1 flex items-center gap-2">
                   <span className="font-bold">⚠</span> /pricing/enterprise
                 </p>
                 <p className="text-white/60 text-[12px] ml-5">Nested schema markup missing. Citation prob. dropped -14%.</p>
               </div>
-              
+
               <div className="bg-primary/10 border border-primary/20 p-4 rounded-lg mb-6">
                 <p className="text-primary mb-1 flex items-center gap-2">
                   <span className="font-bold">✔</span> /features/ai-search
                 </p>
                 <p className="text-white/60 text-[12px] ml-5">H2 structured correctly. Readiness Score: 92/100 (Pass)</p>
               </div>
-              
+
               <p className="text-white flex items-center justify-between">
                 <span>Audit complete.</span>
                 <span className="text-amber-400 font-bold bg-amber-400/10 px-2 py-0.5 rounded">1 Warning</span>
@@ -966,18 +966,18 @@ function WhoUsesPinnacleSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
-            { 
-              title: "SEO Teams", 
+            {
+              title: "SEO Teams",
               description: "Validate structure and schema signals that impact AI citation outcomes before content is published.",
               icon: Search
             },
-            { 
-              title: "Content Marketing", 
+            {
+              title: "Content Marketing",
               description: "Rewrite weak sections using extractable definitions and measurable scoring feedback.",
               icon: BookOpen
             },
-            { 
-              title: "Engineering", 
+            {
+              title: "Engineering",
               description: "Integrate AEO checks natively into deployment pipelines using the Pinnacle CLI and API.",
               icon: Code2
             },
@@ -1007,8 +1007,8 @@ function FAQSection() {
   };
 
   return (
-    <SectionWrapper className="py-24 px-8 bg-transparent" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-      <div className="max-w-[800px] mx-auto">
+    <SectionWrapper id="faq" className="py-40 px-8 bg-transparent" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+      <div className="max-w-[1000px] mx-auto">
         <p className="text-[10px] font-mono tracking-[0.1em] mb-4 text-primary uppercase text-center">
           {"// FAQ"}
         </p>
@@ -1023,25 +1023,25 @@ function FAQSection() {
               <div
                 key={item.question}
                 className="rounded-2xl transition-colors overflow-hidden"
-                style={{ 
-                  background: isOpen ? "rgba(163,230,53,0.03)" : "#141418", 
-                  border: isOpen ? "1px solid rgba(163,230,53,0.2)" : "1px solid rgba(255,255,255,0.05)" 
+                style={{
+                  background: isOpen ? "rgba(163,230,53,0.03)" : "#141418",
+                  border: isOpen ? "1px solid rgba(163,230,53,0.2)" : "1px solid rgba(255,255,255,0.05)"
                 }}
               >
                 <button
                   type="button"
                   onClick={() => handleToggleFaq(index)}
-                  className="w-full flex items-center justify-between gap-4 p-6 text-left"
+                  className="w-full flex items-center justify-between gap-6 p-8 text-left"
                 >
-                  <h3 className="text-[17px] font-semibold text-white">
+                  <h3 className="text-[19px] font-semibold text-white">
                     {item.question}
                   </h3>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${isOpen ? "bg-primary text-black" : "bg-[#0e0e11] text-white/50 border border-white/10"}`}>
-                    <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isOpen ? "rotate-180" : "rotate-0"}`} />
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-colors ${isOpen ? "bg-primary text-black" : "bg-[#0e0e11] text-white/50 border border-white/10"}`}>
+                    <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${isOpen ? "rotate-180" : "rotate-0"}`} />
                   </div>
                 </button>
                 {isOpen && (
-                  <div className="px-6 pb-6 text-[15px] leading-relaxed text-muted-foreground whitespace-pre-wrap">
+                  <div className="px-8 pb-8 text-[16px] leading-relaxed text-muted-foreground whitespace-pre-wrap">
                     {item.answer}
                   </div>
                 )}
@@ -1066,9 +1066,9 @@ function AIVisibilityLabPreview({ onNavigate }) {
   const reduceMotion = useReducedMotion();
 
   return (
-    <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-      <div className="max-w-[1120px] mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+    <SectionWrapper className="py-40 px-8" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      <div className="max-w-[1280px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
 
           {/* Left: copy */}
           <motion.div variants={slideInLeft}>
@@ -1150,14 +1150,14 @@ function AIVisibilityLabPreview({ onNavigate }) {
                 </span>
               </div>
 
-             <div className="p-6 space-y-5">
+              <div className="p-6 space-y-5">
                 {/* Mock inputs */}
                 <div
                   className="rounded-[12px] p-5 relative overflow-hidden"
                   style={{ background: "#141418", border: "1px solid rgba(255,255,255,0.05)" }}
                 >
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/0 via-primary/50 to-primary/0" />
-                  
+
                   <div className="text-[10px] font-mono tracking-widest text-muted-foreground uppercase mb-2">Target Query</div>
                   <div
                     className="h-10 rounded flex items-center px-4 mb-5"
@@ -1165,7 +1165,7 @@ function AIVisibilityLabPreview({ onNavigate }) {
                   >
                     <span className="text-[13px] text-white">Best enterprise software 2026</span>
                   </div>
-                  
+
                   <div className="text-[10px] font-mono tracking-widest text-muted-foreground uppercase mb-2">Target URL</div>
                   <div
                     className="h-10 rounded flex items-center px-4"
@@ -1184,17 +1184,17 @@ function AIVisibilityLabPreview({ onNavigate }) {
                 {/* Engine bars preview */}
                 <div className="grid grid-cols-2 gap-3 mt-4">
                   {[
-                    { name: "ChatGPT",    score: 82, color: "#a3e635" },
+                    { name: "ChatGPT", score: 82, color: "#a3e635" },
                     { name: "Perplexity", score: 71, color: "#3b82f6" },
                   ].map((e) => (
                     <div key={e.name} className="flex flex-col rounded-lg p-3" style={{ background: "#141418", border: "1px solid rgba(255,255,255,0.05)" }}>
-                       <span className="text-[11px] font-mono tracking-wider uppercase text-muted-foreground mb-3">{e.name}</span>
-                       <div className="flex items-center gap-2">
-                         <div className="flex-1 h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.1)" }}>
-                           <div className="h-full rounded-full" style={{ width: `${e.score}%`, background: e.color }} />
-                         </div>
-                         <span className="text-[12px] font-bold" style={{ color: e.color }}>{e.score}</span>
-                       </div>
+                      <span className="text-[11px] font-mono tracking-wider uppercase text-muted-foreground mb-3">{e.name}</span>
+                      <div className="flex items-center gap-2">
+                        <div className="flex-1 h-1.5 rounded-full" style={{ background: "rgba(255,255,255,0.1)" }}>
+                          <div className="h-full rounded-full" style={{ width: `${e.score}%`, background: e.color }} />
+                        </div>
+                        <span className="text-[12px] font-bold" style={{ color: e.color }}>{e.score}</span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -1307,9 +1307,9 @@ function FreeAuditCTA({ onNavigate }) {
 
 
 export default function LandingPage({
-  onGetStarted = () => {},
-  onNavigate = () => {},
-  onSelectPlan = () => {},
+  onGetStarted = () => { },
+  onNavigate = () => { },
+  onSelectPlan = () => { },
   isCheckoutLoading = false,
   user = null,
 }) {
@@ -1319,252 +1319,252 @@ export default function LandingPage({
     <div className="relative overflow-x-hidden min-h-screen bg-black" data-testid="landing-page">
       <div className="relative z-10">
 
-      <HeroSection onGetStarted={onGetStarted} onNavigate={onNavigate} />
-      <AIEngineMarquee />
-      <AIVisibilityExplainedSection />
-      <HowAIEnginesChooseContentSection />
-      <SearchShiftSection />
-      <AIVisibilityLabPreview onNavigate={onNavigate} />
-      <StrategySimulatorSection onNavigate={onNavigate} />
-      <PlatformBentoGrid />
-      <DeveloperCLISection />
-      <WhoUsesPinnacleSection />
-      <FreeAuditCTA onNavigate={onNavigate} />
-      <FAQSection />
+        <HeroSection onGetStarted={onGetStarted} onNavigate={onNavigate} />
+        <AIEngineMarquee />
+        <AIVisibilityExplainedSection />
+        <HowAIEnginesChooseContentSection />
+        <SearchShiftSection />
+        <AIVisibilityLabPreview onNavigate={onNavigate} />
+        <StrategySimulatorSection onNavigate={onNavigate} />
+        <PlatformBentoGrid />
+        <DeveloperCLISection />
+        <WhoUsesPinnacleSection />
+        <FreeAuditCTA onNavigate={onNavigate} />
+        <FAQSection />
 
-      {/* ── PRICING ──────────────────────────────────────────────────────── */}
-      <section className="py-24 px-8 bg-transparent" data-section="pricing" id="pricing" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-        <div className="max-w-[1120px] mx-auto">
-          <div className="mb-16 text-center">
-            <p className="text-[10px] font-mono tracking-[0.1em] mb-4 text-primary uppercase text-center">
-              {"// PRICING"}
-            </p>
-            <h2 className="font-display text-4xl lg:text-[50px] font-bold mb-4 text-white leading-tight">
-              Simple, transparent pricing
-            </h2>
-            <p className="text-[16px] text-muted-foreground max-w-[600px] mx-auto">
-              Start free. Upgrade when you need more.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Discover */}
-            <div className="rounded-[24px] p-8 flex flex-col" style={{ background: "#141418", border: "1px solid rgba(255,255,255,0.05)" }}>
-              <h3 className="text-xl font-display font-bold text-white mb-1">Discover</h3>
-              <p className="text-[14px] text-muted-foreground mb-6">Understand your AI visibility.</p>
-              <div className="mb-8 border-b border-white/5 pb-8">
-                <span className="text-4xl font-bold text-white">₹8,000</span>
-                <span className="text-sm ml-1 text-muted-foreground">/month</span>
-              </div>
-              <ul className="space-y-4 mb-8">
-                {["5 audits/month", "3 AI tests/month", "Basic audit & score", "3-record history"].map(item => (
-                  <li key={item} className="flex items-center gap-3 text-[14px] text-white/80">
-                    <CheckCircle className="w-4 h-4 text-primary shrink-0 opacity-70" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <button
-                onClick={() => onSelectPlan("discover")}
-                className="w-full rounded-full py-3.5 text-[14px] font-bold transition-all mt-auto pointer-events-auto"
-                style={{ background: "#0e0e11", border: "1px solid rgba(255,255,255,0.1)", color: "white" }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = "var(--primary)"}
-                onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"}
-              >
-                Start with Discover
-              </button>
-            </div>
-
-            {/* Optimize — featured */}
-            <div
-              className="rounded-[24px] p-8 relative flex flex-col transform md:scale-[1.03] z-10"
-              style={{
-                background: "linear-gradient(180deg, #181c14 0%, #0e0e11 100%)",
-                border: "1px solid rgba(163,230,53,0.3)",
-                boxShadow: "0 20px 60px rgba(163,230,53,0.1)",
-              }}
-            >
-              <div
-                className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full font-bold tracking-widest text-[10px] uppercase"
-                style={{ background: "var(--primary)", color: "#000" }}
-              >
-                MOST POPULAR
-              </div>
-              <h3 className="text-xl font-display font-bold text-primary mb-1 mt-2">Optimize</h3>
-              <p className="text-[14px] text-muted-foreground mb-6">Fix and improve what AI can't see.</p>
-              <div className="mb-8 border-b border-primary/10 pb-8">
-                <span className="text-4xl font-bold text-white">₹15,000</span>
-                <span className="text-sm ml-1 text-muted-foreground">/month</span>
-              </div>
-              <ul className="space-y-4 mb-8">
-                {[
-                  "30 audits/month",
-                  "20 AI tests/month",
-                  "Advanced Audit",
-                  "Strategy Simulator",
-                  "Competitor intel (2/query)",
-                  "Full history",
-                ].map(item => (
-                  <li key={item} className="flex items-center gap-3 text-[14px] text-white/90">
-                    <CheckCircle className="w-4 h-4 text-primary shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <button
-                onClick={() => onSelectPlan("optimize")}
-                disabled={isCheckoutLoading || isSubscribed}
-                className="w-full justify-center rounded-full py-3.5 text-[15px] font-bold disabled:opacity-60 disabled:cursor-not-allowed mt-auto transition-transform hover:scale-[1.02]"
-                style={{ background: "var(--primary)", color: "#000", boxShadow: "0 0 20px rgba(163,230,53,0.2)" }}
-              >
-                {isSubscribed ? "Current plan" : isCheckoutLoading ? "Redirecting..." : "Start Optimizing"}
-              </button>
-            </div>
-
-            {/* Dominate */}
-            <div className="rounded-[24px] p-8 flex flex-col" style={{ background: "#141418", border: "1px solid rgba(255,255,255,0.05)" }}>
-              <h3 className="text-xl font-display font-bold text-white mb-1">Dominate</h3>
-              <p className="text-[14px] text-muted-foreground mb-6">Scale and outperform competitors.</p>
-              <div className="mb-8 border-b border-white/5 pb-8">
-                <span className="text-4xl font-bold text-white">₹40,000</span>
-                <span className="text-sm ml-1 text-muted-foreground">/month</span>
-              </div>
-              <ul className="space-y-4 mb-8">
-                {[
-                  "Everything in Optimize",
-                  "Unlimited audits & AI tests",
-                  "Full competitor intel (5)",
-                  "Monitoring + alerts",
-                  "CLI access",
-                  "Enterprise reports",
-                ].map(item => (
-                  <li key={item} className="flex items-center gap-3 text-[14px] text-white/80">
-                    <CheckCircle className="w-4 h-4 text-primary shrink-0 opacity-70" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <button
-                onClick={() => onSelectPlan("dominate")}
-                disabled={isCheckoutLoading}
-                className="w-full rounded-full py-3.5 text-[14px] font-bold transition-all mt-auto disabled:opacity-60 disabled:cursor-not-allowed pointer-events-auto"
-                style={{ background: "#0e0e11", border: "1px solid rgba(255,255,255,0.1)", color: "white" }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = "var(--primary)"}
-                onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"}
-              >
-                {isCheckoutLoading ? "Redirecting..." : "Dominate AI Search"}
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── FOOTER ───────────────────────────────────────────────────────── */}
-      <footer style={{ borderTop: "1px solid rgba(255,255,255,0.05)", background: "transparent" }}>
-        <div className="max-w-[1120px] mx-auto px-8 py-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12 mb-16">
-            {/* Brand */}
-            <div className="col-span-2 md:col-span-1">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="font-display font-bold text-xl tracking-tight leading-none text-white">
-                  <span>Pinnacle</span>
-                  <span className="font-light text-primary">.ai</span>
-                </span>
-              </div>
-              <p className="text-[14px] leading-relaxed text-muted-foreground">
-                Control how AI engines discover, cite, and summarize your digital footprint.
+        {/* ── PRICING ──────────────────────────────────────────────────────── */}
+        <section className="py-24 px-8 bg-transparent" data-section="pricing" id="pricing" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+          <div className="max-w-[1120px] mx-auto">
+            <div className="mb-16 text-center">
+              <p className="text-[10px] font-mono tracking-[0.1em] mb-4 text-primary uppercase text-center">
+                {"// PRICING"}
+              </p>
+              <h2 className="font-display text-4xl lg:text-[50px] font-bold mb-4 text-white leading-tight">
+                Simple, transparent pricing
+              </h2>
+              <p className="text-[16px] text-muted-foreground max-w-[600px] mx-auto">
+                Start free. Upgrade when you need more.
               </p>
             </div>
 
-            {/* Product */}
-            <div>
-              <p className="text-[10px] font-mono tracking-widest mb-6 text-white uppercase">Product</p>
-              <ul className="space-y-3">
-                {[
-                  { label: "AEO Audits", page: "audits" },
-                  { label: "AI Visibility Lab", page: "ai-visibility-lab" },
-                  { label: "Monitoring", page: "monitor" },
-                  { label: "Pricing", page: "pricing" },
-                  { label: "Pinnacle CLI", page: "cli", isNew: true },
-                ].map(({ label, page, isNew }) => (
-                  <li key={label}>
-                    <button
-                      onClick={() => onNavigate?.(page)}
-                      className="text-[14px] text-muted-foreground hover:text-white transition-colors flex items-center gap-2"
-                    >
-                      {label}
-                      {isNew && <span className="bg-primary/20 text-primary text-[9px] font-bold px-1.5 py-0.5 rounded tracking-wider">NEW</span>}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Company */}
-            <div>
-              <p className="text-[10px] font-mono tracking-widest mb-6 text-white uppercase">Company</p>
-              <ul className="space-y-3">
-                {[
-                  { label: "About",    page: "about" },
-                  { label: "Blog",     page: "blog" },
-                  { label: "Careers",  page: "careers" },
-                  { label: "Press",    page: "press" },
-                ].map(({ label, page }) => (
-                  <li key={label}>
-                    <button
-                      onClick={() => onNavigate?.(page)}
-                      className="text-[14px] text-muted-foreground hover:text-white transition-colors"
-                    >
-                      {label}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Support */}
-            <div>
-              <p className="text-[10px] font-mono tracking-widest mb-6 text-white uppercase">Support</p>
-              <ul className="space-y-3 mb-8">
-                <li><button onClick={() => onNavigate?.("docs")} className="text-[14px] text-muted-foreground hover:text-white transition-colors">Documentation</button></li>
-                <li><button onClick={() => onNavigate?.("status")} className="text-[14px] text-muted-foreground hover:text-white transition-colors">System Status</button></li>
-                <li><a href="mailto:support@pinnacle.ai" className="text-[14px] text-muted-foreground hover:text-white transition-colors">Contact Support</a></li>
-              </ul>
-              
-              <p className="text-[10px] font-mono tracking-widest mb-6 text-white uppercase">Legal</p>
-              <ul className="space-y-3">
-                <li><button onClick={() => onNavigate?.("terms")} className="text-[14px] text-muted-foreground hover:text-white transition-colors">Terms & Privacy</button></li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-white/5" >
-            <div className="text-[13px] text-muted-foreground flex items-center gap-4">
-              <span>&copy; {new Date().getFullYear()} Pinnacle.ai. All rights reserved.</span>
-              <span className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" /> All systems operational
-              </span>
-            </div>
-            <div className="flex items-center gap-6">
-              {[
-                { label: "X", href: "https://twitter.com/pinnacleai" },
-                { label: "LinkedIn",    href: "https://linkedin.com/company/pinnacleai" },
-                { label: "GitHub",      href: "https://github.com/pinnacleai" },
-              ].map(({ label, href }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-[13px] text-muted-foreground hover:text-white transition-colors font-medium"
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {/* Discover */}
+              <div className="rounded-[24px] p-10 flex flex-col" style={{ background: "#141418", border: "1px solid rgba(255,255,255,0.05)" }}>
+                <h3 className="text-2xl font-display font-bold text-white mb-2">Discover</h3>
+                <p className="text-[15px] text-muted-foreground mb-6">Understand your AI visibility.</p>
+                <div className="mb-8 border-b border-white/5 pb-10">
+                  <span className="text-5xl font-bold text-white">₹8,000</span>
+                  <span className="text-base ml-1 text-muted-foreground">/month</span>
+                </div>
+                <ul className="space-y-4 mb-10">
+                  {["5 audits/month", "3 AI tests/month", "Basic audit & score", "3-record history"].map(item => (
+                    <li key={item} className="flex items-center gap-3 text-[15px] text-white/80">
+                      <CheckCircle className="w-5 h-5 text-primary shrink-0 opacity-70" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={() => onSelectPlan("discover")}
+                  className="w-full rounded-full py-4 text-base font-bold transition-all mt-auto pointer-events-auto"
+                  style={{ background: "#0e0e11", border: "1px solid rgba(255,255,255,0.1)", color: "white" }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = "var(--primary)"}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"}
                 >
-                  {label}
-                </a>
-              ))}
+                  Start with Discover
+                </button>
+              </div>
+
+              {/* Optimize — featured */}
+              <div
+                className="rounded-[24px] p-8 relative flex flex-col transform md:scale-[1.03] z-10"
+                style={{
+                  background: "linear-gradient(180deg, #181c14 0%, #0e0e11 100%)",
+                  border: "1px solid rgba(163,230,53,0.3)",
+                  boxShadow: "0 20px 60px rgba(163,230,53,0.1)",
+                }}
+              >
+                <div
+                  className="absolute -top-5 left-1/2 -translate-x-1/2 px-5 py-2 rounded-full font-bold tracking-widest text-[11px] uppercase"
+                  style={{ background: "var(--primary)", color: "#000" }}
+                >
+                  MOST POPULAR
+                </div>
+                <h3 className="text-2xl font-display font-bold text-primary mb-2 mt-2">Optimize</h3>
+                <p className="text-[15px] text-muted-foreground mb-6">Fix and improve what AI can't see.</p>
+                <div className="mb-8 border-b border-primary/10 pb-10">
+                  <span className="text-5xl font-bold text-white">₹15,000</span>
+                  <span className="text-base ml-1 text-muted-foreground">/month</span>
+                </div>
+                <ul className="space-y-4 mb-10">
+                  {[
+                    "30 audits/month",
+                    "20 AI tests/month",
+                    "Advanced Audit",
+                    "Strategy Simulator",
+                    "Competitor intel (2/query)",
+                    "Full history",
+                  ].map(item => (
+                    <li key={item} className="flex items-center gap-3 text-[15px] text-white/90">
+                      <CheckCircle className="w-5 h-5 text-primary shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={() => onSelectPlan("optimize")}
+                  disabled={isCheckoutLoading || isSubscribed}
+                  className="w-full justify-center rounded-full py-4 text-base font-bold disabled:opacity-60 disabled:cursor-not-allowed mt-auto transition-transform hover:scale-[1.02]"
+                  style={{ background: "var(--primary)", color: "#000", boxShadow: "0 0 20px rgba(163,230,53,0.2)" }}
+                >
+                  {isSubscribed ? "Current plan" : isCheckoutLoading ? "Redirecting..." : "Start Optimizing"}
+                </button>
+              </div>
+
+              {/* Dominate */}
+              <div className="rounded-[24px] p-10 flex flex-col" style={{ background: "#141418", border: "1px solid rgba(255,255,255,0.05)" }}>
+                <h3 className="text-2xl font-display font-bold text-white mb-2">Dominate</h3>
+                <p className="text-[15px] text-muted-foreground mb-6">Scale and outperform competitors.</p>
+                <div className="mb-8 border-b border-white/5 pb-10">
+                  <span className="text-5xl font-bold text-white">₹40,000</span>
+                  <span className="text-base ml-1 text-muted-foreground">/month</span>
+                </div>
+                <ul className="space-y-4 mb-10">
+                  {[
+                    "Everything in Optimize",
+                    "Unlimited audits & AI tests",
+                    "Full competitor intel (5)",
+                    "Monitoring + alerts",
+                    "CLI access",
+                    "Enterprise reports",
+                  ].map(item => (
+                    <li key={item} className="flex items-center gap-3 text-[15px] text-white/80">
+                      <CheckCircle className="w-5 h-5 text-primary shrink-0 opacity-70" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={() => onSelectPlan("dominate")}
+                  disabled={isCheckoutLoading}
+                  className="w-full rounded-full py-4 text-base font-bold transition-all mt-auto disabled:opacity-60 disabled:cursor-not-allowed pointer-events-auto"
+                  style={{ background: "#0e0e11", border: "1px solid rgba(255,255,255,0.1)", color: "white" }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = "var(--primary)"}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"}
+                >
+                  {isCheckoutLoading ? "Redirecting..." : "Dominate AI Search"}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      </footer>
+        </section>
+
+        {/* ── FOOTER ───────────────────────────────────────────────────────── */}
+        <footer style={{ borderTop: "1px solid rgba(255,255,255,0.05)", background: "transparent" }}>
+          <div className="max-w-[1280px] mx-auto px-8 py-24">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12 mb-16">
+              {/* Brand */}
+              <div className="col-span-2 md:col-span-1">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="font-display font-bold text-xl tracking-tight leading-none text-white">
+                    <span>Pinnacle</span>
+                    <span className="font-light text-primary">.ai</span>
+                  </span>
+                </div>
+                <p className="text-[14px] leading-relaxed text-muted-foreground">
+                  Control how AI engines discover, cite, and summarize your digital footprint.
+                </p>
+              </div>
+
+              {/* Product */}
+              <div>
+                <p className="text-[10px] font-mono tracking-widest mb-6 text-white uppercase">Product</p>
+                <ul className="space-y-3">
+                  {[
+                    { label: "AEO Audits", page: "audits" },
+                    { label: "AI Visibility Lab", page: "ai-visibility-lab" },
+                    { label: "Monitoring", page: "monitor" },
+                    { label: "Pricing", page: "pricing" },
+                    { label: "Pinnacle CLI", page: "cli", isNew: true },
+                  ].map(({ label, page, isNew }) => (
+                    <li key={label}>
+                      <button
+                        onClick={() => onNavigate?.(page)}
+                        className="text-[14px] text-muted-foreground hover:text-white transition-colors flex items-center gap-2"
+                      >
+                        {label}
+                        {isNew && <span className="bg-primary/20 text-primary text-[9px] font-bold px-1.5 py-0.5 rounded tracking-wider">NEW</span>}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Company */}
+              <div>
+                <p className="text-[10px] font-mono tracking-widest mb-6 text-white uppercase">Company</p>
+                <ul className="space-y-3">
+                  {[
+                    { label: "About", page: "about" },
+                    { label: "Blog", page: "blog" },
+                    { label: "Careers", page: "careers" },
+                    { label: "Press", page: "press" },
+                  ].map(({ label, page }) => (
+                    <li key={label}>
+                      <button
+                        onClick={() => onNavigate?.(page)}
+                        className="text-[14px] text-muted-foreground hover:text-white transition-colors"
+                      >
+                        {label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Support */}
+              <div>
+                <p className="text-[10px] font-mono tracking-widest mb-6 text-white uppercase">Support</p>
+                <ul className="space-y-3 mb-8">
+                  <li><button onClick={() => onNavigate?.("docs")} className="text-[14px] text-muted-foreground hover:text-white transition-colors">Documentation</button></li>
+                  <li><button onClick={() => onNavigate?.("status")} className="text-[14px] text-muted-foreground hover:text-white transition-colors">System Status</button></li>
+                  <li><a href="mailto:support@pinnacle.ai" className="text-[14px] text-muted-foreground hover:text-white transition-colors">Contact Support</a></li>
+                </ul>
+
+                <p className="text-[10px] font-mono tracking-widest mb-6 text-white uppercase">Legal</p>
+                <ul className="space-y-3">
+                  <li><button onClick={() => onNavigate?.("terms")} className="text-[14px] text-muted-foreground hover:text-white transition-colors">Terms & Privacy</button></li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-white/5" >
+              <div className="text-[13px] text-muted-foreground flex items-center gap-4">
+                <span>&copy; {new Date().getFullYear()} Pinnacle.ai. All rights reserved.</span>
+                <span className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-primary animate-pulse" /> All systems operational
+                </span>
+              </div>
+              <div className="flex items-center gap-6">
+                {[
+                  { label: "X", href: "https://twitter.com/pinnacleai" },
+                  { label: "LinkedIn", href: "https://linkedin.com/company/pinnacleai" },
+                  { label: "GitHub", href: "https://github.com/pinnacleai" },
+                ].map(({ label, href }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-[13px] text-muted-foreground hover:text-white transition-colors font-medium"
+                  >
+                    {label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        </footer>
       </div>
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_PAGE_SCHEMA) }} />
