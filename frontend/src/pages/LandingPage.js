@@ -209,7 +209,7 @@ function VisibilityTrendTooltip({ active, payload, label }) {
           <div key={series.key} className="flex items-center justify-between gap-3 text-[11px]">
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full" style={{ background: series.color }} />
-              <span style={{ color: "#a5b4fc" }}>{series.label}</span>
+              <span style={{ color: "#94a3b8" }}>{series.label}</span>
             </div>
             <span className="font-semibold" style={{ color: "#f8fafc" }}>
               {pointByKey.get(series.key)}%
@@ -335,23 +335,39 @@ function DashboardMockup() {
         initial={reduceMotion ? false : { opacity: 0, x: -16 }}
         animate={reduceMotion ? undefined : { opacity: 1, x: 0 }}
         transition={{ delay: 0.8, duration: 0.5 }}
-        className="absolute rounded-xl p-3 z-10"
+        className="absolute z-10"
         style={{
-          background: "rgba(13,13,13,0.97)",
-          border: "1px solid rgba(255,255,255,0.1)",
-          backdropFilter: "blur(12px)",
-          boxShadow: "0 8px 30px rgba(0,0,0,0.6)",
-          width: 200,
           left: -60,
           top: "38%",
         }}
       >
-        <div className="flex items-center justify-between mb-1.5">
-          <span className="text-[8px] font-mono tracking-widest uppercase" style={{ color: "#555" }}>New Citation</span>
-          <CheckCircle className="w-3 h-3 text-primary" />
-        </div>
-        <p className="text-[12px] text-white font-medium leading-snug">ChatGPT cited your /pricing page</p>
-        <p className="text-[9px] font-mono mt-1.5" style={{ color: "#555" }}>2 min ago</p>
+        <motion.div
+          animate={reduceMotion ? undefined : { 
+            y: [0, -6, 0],
+            x: [0, 4, 0],
+            rotate: [0, 1.5, 0]
+          }}
+          transition={{ 
+            duration: 12, 
+            repeat: Infinity, 
+            ease: "easeInOut" 
+          }}
+          className="rounded-xl p-3"
+          style={{
+            background: "rgba(20,20,20,0.98)", // More opaque to replace blur
+            border: "1px solid rgba(255,255,255,0.1)",
+            boxShadow: "0 8px 30px rgba(0,0,0,0.6)",
+            width: 200,
+            willChange: "transform",
+          }}
+        >
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[8px] font-mono tracking-widest uppercase" style={{ color: "#555" }}>New Citation</span>
+            <CheckCircle className="w-3 h-3 text-primary" />
+          </div>
+          <p className="text-[12px] text-white font-medium leading-snug">ChatGPT cited your /pricing page</p>
+          <p className="text-[9px] font-mono mt-1.5" style={{ color: "#555" }}>2 min ago</p>
+        </motion.div>
       </motion.div>
 
       {/* Orbital card: Lift Suggestion — bottom right */}
@@ -359,26 +375,44 @@ function DashboardMockup() {
         initial={reduceMotion ? false : { opacity: 0, y: 16 }}
         animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
         transition={{ delay: 1.1, duration: 0.5 }}
-        className="absolute rounded-xl p-4 z-10"
+        className="absolute z-10"
         style={{
-          background: "#a3e635",
-          boxShadow: "0 16px 40px rgba(163,230,53,0.25)",
-          width: 220,
           right: -16,
           bottom: -24,
         }}
       >
-        <div className="flex items-center gap-1.5 mb-2">
-          <Sparkles className="w-3 h-3 text-black/50" />
-          <span className="text-[8px] font-mono uppercase tracking-widest font-bold text-black/50">Lift Suggestion</span>
-        </div>
-        <p className="text-[13px] font-bold text-[#0a0a0a] leading-snug mb-3">
-          Add FAQ schema → predicted +14 citation pts.
-        </p>
-        <div className="flex items-center gap-3">
-          <button className="bg-[#0a0a0a] text-white px-4 py-1.5 rounded-full text-[10px] font-bold">Apply</button>
-          <button className="text-black/60 text-[10px] font-semibold">Preview</button>
-        </div>
+        <motion.div
+          animate={reduceMotion ? undefined : { 
+            y: [0, -8, 0],
+            x: [0, -3, 0],
+            rotate: [0, -1, 0]
+          }}
+          transition={{ 
+            duration: 15, 
+            repeat: Infinity, 
+            ease: "easeInOut",
+            delay: 1 
+          }}
+          className="rounded-xl p-4"
+          style={{
+            background: "#a3e635",
+            boxShadow: "0 10px 30px rgba(163,230,53,0.2)", // Reduced shadow complexity
+            width: 220,
+            willChange: "transform",
+          }}
+        >
+          <div className="flex items-center gap-1.5 mb-2">
+            <Sparkles className="w-3 h-3 text-black/50" />
+            <span className="text-[8px] font-mono uppercase tracking-widest font-bold text-black/50">Lift Suggestion</span>
+          </div>
+          <p className="text-[13px] font-bold text-[#0a0a0a] leading-snug mb-3">
+            Add FAQ schema → predicted +14 citation pts.
+          </p>
+          <div className="flex items-center gap-3">
+            <button className="bg-[#0a0a0a] text-white px-4 py-1.5 rounded-full text-[10px] font-bold">Apply</button>
+            <button className="text-black/60 text-[10px] font-semibold">Preview</button>
+          </div>
+        </motion.div>
       </motion.div>
     </div>
   );
@@ -393,15 +427,15 @@ function HeroSection({ onGetStarted, onNavigate }) {
       className="relative min-h-screen flex items-center"
       style={{ background: "#000000", overflow: "hidden" }}
     >
-      {/* Pure black base — green radial glow ONLY on the right half where the mockup lives */}
+      {/* Pure black base — green radial glow shifted left and up */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: "radial-gradient(ellipse 80% 90% at 75% 50%, rgba(74,222,128,0.07) 0%, transparent 70%)",
+          background: "radial-gradient(circle at 45% 35%, rgba(163,230,53,0.3) 0%, transparent 45%)",
         }}
       />
 
-      {/* Grid — only visible in the green-lit area */}
+      {/* Grid — only visible in the green-lit area, shifted left/up */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -409,8 +443,8 @@ function HeroSection({ onGetStarted, onNavigate }) {
             linear-gradient(rgba(163,230,53,0.055) 1px, transparent 1px),
             linear-gradient(90deg, rgba(163,230,53,0.055) 1px, transparent 1px)`,
           backgroundSize: "60px 60px",
-          maskImage: "radial-gradient(ellipse 75% 80% at 72% 50%, black 20%, transparent 75%)",
-          WebkitMaskImage: "radial-gradient(ellipse 75% 80% at 72% 50%, black 20%, transparent 75%)",
+          maskImage: "radial-gradient(circle 50% at 45% 35%, black 20%, transparent 70%)",
+          WebkitMaskImage: "radial-gradient(circle 50% at 45% 35%, black 20%, transparent 70%)",
         }}
       />
 
@@ -433,7 +467,7 @@ function HeroSection({ onGetStarted, onNavigate }) {
             >
               <div className="w-1.5 h-1.5 rounded-full bg-primary" />
               <span className="text-[11px] font-mono tracking-[0.06em]" style={{ color: "#888" }}>
-                AI Visibility Platform <span className="text-primary/40 mx-1">/</span> v2.4
+                AI Visibility Platform
               </span>
             </div>
 
@@ -602,7 +636,7 @@ function AIVisibilityExplainedSection() {
       </SectionWrapper>
 
       {/* 5. SEO VS AEO VS GEO */}
-      <SectionWrapper className="py-24 px-8 border-t border-white/5 bg-[#0e0e11]">
+      <SectionWrapper className="py-24 px-8 border-t border-white/5 bg-transparent">
         <div className="max-w-[1120px] mx-auto">
           <p className="text-[10px] font-mono tracking-[0.15em] mb-4 text-primary uppercase">
             // WHY IT MATTERS
@@ -653,7 +687,7 @@ function HowAIEnginesChooseContentSection() {
   return (
     <>
       {/* 6. How Evaluation Works */}
-      <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid rgba(255,255,255,0.05)", background: "#09090b" }}>
+      <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid rgba(255,255,255,0.05)", background: "transparent" }}>
         <div className="max-w-[1120px] mx-auto">
           <p className="text-[10px] font-mono tracking-[0.1em] mb-4 text-primary uppercase text-center">
             // AI UNDERSTANDING
@@ -689,7 +723,7 @@ function HowAIEnginesChooseContentSection() {
       </SectionWrapper>
 
       {/* 7. How it Works (Steps) */}
-      <SectionWrapper id="how-it-works" className="py-24 px-8 border-t border-white/5 bg-[#09090b]">
+      <SectionWrapper id="how-it-works" className="py-24 px-8 border-t border-white/5 bg-transparent">
         <div className="max-w-[1120px] mx-auto">
           <p className="text-[10px] font-mono tracking-[0.1em] mb-4 text-primary uppercase">
             // HOW IT WORKS
@@ -742,7 +776,7 @@ const ALL_ENGINES = ["CHATGPT", "GEMINI", "PERPLEXITY", "COPILOT", "CLAUDE", "GR
 
 function AIEngineMarquee() {
   return (
-    <div className="py-10 bg-[#0e0e11] overflow-hidden" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+    <div className="py-10 bg-transparent overflow-hidden" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
       <div className="flex justify-center mb-6">
         <p className="text-[10px] font-mono tracking-[0.2em] text-muted-foreground uppercase">
           // tracked across every major AI engine
@@ -767,19 +801,19 @@ const SHIFT_STEPS = [
     number: "01",
     title: "Millions now ask AI",
     desc: "Users ask ChatGPT, Perplexity, and Gemini instead of searching Google. AI is the new front page.",
-    color: "#4F46E5",
+    color: "#a3e635",
   },
   {
     number: "02",
     title: "AI summarizes and recognizes sources",
     desc: "AI engines generate answers that summarize information and recognize specific pages. Only recognized content gets visibility.",
-    color: "#7C3AED",
+    color: "#a3e635",
   },
   {
     number: "03",
     title: "Unrecognized brands disappear",
     desc: "If your brand isn't in AI answers, you're invisible to a growing segment of users. Pinnacle fixes that.",
-    color: "#6366F1",
+    color: "#a3e635",
   },
 ];
 
@@ -790,7 +824,7 @@ function SearchShiftSection() {
     <SectionWrapper className="py-24 px-8" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
       <div className="max-w-[1120px] mx-auto">
         <motion.div className="mb-12" variants={fadeUp}>
-          <p className="text-[11px] font-medium uppercase tracking-[0.08em] mb-3" style={{ color: "#818CF8" }}>
+          <p className="text-[11px] font-medium uppercase tracking-[0.08em] mb-3" style={{ color: "#a3e635" }}>
             HOW IT WORKS
           </p>
           <h2 className="font-display text-4xl lg:text-[42px] font-bold mb-4" style={{ color: "#ffffff", letterSpacing: "-0.02em" }}>
@@ -837,7 +871,7 @@ function SearchShiftSection() {
 
 function PlatformBentoGrid() {
   return (
-    <SectionWrapper className="py-24 px-8 bg-[#09090b]" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+    <SectionWrapper className="py-24 px-8 bg-transparent" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
       <div className="max-w-[1120px] mx-auto">
         <p className="text-[10px] font-mono tracking-[0.1em] mb-4 text-primary uppercase text-center">
           // PLATFORM FEATURES
@@ -923,7 +957,7 @@ function PlatformBentoGrid() {
 
 function DeveloperCLISection() {
   return (
-    <SectionWrapper className="py-24 px-8 bg-[#0e0e11] border-t border-white/5">
+    <SectionWrapper className="py-24 px-8 bg-transparent border-t border-white/5">
       <div className="max-w-[1120px] mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div>
@@ -996,7 +1030,7 @@ function DeveloperCLISection() {
 
 function WhoUsesPinnacleSection() {
   return (
-    <SectionWrapper className="py-24 px-8 bg-[#09090b]" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+    <SectionWrapper className="py-24 px-8 bg-transparent" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
       <div className="max-w-[1120px] mx-auto">
         <p className="text-[10px] font-mono tracking-[0.1em] mb-4 text-primary uppercase text-center">
           // BUILT FOR SCALE
@@ -1051,7 +1085,7 @@ function FAQSection() {
   };
 
   return (
-    <SectionWrapper className="py-24 px-8 bg-[#09090b]" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+    <SectionWrapper className="py-24 px-8 bg-transparent" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
       <div className="max-w-[800px] mx-auto">
         <p className="text-[10px] font-mono tracking-[0.1em] mb-4 text-primary uppercase text-center">
           // FAQ
@@ -1116,7 +1150,7 @@ function AIVisibilityLabPreview({ onNavigate }) {
 
           {/* Left: copy */}
           <motion.div variants={slideInLeft}>
-            <p className="text-[11px] font-medium uppercase tracking-[0.08em] mb-3" style={{ color: "#818CF8" }}>
+            <p className="text-[11px] font-medium uppercase tracking-[0.08em] mb-3" style={{ color: "#a3e635" }}>
               AI LAB
             </p>
             <div
@@ -1361,12 +1395,13 @@ export default function LandingPage({
   const isSubscribed = Boolean(user?.isSubscribed || user?.isFoundingUser);
 
   return (
-    <div className="relative overflow-x-hidden" style={{ background: "#000000", minHeight: "100vh" }} data-testid="landing-page">
+    <div className="relative overflow-x-hidden min-h-screen bg-black" data-testid="landing-page">
+      <div className="relative z-10">
 
       <HeroSection onGetStarted={onGetStarted} onNavigate={onNavigate} />
+      <AIEngineMarquee />
       <AIVisibilityExplainedSection />
       <HowAIEnginesChooseContentSection />
-      <AIEngineMarquee />
       <SearchShiftSection />
       <AIVisibilityLabPreview onNavigate={onNavigate} />
       <StrategySimulatorSection onNavigate={onNavigate} />
@@ -1377,7 +1412,7 @@ export default function LandingPage({
       <FAQSection />
 
       {/* ── PRICING ──────────────────────────────────────────────────────── */}
-      <section className="py-24 px-8 bg-[#0e0e11]" data-section="pricing" id="pricing" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+      <section className="py-24 px-8 bg-transparent" data-section="pricing" id="pricing" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
         <div className="max-w-[1120px] mx-auto">
           <div className="mb-16 text-center">
             <p className="text-[10px] font-mono tracking-[0.1em] mb-4 text-primary uppercase text-center">
@@ -1504,7 +1539,7 @@ export default function LandingPage({
       </section>
 
       {/* ── FOOTER ───────────────────────────────────────────────────────── */}
-      <footer style={{ borderTop: "1px solid rgba(255,255,255,0.05)", background: "#0e0e11" }}>
+      <footer style={{ borderTop: "1px solid rgba(255,255,255,0.05)", background: "transparent" }}>
         <div className="max-w-[1120px] mx-auto px-8 py-16">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12 mb-16">
             {/* Brand */}
@@ -1609,6 +1644,7 @@ export default function LandingPage({
           </div>
         </div>
       </footer>
+      </div>
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_PAGE_SCHEMA) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_SCHEMA) }} />

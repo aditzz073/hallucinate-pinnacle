@@ -6,8 +6,8 @@ module.exports = {
     extend: {
       colors: {
         // -- Layered surface system --
-        background: "#09090b",       // zinc-950, deep near black
-        surface: "#0e0e11",          // slight elevation
+        background: "#000000",       // true black
+        surface: "#09090b",          // slight elevation (zinc-950)
         "surface-2": "#141418",      // elevated cards
         "surface-3": "#1d1d22",      // hover / pressed state
         
@@ -44,12 +44,12 @@ module.exports = {
         input: "#141418",
         ring: "#a3e635",
 
-        // -- Legacy brand kept for backwards compat (dashboard) --
+        // -- Legacy brand remapped to theme --
         brand: {
-          blue: "#4F46E5",
-          teal: "#22D3EE",
-          indigo: "#4F46E5",
-          violet: "#7C3AED",
+          blue: "#a3e635",
+          teal: "#a3e635",
+          indigo: "#a3e635",
+          violet: "#a3e635",
         },
       },
       maxWidth: {

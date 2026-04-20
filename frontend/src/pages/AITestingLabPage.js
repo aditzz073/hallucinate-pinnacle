@@ -175,7 +175,7 @@ export default function AITestingLabPage({ onSignUp }) {
       <div>
         <h1 className="font-display text-3xl font-bold text-white mb-2">
           AI Testing{" "}
-          <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">
             Lab
           </span>
         </h1>
@@ -208,8 +208,8 @@ export default function AITestingLabPage({ onSignUp }) {
                   disabled={isGuest && hasReachedLimit}
                   className={`p-3 rounded-xl border text-left transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
                     selected
-                      ? "border-indigo-500/40 bg-indigo-500/10 text-white"
-                      : "text-gray-500 hover:text-gray-400"
+                      ? "border-primary/40 bg-primary/10 text-white"
+                      : "text-muted-foreground hover:text-gray-400"
                   }`}
                   style={{ borderColor: selected ? undefined : "var(--border)", background: selected ? undefined : "transparent" }}
                 >
@@ -217,10 +217,10 @@ export default function AITestingLabPage({ onSignUp }) {
                     <div className="bg-white rounded-md p-1 flex items-center justify-center shadow-sm shrink-0">
                       {ENGINE_LOGOS[engine.id]
                         ? <img src={ENGINE_LOGOS[engine.id]} alt={engine.name} className="w-4 h-4 object-contain" />
-                        : <Icon className={`w-4 h-4 ${selected ? "text-indigo-400" : "text-gray-600"}`} />}
+                        : <Icon className={`w-4 h-4 ${selected ? "text-primary" : "text-subtle-foreground"}`} />}
                     </div>
                     <span className="text-xs font-semibold">{engine.name}</span>
-                    {selected && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-400" />}
+                    {selected && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary" />}
                   </div>
                   <p
                     className="text-[10px] leading-snug"
@@ -367,9 +367,9 @@ export default function AITestingLabPage({ onSignUp }) {
           {/* Relevance feedback */}
           <div
             className="glass-card p-4 flex items-start gap-3"
-            style={{ borderColor: "rgba(99,102,241,0.25)" }}
+            style={{ borderColor: "var(--primary-light)" }}
           >
-            <Info className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+            <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
             <div className="space-y-1.5">
               <p className="text-sm font-medium text-white">Relevance Analysis</p>
               <p className="text-xs" style={{ color: "var(--text-muted)" }}>
@@ -416,7 +416,7 @@ export default function AITestingLabPage({ onSignUp }) {
                         >
                           {ENGINE_LOGOS[r.engine_id]
                             ? <img src={ENGINE_LOGOS[r.engine_id]} alt={r.engine_name} className="w-5 h-5 object-contain" />
-                            : <Icon className="w-5 h-5 text-indigo-300" />}
+                            : <Icon className="w-5 h-5 text-primary" />}
                         </div>
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
@@ -469,7 +469,7 @@ export default function AITestingLabPage({ onSignUp }) {
                               className="flex items-start gap-2 text-xs"
                               style={{ color: "var(--text-muted)" }}
                             >
-                              <Zap className="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5" />
+                              <Zap className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
                               <span>{imp}</span>
                             </li>
                           ))}
@@ -533,7 +533,7 @@ export default function AITestingLabPage({ onSignUp }) {
                               {r.priority_signals.map((sig, i) => (
                                 <span
                                   key={i}
-                                  className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400"
+                                  className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary"
                                 >
                                   {sig}
                                 </span>
@@ -597,13 +597,13 @@ export default function AITestingLabPage({ onSignUp }) {
           {/* Page information */}
           <div className="glass-card p-5">
             <div className="flex items-center gap-2 mb-4">
-              <Globe className="w-4 h-4 text-blue-400" />
+              <Globe className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium text-white">Page Information</span>
               <a
                 href={result.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-auto flex items-center gap-1 text-xs text-blue-400 hover:underline"
+                className="ml-auto flex items-center gap-1 text-xs text-primary hover:underline"
               >
                 View Page <ExternalLink className="w-3 h-3" />
               </a>

@@ -107,7 +107,7 @@ export default function AdvancedAuditPage() {
   return (
     <div className="space-y-10" data-testid="advanced-audit-page">
       <div>
-        <h1 className="font-display text-3xl font-bold text-white mb-2">Advanced <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Audit</span></h1>
+        <h1 className="font-display text-3xl font-bold text-white mb-2">Advanced <span className="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">Audit</span></h1>
         <p className="text-sm" style={{ color: "var(--text-muted)" }}>Deep audit with explainability, historical intelligence, and integrity metadata.</p>
       </div>
 
@@ -203,7 +203,7 @@ function AdvancedResult({ result, isPaidUser }) {
         <div>
           <span className="text-4xl font-bold" style={{ color: getScoreColor(result.overall_score) }}>{result.overall_score}</span>
           <span className="text-xs text-gray-600 ml-2">/100 AEO Score</span>
-          <a href={result.url} target="_blank" rel="noopener noreferrer" className="block text-xs text-blue-400 mt-2 hover:underline flex items-center gap-1">
+          <a href={result.url} target="_blank" rel="noopener noreferrer" className="block text-xs text-primary mt-2 hover:underline flex items-center gap-1">
             {result.url} <ExternalLink className="w-3 h-3" />
           </a>
         </div>
@@ -232,7 +232,7 @@ function AdvancedResult({ result, isPaidUser }) {
       {/* Historical Intelligence */}
       {result.historical_intelligence?.length > 0 && (
         <div className="glass-card p-6">
-          <h3 className="font-semibold text-sm mb-4 flex items-center gap-2"><Info className="w-4 h-4 text-blue-400" /> Historical Intelligence</h3>
+          <h3 className="font-semibold text-sm mb-4 flex items-center gap-2"><Info className="w-4 h-4 text-primary" /> Historical Intelligence</h3>
           <div className="space-y-2">
             {result.historical_intelligence.slice(0, 5).map((rec, i) => (
               <div key={i} className="flex items-start gap-3 bg-muted/50 rounded-md px-4 py-3 text-xs" data-testid={`hist-rec-${i}`}>

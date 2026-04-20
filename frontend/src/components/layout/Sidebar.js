@@ -82,7 +82,7 @@ export default function Sidebar({ activePage, onNavigate, onFeatureLocked, onLog
         <Logo size="sm" />
         {!collapsed && (
           <span className="font-display font-bold text-sm tracking-tight text-white whitespace-nowrap">
-            Pinnacle<span className="text-indigo-400">.ai</span>
+            Pinnacle<span className="text-primary">.ai</span>
           </span>
         )}
       </div>
@@ -126,13 +126,13 @@ export default function Sidebar({ activePage, onNavigate, onFeatureLocked, onLog
                     } ${
                       isActive
                         ? "text-white"
-                        : "text-[#7070A0] hover:text-white"
+                        : "text-muted-foreground hover:text-white"
                     }`}
                     style={
                       isActive
                         ? {
-                            background: "rgba(79,70,229,0.12)",
-                            borderLeft: "2px solid #4F46E5",
+                            background: "var(--primary-light)",
+                            borderLeft: "2px solid var(--primary)",
                             paddingLeft: collapsed ? undefined : "calc(0.75rem - 2px)",
                             opacity: isPremiumLocked ? 0.62 : 1,
                           }
@@ -145,7 +145,7 @@ export default function Sidebar({ activePage, onNavigate, onFeatureLocked, onLog
                   >
                     <Icon
                       className={`shrink-0 transition-colors ${collapsed ? "w-4.5 h-4.5" : "w-4 h-4"} ${
-                        isActive ? "text-indigo-400" : "text-[#4A4A70] group-hover:text-[#7070A0]"
+                        isActive ? "text-primary" : "text-subtle-foreground group-hover:text-muted-foreground"
                       }`}
                       style={{ width: "16px", height: "16px" }}
                     />
@@ -155,7 +155,7 @@ export default function Sidebar({ activePage, onNavigate, onFeatureLocked, onLog
                     {isPremiumLocked && (
                       <Lock
                         className="ml-auto shrink-0"
-                        style={{ width: "13px", height: "13px", color: "#A5B4FC" }}
+                        style={{ width: "13px", height: "13px", color: "var(--primary)" }}
                         aria-label={`Available in ${getMinimumPlanForFeature(premiumFeature)}`}
                       />
                     )}
@@ -181,8 +181,8 @@ export default function Sidebar({ activePage, onNavigate, onFeatureLocked, onLog
           onClick={() => onNavigate("profile")}
           className={`w-full flex items-center gap-2.5 rounded-md text-sm font-medium transition-all duration-200 ease-out hover:-translate-y-[1px] group ${
             collapsed ? "justify-center px-0 py-2.5" : "px-3 py-2"
-          } ${activePage === "profile" ? "text-white" : "text-[#7070A0] hover:text-white hover:bg-[#1A1A30]"}`}
-          style={activePage === "profile" ? { background: "rgba(79,70,229,0.12)", borderLeft: "2px solid #4F46E5", paddingLeft: collapsed ? undefined : "calc(0.75rem - 2px)" } : { borderLeft: "2px solid transparent" }}
+          } ${activePage === "profile" ? "text-white" : "text-muted-foreground hover:text-white hover:bg-white/5"}`}
+          style={activePage === "profile" ? { background: "var(--primary-light)", borderLeft: "2px solid var(--primary)", paddingLeft: collapsed ? undefined : "calc(0.75rem - 2px)" } : { borderLeft: "2px solid transparent" }}
         >
           <User style={{ width: "16px", height: "16px" }} className="shrink-0" />
           {!collapsed && <span>Profile</span>}
@@ -193,7 +193,7 @@ export default function Sidebar({ activePage, onNavigate, onFeatureLocked, onLog
           onClick={onLogout}
           className={`w-full flex items-center gap-2.5 rounded-md text-sm font-medium transition-all duration-200 ease-out hover:-translate-y-[1px] ${
             collapsed ? "justify-center px-0 py-2.5" : "px-3 py-2"
-          } text-[#7070A0] hover:text-red-400 hover:bg-red-500/10`}
+          } text-muted-foreground hover:text-red-400 hover:bg-red-500/10`}
           style={{ borderLeft: "2px solid transparent" }}
         >
           <LogOut style={{ width: "16px", height: "16px" }} className="shrink-0" />

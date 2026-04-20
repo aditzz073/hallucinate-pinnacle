@@ -52,7 +52,7 @@ export default function UpgradeModal({
   if (errorType === "feature_locked") {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-        <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#0D0D1F] shadow-2xl">
+        <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#000000] shadow-2xl">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 transition-colors"
@@ -62,8 +62,8 @@ export default function UpgradeModal({
           </button>
 
           <div className="p-8 text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500/20 to-violet-500/20 border border-indigo-500/30 mb-6">
-              <Lock className="w-8 h-8 text-indigo-400" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 border border-primary/30 mb-6">
+              <Lock className="w-8 h-8 text-primary" />
             </div>
 
             <h2 className="text-2xl font-bold text-white mb-2">
@@ -80,7 +80,7 @@ export default function UpgradeModal({
               <button
                 onClick={() => onUpgrade(requiredPlan)}
                 className="w-full py-3 rounded-lg text-sm font-bold text-white transition-all duration-200 hover:brightness-110"
-                style={{ background: "linear-gradient(135deg, #4F46E5, #7C3AED)" }}
+                style={{ background: "var(--primary)", color: "black" }}
               >
                 Upgrade to {displayPlan}
               </button>
@@ -139,7 +139,7 @@ export default function UpgradeModal({
               <button
                 onClick={() => { onClose(); navigate("/pricing"); }}
                 className="w-full py-3 rounded-lg text-sm font-bold text-white transition-all duration-200 hover:brightness-110"
-                style={{ background: "linear-gradient(135deg, #D97706, #F59E0B)" }}
+                style={{ background: "var(--primary)", color: "black" }}
               >
                 Upgrade for more
               </button>
@@ -172,8 +172,8 @@ export default function UpgradeModal({
         </button>
 
         <div className="p-8 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500/20 to-violet-500/20 border border-indigo-500/30 mb-6">
-            <Rocket className="w-8 h-8 text-indigo-400" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 border border-primary/30 mb-6">
+            <Rocket className="w-8 h-8 text-primary" />
           </div>
 
           <h2 className="text-2xl font-bold text-white mb-2">
@@ -189,7 +189,7 @@ export default function UpgradeModal({
             <button
               onClick={() => { onClose(); navigate("/pricing"); }}
               className="w-full py-3 rounded-lg text-sm font-bold text-white transition-all duration-200 hover:brightness-110"
-              style={{ background: "linear-gradient(135deg, #4F46E5, #7C3AED)" }}
+              style={{ background: "var(--primary)", color: "black" }}
             >
               View Plans
             </button>

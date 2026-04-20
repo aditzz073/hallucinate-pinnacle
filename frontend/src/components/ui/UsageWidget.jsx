@@ -47,8 +47,8 @@ export default function UsageWidget({ plan, usage, resetsAt }) {
         style={{ padding: "12px 16px", background: "rgba(79,70,229,0.04)" }}
       >
         <div className="flex items-center gap-2 mb-1">
-          <TrendingUp className="w-3.5 h-3.5" style={{ color: "#818CF8" }} />
-          <span className="text-xs font-semibold" style={{ color: "#818CF8" }}>Usage</span>
+          <TrendingUp className="w-3.5 h-3.5" style={{ color: "var(--primary)" }} />
+          <span className="text-xs font-semibold" style={{ color: "var(--primary)" }}>Usage</span>
         </div>
         <p className="text-xs" style={{ color: "var(--muted)" }}>
           Unlimited — {usage?.aeo_audits_used || 0} audits run this month
@@ -82,8 +82,8 @@ export default function UsageWidget({ plan, usage, resetsAt }) {
     >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <TrendingUp className="w-3.5 h-3.5" style={{ color: "#818CF8" }} />
-          <span className="text-xs font-semibold" style={{ color: "#818CF8" }}>Usage</span>
+          <TrendingUp className="w-3.5 h-3.5" style={{ color: "var(--primary)" }} />
+          <span className="text-xs font-semibold" style={{ color: "var(--primary)" }}>Usage</span>
         </div>
         {resetsLabel && (
           <span className="text-[10px]" style={{ color: "var(--muted-foreground)" }}>
@@ -108,7 +108,7 @@ export default function UsageWidget({ plan, usage, resetsAt }) {
         <button
           onClick={() => navigate("/pricing")}
           className="mt-3 text-xs font-medium hover:opacity-70 transition-opacity"
-          style={{ color: "#818CF8" }}
+          style={{ color: "var(--primary)" }}
         >
           Upgrade for unlimited →
         </button>

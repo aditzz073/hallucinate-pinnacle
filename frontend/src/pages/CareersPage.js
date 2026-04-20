@@ -42,10 +42,10 @@ export default function CareersPage() {
     <div className="py-8">
       {/* Header */}
       <div className="mb-14">
-        <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "#4F46E5" }}>Careers</p>
+        <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--primary)" }}>Careers</p>
         <h1 className="font-display text-4xl lg:text-5xl font-bold mb-4" style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}>
           Help us define{" "}
-          <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">the future of discovery.</span>
+          <span className="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">the future of discovery.</span>
         </h1>
         <p className="text-base max-w-[560px]" style={{ color: "var(--text-muted)" }}>
           We're a small team moving fast. If you want to work on a genuinely new problem with the people shaping how AI finds information, you're in the right place.
@@ -62,7 +62,7 @@ export default function CareersPage() {
               className="rounded-xl px-4 py-3 flex items-center gap-2.5"
               style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
             >
-              <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "#818CF8" }} />
+              <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "var(--primary)" }} />
               <span className="text-sm" style={{ color: "var(--text-muted)" }}>{label}</span>
             </div>
           ))}
@@ -81,13 +81,13 @@ export default function CareersPage() {
               className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl px-5 py-4 transition-colors"
               style={{ background: "var(--surface)", border: "1px solid var(--border)", cursor: "pointer" }}
               onClick={() => window.location.href = "mailto:pinnacle.ai.support@gmail.com?subject=Application: " + role.title}
-              onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
+              onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(163,230,53,0.4)"}
               onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
             >
               <div>
                 <p className="text-sm font-semibold mb-1" style={{ color: "var(--foreground)" }}>{role.title}</p>
                 <div className="flex items-center gap-3 flex-wrap">
-                  <span className="text-xs px-2 py-0.5 rounded-md" style={{ background: "rgba(79,70,229,0.12)", color: "#818CF8" }}>
+                  <span className="text-xs px-2 py-0.5 rounded-md" style={{ background: "rgba(163,230,53,0.12)", color: "var(--primary)" }}>
                     {role.team}
                   </span>
                   <span className="flex items-center gap-1 text-xs" style={{ color: "var(--text-muted)" }}>
@@ -98,7 +98,7 @@ export default function CareersPage() {
                   </span>
                 </div>
               </div>
-              <button className="inline-flex items-center gap-1.5 text-xs font-semibold shrink-0" style={{ color: "#818CF8" }}>
+              <button className="inline-flex items-center gap-1.5 text-xs font-semibold shrink-0" style={{ color: "var(--primary)" }}>
                 Apply <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -110,7 +110,7 @@ export default function CareersPage() {
           <a
             href="mailto:pinnacle.ai.support@gmail.com"
             className="underline"
-            style={{ color: "#818CF8" }}
+            style={{ color: "var(--primary)" }}
           >
             Send us a note
           </a>{" "}

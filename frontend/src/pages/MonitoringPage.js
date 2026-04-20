@@ -96,7 +96,7 @@ export default function MonitoringPage() {
   return (
     <div className="space-y-10" data-testid="monitoring-page">
       <div>
-        <h1 className="font-display text-3xl font-bold text-white mb-2">Monitor <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Pages</span></h1>
+        <h1 className="font-display text-3xl font-bold text-white mb-2">Monitor <span className="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">Pages</span></h1>
         <p className="text-sm" style={{ color: "var(--text-muted)" }}>Track pages over time and detect signal changes.</p>
       </div>
 
@@ -128,9 +128,9 @@ export default function MonitoringPage() {
             <div key={page.id} className="glass-card overflow-hidden" data-testid={`monitored-page-${page.id}`}>
               <div className="flex items-center justify-between px-5 py-4">
                 <div className="flex items-center gap-4 flex-1 min-w-0">
-                  <Eye className="w-4 h-4 text-brand-blue shrink-0" />
+                  <Eye className="w-4 h-4 text-primary shrink-0" />
                   <div className="min-w-0">
-                    <a href={page.url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-white hover:text-brand-blue flex items-center gap-1 transition-colors"><span className="truncate max-w-md">{page.url}</span><ExternalLink className="w-3 h-3 shrink-0" /></a>
+                    <a href={page.url} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-white hover:text-primary flex items-center gap-1 transition-colors"><span className="truncate max-w-md">{page.url}</span><ExternalLink className="w-3 h-3 shrink-0" /></a>
                     <p className="text-xs text-gray-500">Brand: {getRecordBrand(page)} | Added: {new Date(page.created_at).toLocaleDateString()} | Last: {page.last_snapshot_at ? new Date(page.last_snapshot_at).toLocaleString() : "N/A"}</p>
                   </div>
                 </div>

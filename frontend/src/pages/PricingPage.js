@@ -146,13 +146,13 @@ export default function PricingPage({ user, isCheckoutLoading, onSelectPlan }) {
   return (
     <div
       className="min-h-screen"
-      style={{ background: "#0B0B0F", color: "#F4F4F5" }}
+      style={{ background: "#000000", color: "#F4F4F5" }}
       data-testid="pricing-page"
     >
       <div className="max-w-[1200px] mx-auto px-6 md:px-8">
         {/* Hero */}
         <section className="py-16 md:py-24 border-b border-zinc-800/80">
-          <p className="text-xs uppercase tracking-[0.18em] text-indigo-300 mb-4">
+          <p className="text-xs uppercase tracking-[0.18em] text-primary mb-4">
             PRICING
           </p>
           <h1 className="text-4xl md:text-6xl font-semibold leading-tight tracking-tight max-w-3xl">
@@ -168,7 +168,7 @@ export default function PricingPage({ user, isCheckoutLoading, onSelectPlan }) {
           <div className="grid md:grid-cols-3 gap-6">
             {/* Discover */}
             <article
-              className="rounded-xl border border-slate-700 bg-[#0B0B0F] p-7 flex flex-col"
+              className="rounded-xl border border-white/10 bg-zinc-950 p-7 flex flex-col"
               style={{ boxShadow: "0 10px 30px rgba(0,0,0,0.22)" }}
             >
               <p className="text-[20px] font-bold text-white">Discover</p>
@@ -196,13 +196,13 @@ export default function PricingPage({ user, isCheckoutLoading, onSelectPlan }) {
 
             {/* Optimize — highlighted */}
             <article
-              className="rounded-xl border-2 border-indigo-500 bg-[#0B0B0F] p-7 relative flex flex-col"
+              className="rounded-xl border-2 border-primary bg-zinc-950 p-7 relative flex flex-col"
               style={{
                 boxShadow:
-                  "0 -2px 20px rgba(99,102,241,0.2), 0 14px 40px rgba(34,34,59,0.45)",
+                  "0 -2px 20px rgba(163,230,53,0.1), 0 14px 40px rgba(0,0,0,0.45)",
               }}
             >
-              <span className="absolute -top-3 left-6 text-[11px] font-semibold uppercase tracking-[0.16em] px-3 py-1 rounded-full bg-indigo-500 text-white">
+              <span className="absolute -top-3 left-6 text-[11px] font-semibold uppercase tracking-[0.16em] px-3 py-1 rounded-full bg-primary text-black">
                 Most Popular
               </span>
               <p className="text-[20px] font-bold text-white">Optimize</p>
@@ -222,7 +222,7 @@ export default function PricingPage({ user, isCheckoutLoading, onSelectPlan }) {
               <button
                 onClick={() => onSelectPlan("optimize")}
                 disabled={isCheckoutLoading || isOnPlan("optimize")}
-                className="mt-8 w-full h-11 rounded-xl bg-indigo-500 text-white text-sm font-semibold hover:brightness-110 hover:scale-[1.01] transition disabled:opacity-60 disabled:cursor-not-allowed"
+                className="mt-8 w-full h-11 rounded-xl bg-primary text-black text-sm font-semibold hover:brightness-110 hover:scale-[1.01] transition disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {planButtonLabel("optimize", "Start Optimizing")}
               </button>
@@ -230,7 +230,7 @@ export default function PricingPage({ user, isCheckoutLoading, onSelectPlan }) {
 
             {/* Dominate */}
             <article
-              className="rounded-xl border border-violet-700 bg-[#0B0B0F] p-7 flex flex-col"
+              className="rounded-xl border border-white/10 bg-zinc-950 p-7 flex flex-col"
               style={{ boxShadow: "0 10px 30px rgba(0,0,0,0.22)" }}
             >
               <p className="text-[20px] font-bold text-white">Dominate</p>
@@ -250,7 +250,7 @@ export default function PricingPage({ user, isCheckoutLoading, onSelectPlan }) {
               <button
                 onClick={() => onSelectPlan("dominate")}
                 disabled={isCheckoutLoading || isOnPlan("dominate")}
-                className="mt-8 w-full h-11 rounded-xl border border-violet-600 text-sm font-medium text-white hover:bg-violet-500/10 hover:scale-[1.01] transition disabled:opacity-60 disabled:cursor-not-allowed"
+                className="mt-8 w-full h-11 rounded-xl border border-primary/40 text-sm font-medium text-white hover:bg-primary/10 hover:scale-[1.01] transition disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {planButtonLabel("dominate", "Dominate AI Search")}
               </button>
@@ -273,7 +273,7 @@ export default function PricingPage({ user, isCheckoutLoading, onSelectPlan }) {
             <div className="mt-6 grid sm:grid-cols-2 md:grid-cols-4 gap-3 text-sm text-zinc-300">
               {CUSTOM_FEATURES.map((f) => (
                 <div key={f} className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-indigo-400 shrink-0" />
+                  <Check className="w-4 h-4 text-primary shrink-0" />
                   {f}
                 </div>
               ))}
@@ -281,7 +281,7 @@ export default function PricingPage({ user, isCheckoutLoading, onSelectPlan }) {
             <div className="mt-6 flex flex-wrap gap-3">
               <a
                 href="mailto:pujeradi@gmail.com?subject=Pinnacle%20Custom%20Plan"
-                className="h-11 px-6 rounded-xl bg-indigo-500 text-sm font-semibold text-white inline-flex items-center gap-2 hover:brightness-110 transition"
+                className="h-11 px-6 rounded-xl bg-primary text-sm font-semibold text-black inline-flex items-center gap-2 hover:brightness-110 transition"
               >
                 Talk to us <ArrowRight className="w-4 h-4" />
               </a>
@@ -302,10 +302,10 @@ export default function PricingPage({ user, isCheckoutLoading, onSelectPlan }) {
                   <th className="text-center px-5 py-3 font-medium text-zinc-300">
                     Discover
                   </th>
-                  <th className="text-center px-5 py-3 font-medium text-indigo-300">
+                  <th className="text-center px-5 py-3 font-medium text-primary">
                     Optimize
                   </th>
-                  <th className="text-center px-5 py-3 font-medium text-violet-300">
+                  <th className="text-center px-5 py-3 font-medium text-primary">
                     Dominate
                   </th>
                 </tr>

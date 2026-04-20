@@ -128,13 +128,13 @@ export default function ProfilePage() {
       return { text: "Founding Access", color: "from-amber-300 to-yellow-500", icon: Shield };
     }
     if (plan === "dominate") {
-      return { text: "Dominate", color: "from-violet-400 to-purple-400", icon: Shield };
+      return { text: "Dominate", color: "from-primary to-primary-hover", icon: Shield };
     }
     if (plan === "optimize") {
-      return { text: "Optimize", color: "from-blue-400 to-cyan-400", icon: Shield };
+      return { text: "Optimize", color: "from-primary to-primary-hover", icon: Shield };
     }
     if (plan === "discover") {
-      return { text: "Discover", color: "from-indigo-400 to-violet-400", icon: Shield };
+      return { text: "Discover", color: "from-primary to-primary-hover", icon: Shield };
     }
     if (plan === "free" && user) {
       return { text: "Free", color: "from-slate-300 to-slate-500", icon: User };
@@ -157,9 +157,9 @@ export default function ProfilePage() {
   const planName = billingData?.plan_name || PLAN_DISPLAY_NAMES[user?.plan] || "Discover";
 
   const statItems = [
-    { icon: FileSearch, label: "Total Audits", value: stats.total_audits || 0, tint: "#60A5FA" },
-    { icon: Search, label: "AI Tests", value: stats.total_ai_tests || 0, tint: "#C084FC" },
-    { icon: TrendingUp, label: "Avg Score", value: stats.avg_score || "N/A", tint: "#34D399" },
+    { icon: FileSearch, label: "Total Audits", value: stats.total_audits || 0, tint: "var(--primary)" },
+    { icon: Search, label: "AI Tests", value: stats.total_ai_tests || 0, tint: "#34D399" },
+    { icon: TrendingUp, label: "Avg Score", value: stats.avg_score || "N/A", tint: "var(--primary)" },
     { icon: Clock, label: "Last Active", value: "Today", tint: "#FBBF24" },
   ];
 
@@ -167,7 +167,7 @@ export default function ProfilePage() {
     active: { bg: "rgba(16,185,129,0.12)", border: "rgba(16,185,129,0.3)", text: "#34D399" },
     past_due: { bg: "rgba(251,191,36,0.12)", border: "rgba(251,191,36,0.3)", text: "#FBBF24" },
     canceled: { bg: "rgba(239,68,68,0.12)", border: "rgba(239,68,68,0.3)", text: "#F87171" },
-    trialing: { bg: "rgba(99,102,241,0.12)", border: "rgba(99,102,241,0.3)", text: "#818CF8" },
+    trialing: { bg: "rgba(163,230,53,0.12)", border: "rgba(163,230,53,0.3)", text: "var(--primary)" },
     none: { bg: "rgba(161,161,170,0.08)", border: "rgba(161,161,170,0.2)", text: "#A1A1AA" },
     pending: { bg: "rgba(251,191,36,0.12)", border: "rgba(251,191,36,0.3)", text: "#FBBF24" },
   };
@@ -178,7 +178,7 @@ export default function ProfilePage() {
       <section
         className="rounded-xl border p-5 md:p-6"
         style={{
-          background: "linear-gradient(180deg, #1D1D2A 0%, #181824 100%)",
+          background: "linear-gradient(180deg, #121212 0%, #000000 100%)",
           borderColor: "rgba(255,255,255,0.06)",
         }}
       >
@@ -186,7 +186,7 @@ export default function ProfilePage() {
           <div className="flex items-center gap-4 min-w-0">
             <div
               className="h-16 w-16 md:h-20 md:w-20 rounded-full border flex items-center justify-center shrink-0"
-              style={{ background: "rgba(79,70,229,0.14)", borderColor: "rgba(255,255,255,0.12)" }}
+              style={{ background: "rgba(163,230,53,0.14)", borderColor: "rgba(255,255,255,0.12)" }}
             >
               <div
                 className="h-12 w-12 md:h-14 md:w-14 rounded-full border flex items-center justify-center"
@@ -207,7 +207,7 @@ export default function ProfilePage() {
 
               <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border"
                 style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.12)" }}>
-                <RoleIcon className="w-4 h-4" style={{ color: "#FCD34D" }} />
+                <RoleIcon className="w-4 h-4" style={{ color: "var(--primary)" }} />
                 <span className="text-xs md:text-sm font-semibold" style={{ color: "#F3F4F6" }}>
                   {roleInfo.text}
                 </span>
@@ -220,7 +220,7 @@ export default function ProfilePage() {
               type="button"
               onClick={() => openSettingsPanel("security")}
               className="h-10 px-3 rounded-lg border text-sm font-medium text-white inline-flex items-center justify-center gap-2 transition-all hover:-translate-y-[2px]"
-              style={{ background: "#202032", borderColor: "rgba(255,255,255,0.10)" }}
+              style={{ background: "#121212", borderColor: "rgba(255,255,255,0.10)" }}
             >
               <PencilLine className="w-4 h-4" />
               Edit
@@ -229,7 +229,7 @@ export default function ProfilePage() {
               type="button"
               onClick={() => openSettingsPanel("preferences")}
               className="h-10 px-3 rounded-lg border text-sm font-medium text-white inline-flex items-center justify-center gap-2 transition-all hover:-translate-y-[2px]"
-              style={{ background: "#202032", borderColor: "rgba(255,255,255,0.10)" }}
+              style={{ background: "#121212", borderColor: "rgba(255,255,255,0.10)" }}
             >
               <Settings className="w-4 h-4" />
               Settings
@@ -252,7 +252,7 @@ export default function ProfilePage() {
               {/* Plan badge */}
               <div
                 className="px-3 py-1.5 rounded-lg border text-sm font-bold"
-                style={{ background: "rgba(79,70,229,0.12)", borderColor: "rgba(79,70,229,0.3)", color: "#A5B4FC" }}
+                style={{ background: "rgba(163,230,53,0.12)", borderColor: "rgba(163,230,53,0.3)", color: "var(--primary)" }}
               >
                 {planName}
               </div>
@@ -278,7 +278,7 @@ export default function ProfilePage() {
                 onClick={handleOpenBilling}
                 disabled={openingBillingPortal}
                 className="h-9 px-4 rounded-lg text-xs font-semibold text-white inline-flex items-center gap-2 disabled:opacity-60 transition-all hover:brightness-110"
-                style={{ background: "#4F46E5" }}
+                style={{ background: "var(--primary)", color: "black" }}
               >
                 {openingBillingPortal ? "Opening..." : "Manage Billing"}
                 <ArrowUpRight className="w-3.5 h-3.5" />
@@ -308,7 +308,7 @@ export default function ProfilePage() {
                   className="h-full rounded-full transition-all duration-500"
                   style={{
                     width: auditsLimit ? `${Math.min((auditsUsed / auditsLimit) * 100, 100)}%` : "5%",
-                    background: auditsLimit && auditsUsed >= auditsLimit ? "#F87171" : "#818CF8",
+                    background: auditsLimit && auditsUsed >= auditsLimit ? "#F87171" : "var(--primary)",
                   }}
                 />
               </div>
@@ -389,7 +389,7 @@ export default function ProfilePage() {
             className="rounded-xl border p-4 text-left transition-all duration-200 hover:-translate-y-[2px]"
             style={{ background: "#181824", borderColor: "rgba(255,255,255,0.06)" }}
           >
-            <Key className="w-4 h-4 mb-2" style={{ color: "#818CF8" }} />
+            <Key className="w-4 h-4 mb-2" style={{ color: "var(--primary)" }} />
             <p className="text-sm font-semibold text-white">CLI Access</p>
             <p className="text-xs mt-1 text-zinc-400">Generate local access key</p>
           </button>
@@ -454,7 +454,7 @@ export default function ProfilePage() {
                   type="button"
                   onClick={handleOpenBilling}
                   className="h-9 px-3 rounded-lg text-xs font-semibold text-white"
-                  style={{ background: "#4F46E5" }}
+                  style={{ background: "var(--primary)", color: "black" }}
                 >
                   {canManageSubscription ? "Manage Subscription" : "Unlock Dominate"}
                 </button>
@@ -464,7 +464,7 @@ export default function ProfilePage() {
                 onClick={handleGenerateKey}
                 disabled={generatingKey}
                 className="w-full sm:w-auto h-9 px-4 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 text-white"
-                style={{ background: "#4F46E5" }}
+                style={{ background: "var(--primary)", color: "black" }}
               >
                 {generatingKey ? (
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -486,7 +486,7 @@ export default function ProfilePage() {
                   />
                   <button
                     onClick={copyKeyToClipboard}
-                    className="p-1.5 rounded bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 transition-colors"
+                    className="p-1.5 rounded bg-primary/20 text-primary hover:bg-primary/30 transition-colors"
                   >
                     {keyCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   </button>
@@ -511,7 +511,7 @@ export default function ProfilePage() {
               className="w-full p-4 flex items-center justify-between"
             >
               <div className="flex items-center gap-2">
-                <Lock className="w-4 h-4 text-blue-400" />
+                <Lock className="w-4 h-4 text-primary" />
                 <div className="text-left">
                   <p className="text-sm font-semibold text-white">Security</p>
                   <p className="text-xs text-zinc-400">Password and account protection</p>
@@ -582,7 +582,7 @@ export default function ProfilePage() {
                   type="submit"
                   disabled={pwStatus === "loading" || pwStatus === "success"}
                   className="w-full h-10 rounded-lg text-sm font-semibold flex items-center justify-center gap-2 transition-all"
-                  style={{ background: pwStatus === "success" ? "rgba(16,185,129,0.2)" : "#4F46E5", color: "white", border: pwStatus === "success" ? "1px solid rgba(16,185,129,0.4)" : "none" }}
+                  style={{ background: pwStatus === "success" ? "rgba(16,185,129,0.2)" : "var(--primary)", color: pwStatus === "success" ? "white" : "black", border: pwStatus === "success" ? "1px solid rgba(16,185,129,0.4)" : "none" }}
                 >
                   {pwStatus === "loading" && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                   {pwStatus === "success" && <><Check className="w-4 h-4 text-emerald-400" /> Password updated</>}
@@ -617,7 +617,7 @@ export default function ProfilePage() {
                   onClick={handleOpenBilling}
                   disabled={openingBillingPortal}
                   className="h-9 px-3 rounded-lg text-xs font-semibold text-white disabled:opacity-60"
-                  style={{ background: "#4F46E5" }}
+                  style={{ background: "var(--primary)", color: "black" }}
                 >
                   {openingBillingPortal
                     ? "Opening..."

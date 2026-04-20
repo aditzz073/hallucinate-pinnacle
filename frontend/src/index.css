@@ -12,7 +12,7 @@
 
 body {
   font-family: "Manrope", system-ui, sans-serif;
-  background-color: #09090b;
+  background-color: #000000;
   min-height: 100vh;
   color: #fafafa;
   -webkit-font-smoothing: antialiased;
@@ -26,7 +26,7 @@ body {
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #09090b; }
+::-webkit-scrollbar-track { background: #000000; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
 
@@ -35,8 +35,8 @@ body {
    ========================= */
 
 :root {
-  --bg:        #09090b;
-  --surface:   #0e0e11;
+  --bg:        #000000;
+  --surface:   #09090b;
   --surface-2: #141418;
   --surface-3: #1d1d22;
   --border:    rgba(255,255,255,0.08);
@@ -94,7 +94,7 @@ body {
 .action-card:hover {
   border-color: var(--primary);
   background: var(--surface-3);
-  box-shadow: 0 0 0 1px rgba(79,70,229,0.15), 0 4px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 0 20px rgba(163,230,53,0.1), 0 4px 16px rgba(0,0,0,0.2);
 }
 
 /* Backwards-compatible glass-card alias → uses solid surface */
@@ -128,7 +128,7 @@ body {
 .glass-input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+  box-shadow: 0 0 0 3px rgba(163, 230, 53, 0.15);
 }
 
 .glass-input::placeholder {
@@ -156,7 +156,7 @@ body {
 .input-field textarea:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+  box-shadow: 0 0 0 3px rgba(163, 230, 53, 0.15);
 }
 
 /* =========================
@@ -199,7 +199,7 @@ body {
 /* Primary , branded indigo */
 .btn-primary {
   background: var(--primary);
-  color: #fff;
+  color: #000000;
   font-weight: 600;
   padding: 0.625rem 1.25rem;
   border-radius: 0.5rem;
@@ -216,7 +216,7 @@ body {
 .btn-primary:hover {
   background: var(--primary-hover);
   transform: translateY(-1px) scale(1.01);
-  box-shadow: 0 0 20px rgba(124,58,237,0.25), 0 0 0 3px rgba(79,70,229,0.2);
+  box-shadow: 0 0 20px rgba(163,230,53,0.3), 0 0 0 3px rgba(163,230,53,0.15);
 }
 
 .btn-primary:active {
@@ -562,7 +562,7 @@ body {
    ========================= */
 
 .auth-showcase-bg {
-  background: linear-gradient(160deg, #0c0d1f 0%, #10132b 55%, #11162b 100%);
+  background: #000000;
 }
 
 .auth-showcase-grid {
@@ -575,9 +575,9 @@ body {
 
 .auth-showcase-vignette {
   background:
-    radial-gradient(circle at 15% 15%, rgba(124,58,237,0.18), transparent 40%),
-    radial-gradient(circle at 85% 30%, rgba(34,211,238,0.1), transparent 44%),
-    radial-gradient(circle at 70% 85%, rgba(79,70,229,0.14), transparent 40%);
+    radial-gradient(circle at 15% 15%, rgba(163,230,53,0.1), transparent 40%),
+    radial-gradient(circle at 85% 30%, rgba(52,211,153,0.06), transparent 44%),
+    radial-gradient(circle at 70% 85%, rgba(163,230,53,0.08), transparent 40%);
 }
 
 .auth-graph-card {
@@ -585,9 +585,9 @@ body {
   border-radius: 16px;
   padding: 12px;
   transform: rotate(var(--rot, 0deg));
-  background: linear-gradient(180deg, rgba(19,20,40,0.94), rgba(14,16,33,0.95));
-  border: 1px solid rgba(255,255,255,0.06);
-  box-shadow: 0 10px 28px rgba(0,0,0,0.36), 0 0 0 1px rgba(129,140,248,0.05);
+  background: linear-gradient(180deg, rgba(8,8,8,0.94), rgba(4,4,4,0.95));
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.56), 0 0 0 1px rgba(163,230,53,0.05);
   animation: auth-float-card 16s ease-in-out infinite;
 }
 
@@ -618,9 +618,9 @@ body {
 }
 
 .status-chip-info {
-  background: rgba(79,70,229,0.12);
-  color: #818CF8;
-  border: 1px solid rgba(79,70,229,0.2);
+  background: rgba(163,230,53,0.12);
+  color: var(--primary);
+  border: 1px solid rgba(163,230,53,0.2);
 }
 
 .status-chip-neutral {

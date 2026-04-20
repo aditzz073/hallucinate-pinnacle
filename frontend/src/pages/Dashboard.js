@@ -255,7 +255,7 @@ export default function Dashboard({ onNavigate }) {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3" data-testid="hero-panel">
         <div>
           <h1 className="font-display text-3xl font-bold text-white mb-2 capitalize">
-            {greeting}, <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">{userName}</span>
+            {greeting}, <span className="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">{userName}</span>
           </h1>
           <p className="text-sm" style={{ color: "var(--text-muted)" }}>
             Your AI visibility command centre
@@ -275,8 +275,8 @@ export default function Dashboard({ onNavigate }) {
           style={{ minHeight: "200px" }}
         >
           <div className="flex items-center gap-1.5 mb-4">
-            <Target className="w-3.5 h-3.5" style={{ color: "#4F46E5" }} />
-            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#4F46E5" }}>
+            <Target className="w-3.5 h-3.5" style={{ color: "var(--primary)" }} />
+            <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--primary)" }}>
               Visibility Index
             </p>
           </div>
@@ -294,13 +294,13 @@ export default function Dashboard({ onNavigate }) {
               />
               <defs>
                 <linearGradient id="scoreGradientIndigo" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#4F46E5" />
-                  <stop offset="100%" stopColor="#7C3AED" />
+                  <stop offset="0%" stopColor="var(--primary)" />
+                  <stop offset="100%" stopColor="var(--primary-hover)" />
                 </linearGradient>
               </defs>
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-4xl font-bold" style={{ color: "#818CF8" }}>{aiVisibilityScore}</span>
+              <span className="text-4xl font-bold" style={{ color: "var(--primary)" }}>{aiVisibilityScore}</span>
             </div>
           </div>
           <p className="text-xs" style={{ color: "var(--muted)" }}>
@@ -314,12 +314,12 @@ export default function Dashboard({ onNavigate }) {
         {/* AI Strategic Insight */}
         <div
           className="lg:col-span-2 metric-card flex flex-col justify-between"
-          style={{ minHeight: "200px", borderColor: "rgba(79,70,229,0.2)" }}
+          style={{ minHeight: "200px", borderColor: "rgba(163,230,53,0.2)" }}
         >
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="w-4 h-4" style={{ color: "#818CF8" }} />
-              <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#818CF8" }}>
+              <Sparkles className="w-4 h-4" style={{ color: "var(--primary)" }} />
+              <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: "var(--primary)" }}>
                 AI Strategic Insight
               </span>
             </div>
@@ -331,7 +331,7 @@ export default function Dashboard({ onNavigate }) {
             <button
               onClick={() => onNavigate && onNavigate("ai-tests")}
               className="self-start flex items-center gap-1.5 text-xs font-medium mt-4 transition-opacity hover:opacity-70"
-              style={{ color: "#818CF8" }}
+              style={{ color: "var(--primary)" }}
               data-testid="view-priority-fix-btn"
             >
               View recommendations
@@ -355,7 +355,7 @@ export default function Dashboard({ onNavigate }) {
                   className="h-full rounded-full"
                   style={{
                     width: `${Math.min(100, metric.value)}%`,
-                    background: "linear-gradient(to right, #4F46E5, #7C3AED)",
+                    background: "var(--primary)",
                     transition: "width 0.8s ease-out",
                   }}
                 />
@@ -379,7 +379,7 @@ export default function Dashboard({ onNavigate }) {
               <button
                 key={i}
                 onClick={() => onNavigate && onNavigate("ai-tests")}
-                className="text-left metric-card hover:border-indigo-500/30 transition-colors group"
+                className="text-left metric-card hover:border-primary/30 transition-colors group"
                 data-testid={`priority-action-${i}`}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -408,7 +408,7 @@ export default function Dashboard({ onNavigate }) {
       {isFree && (
         <div data-testid="free-user-get-started">
           <div className="flex items-center gap-2 mb-4">
-            <Rocket className="w-4 h-4" style={{ color: "#818CF8" }} />
+            <Rocket className="w-4 h-4" style={{ color: "var(--primary)" }} />
             <h2 className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>
               Unlock more with a plan
             </h2>
@@ -421,13 +421,13 @@ export default function Dashboard({ onNavigate }) {
               <button
                 key={card.feature}
                 onClick={() => navigate("/pricing")}
-                className="text-left metric-card hover:border-indigo-500/30 transition-all group relative overflow-hidden"
+                className="text-left metric-card hover:border-primary/30 transition-all group relative overflow-hidden"
                 style={{ opacity: 0.85 }}
               >
                 {/* Lock overlay */}
                 <div
                   className="absolute top-2.5 right-2.5 flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold"
-                  style={{ background: "rgba(79,70,229,0.15)", color: "#818CF8" }}
+                  style={{ background: "rgba(163,230,53,0.15)", color: "var(--primary)" }}
                 >
                   🔒 {card.plan}
                 </div>
@@ -439,7 +439,7 @@ export default function Dashboard({ onNavigate }) {
                 </p>
                 <span
                   className="mt-3 text-xs font-medium flex items-center gap-1 group-hover:gap-2 transition-all"
-                  style={{ color: "#818CF8" }}
+                  style={{ color: "var(--primary)" }}
                 >
                   View plans <ChevronRight className="w-3 h-3" />
                 </span>
@@ -460,7 +460,7 @@ export default function Dashboard({ onNavigate }) {
               <button
                 key={card.title}
                 onClick={() => onNavigate && onNavigate(card.nav)}
-                className="metric-card text-left hover:border-indigo-500/30 transition-colors group"
+                className="metric-card text-left hover:border-primary/30 transition-colors group"
                 data-testid={`op-card-${card.title.toLowerCase()}`}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -484,7 +484,7 @@ export default function Dashboard({ onNavigate }) {
               <button
                 onClick={() => onNavigate && onNavigate("audits")}
                 className="text-xs transition-opacity hover:opacity-70"
-                style={{ color: "#818CF8" }}
+                style={{ color: "var(--primary)" }}
               >
                 View all
               </button>
@@ -520,7 +520,7 @@ export default function Dashboard({ onNavigate }) {
               <button
                 onClick={() => onNavigate && onNavigate("ai-tests")}
                 className="text-xs transition-opacity hover:opacity-70"
-                style={{ color: "#818CF8" }}
+                style={{ color: "var(--primary)" }}
               >
                 View all
               </button>

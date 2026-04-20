@@ -203,7 +203,7 @@ export default function AIVisibilityLabPage({ onSignUp }) {
       <div>
         <h1 className="font-display text-3xl font-bold text-white mb-2">
           AI Visibility{" "}
-          <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">
             Lab
           </span>
         </h1>
@@ -330,7 +330,7 @@ export default function AIVisibilityLabPage({ onSignUp }) {
 
           {/* Summary Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="glass-card p-5 text-center" style={{ borderColor: "rgba(99,102,241,0.3)" }}>
+            <div className="glass-card p-5 text-center" style={{ borderColor: "rgba(163,230,53,0.3)" }}>
               <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">AI Visibility Score</p>
               <p className="text-4xl font-bold" style={{ color: getScoreColor(visibilityScore) }}>
                 {visibilityScore}
@@ -399,7 +399,7 @@ export default function AIVisibilityLabPage({ onSignUp }) {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div className="glass-card p-6">
                   <div className="flex items-center gap-2 mb-4">
-                    <Target className="w-4 h-4 text-blue-400" />
+                    <Target className="w-4 h-4 text-primary" />
                     <span className="text-xs text-gray-500 uppercase tracking-wider">Citation Probability</span>
                   </div>
                   <div className="flex items-end justify-between">
@@ -418,7 +418,7 @@ export default function AIVisibilityLabPage({ onSignUp }) {
                     href={citationResult.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-4 text-xs text-blue-400 hover:underline flex items-center gap-1 truncate"
+                    className="mt-4 text-xs text-primary hover:underline flex items-center gap-1 truncate"
                   >
                     {citationResult.url} <ExternalLink className="w-3 h-3 shrink-0" />
                   </a>
@@ -453,7 +453,7 @@ export default function AIVisibilityLabPage({ onSignUp }) {
               {citationResult.breakdown && (
                 <div className="glass-card p-5">
                   <div className="flex items-center gap-2 mb-4">
-                    <Target className="w-4 h-4 text-blue-400" />
+                    <Target className="w-4 h-4 text-primary" />
                     <span className="text-sm font-medium text-white">Citation Parameters</span>
                   </div>
                   <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
@@ -582,8 +582,8 @@ export default function AIVisibilityLabPage({ onSignUp }) {
               </div>
 
               {/* Relevance feedback */}
-              <div className="glass-card p-4 flex items-start gap-3" style={{ borderColor: "rgba(99,102,241,0.25)" }}>
-                <Info className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+              <div className="glass-card p-4 flex items-start gap-3" style={{ borderColor: "rgba(163,230,53,0.25)" }}>
+                <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                 <div className="space-y-1.5">
                   <p className="text-sm font-medium text-white">Relevance Analysis</p>
                   <p className="text-xs" style={{ color: "var(--text-muted)" }}>{engineResult.relevance.feedback}</p>
@@ -627,7 +627,7 @@ export default function AIVisibilityLabPage({ onSignUp }) {
                             >
                               {ENGINE_LOGOS[r.engine_id]
                                 ? <img src={ENGINE_LOGOS[r.engine_id]} alt={r.engine_name} className="w-5 h-5 object-contain" />
-                                : <Icon className="w-5 h-5 text-indigo-300" />}
+                                : <Icon className="w-5 h-5 text-primary" />}
                             </div>
                             <div className="min-w-0">
                               <div className="flex items-center gap-2 flex-wrap">
@@ -676,7 +676,7 @@ export default function AIVisibilityLabPage({ onSignUp }) {
                                   className="flex items-start gap-2 text-xs"
                                   style={{ color: "var(--text-muted)" }}
                                 >
-                                  <Zap className="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5" />
+                                  <Zap className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
                                   <span>{imp}</span>
                                 </li>
                               ))}
@@ -737,7 +737,7 @@ export default function AIVisibilityLabPage({ onSignUp }) {
                                   {r.priority_signals.map((sig, i) => (
                                     <span
                                       key={i}
-                                      className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400"
+                                      className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary"
                                     >
                                       {sig}
                                     </span>
@@ -800,13 +800,13 @@ export default function AIVisibilityLabPage({ onSignUp }) {
               {/* Page info */}
               <div className="glass-card p-5">
                 <div className="flex items-center gap-2 mb-4">
-                  <Globe className="w-4 h-4 text-blue-400" />
+                  <Globe className="w-4 h-4 text-primary" />
                   <span className="text-sm font-medium text-white">Page Information</span>
                   <a
                     href={engineResult.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="ml-auto flex items-center gap-1 text-xs text-blue-400 hover:underline"
+                    className="ml-auto flex items-center gap-1 text-xs text-primary hover:underline"
                   >
                     View Page <ExternalLink className="w-3 h-3" />
                   </a>

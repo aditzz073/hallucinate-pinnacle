@@ -17,7 +17,7 @@ const TOOLTIP_STYLE = {
 };
 
 const GRID_COLOR = "rgba(255,255,255,0.04)";
-const AXIS_TICK = { fontSize: 11, fill: "var(--muted, #7070A0)" };
+const AXIS_TICK = { fontSize: 11, fill: "var(--text-muted, #a1a1aa)" };
 
 const TABS = [
   { id: "overview", label: "Overview", icon: BarChart3 },
@@ -78,7 +78,7 @@ export default function ReportsPage() {
     <div className="space-y-8" data-testid="reports-page">
       <div>
         <h1 className="font-display text-3xl font-bold text-white mb-2">
-          Reports & <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Analytics</span>
+          Reports & <span className="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">Analytics</span>
         </h1>
         <p className="text-sm" style={{ color: "var(--text-muted)" }}>
           Aggregated insights across all your audits and tests.
@@ -245,15 +245,15 @@ function TrendsTab({ data }) {
             <AreaChart data={auditData} margin={{ top: 4, right: 4, bottom: 0, left: -20 }}>
               <defs>
                 <linearGradient id="gradIndigo" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#4F46E5" stopOpacity={0.25} />
-                  <stop offset="95%" stopColor="#4F46E5" stopOpacity={0} />
+                  <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke={GRID_COLOR} />
               <XAxis dataKey="date" tick={AXIS_TICK} axisLine={false} tickLine={false} />
               <YAxis domain={[0, 100]} tick={AXIS_TICK} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ stroke: "rgba(79,70,229,0.3)", strokeWidth: 1 }} />
-              <Area type="monotone" dataKey="score" stroke="#4F46E5" strokeWidth={2} fillOpacity={1} fill="url(#gradIndigo)" dot={false} activeDot={{ r: 4, fill: "#4F46E5" }} />
+              <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ stroke: "rgba(163,230,53,0.3)", strokeWidth: 1 }} />
+              <Area type="monotone" dataKey="score" stroke="var(--primary)" strokeWidth={2} fillOpacity={1} fill="url(#gradIndigo)" dot={false} activeDot={{ r: 4, fill: "var(--primary)" }} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -266,8 +266,8 @@ function TrendsTab({ data }) {
             <RadarChart data={radarData}>
               <PolarGrid stroke={GRID_COLOR} />
               <PolarAngleAxis dataKey="subject" tick={AXIS_TICK} />
-              <PolarRadiusAxis domain={[0, 100]} tick={{ fontSize: 9, fill: "var(--muted, #7070A0)" }} />
-              <Radar dataKey="score" stroke="#4F46E5" fill="#4F46E5" fillOpacity={0.12} strokeWidth={2} />
+              <PolarRadiusAxis domain={[0, 100]} tick={{ fontSize: 9, fill: "var(--text-muted)" }} />
+              <Radar dataKey="score" stroke="var(--primary)" fill="var(--primary)" fillOpacity={0.12} strokeWidth={2} />
             </RadarChart>
           </ResponsiveContainer>
         </div>
@@ -299,8 +299,8 @@ function CompetitorsTab({ data }) {
               <XAxis dataKey="url" tick={AXIS_TICK} axisLine={false} tickLine={false} />
               <YAxis domain={[0, 100]} tick={AXIS_TICK} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={TOOLTIP_STYLE} cursor={{ fill: "rgba(255,255,255,0.02)" }} />
-              <Bar dataKey="aeo" name="AEO Score" fill="#4F46E5" radius={[4, 4, 0, 0]} maxBarSize={40} />
-              <Bar dataKey="citation" name="Citation %" fill="#7C3AED" radius={[4, 4, 0, 0]} maxBarSize={40} />
+              <Bar dataKey="aeo" name="AEO Score" fill="var(--primary)" radius={[4, 4, 0, 0]} maxBarSize={40} />
+              <Bar dataKey="citation" name="Citation %" fill="#34d399" radius={[4, 4, 0, 0]} maxBarSize={40} />
             </BarChart>
           </ResponsiveContainer>
         </div>

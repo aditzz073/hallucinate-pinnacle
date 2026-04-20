@@ -61,7 +61,7 @@ async function pollForPlanUpdate(refreshUser, targetPlan, maxMs = 15000) {
 
 function SuspensePage({ children }) {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center py-32"><div className="w-6 h-6 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" /></div>}>
+    <Suspense fallback={<div className="flex items-center justify-center py-32"><div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" /></div>}>
       {children}
     </Suspense>
   );
@@ -269,7 +269,7 @@ function PremiumFeatureRoute({ feature, children }) {
         className="rounded-2xl p-7"
         style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
       >
-        <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "#818CF8" }}>
+        <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "var(--primary)" }}>
           Available in {requiredPlan}
         </p>
         <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--foreground)" }}>
@@ -280,9 +280,9 @@ function PremiumFeatureRoute({ feature, children }) {
         </p>
         <div
           className="rounded-xl px-4 py-3 mb-5"
-          style={{ background: "rgba(79,70,229,0.08)", border: "1px solid rgba(79,70,229,0.22)" }}
+          style={{ background: "rgba(163,230,53,0.08)", border: "1px solid rgba(163,230,53,0.22)" }}
         >
-          <p className="text-sm" style={{ color: "#C7D2FE" }}>
+          <p className="text-sm" style={{ color: "var(--text-muted)" }}>
             Your account is on the {PLAN_DISPLAY_NAMES[user?.plan] || "Discover"} plan. Upgrade to unlock full access.
           </p>
         </div>
@@ -308,10 +308,10 @@ export default function AppRoutes() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "#08081A" }} data-testid="loading-screen">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: "#000000" }} data-testid="loading-screen">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
-          <p className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>Loading</p>
+          <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+          <p className="text-xs font-medium" style={{ color: "var(--primary)" }}>Loading</p>
         </div>
       </div>
     );

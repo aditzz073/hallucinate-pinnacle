@@ -70,7 +70,7 @@ export default function AITestsPage({ onSignUp }) {
       {/* Page Header */}
       <div>
         <h1 className="font-display text-3xl font-bold text-white mb-2">
-          AI Citation & <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Generation</span> Tests
+          AI Citation & <span className="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">Generation</span> Tests
         </h1>
         <p className="text-sm" style={{ color: "var(--text-muted)" }}>Test how likely AI engines are to cite and generate content from your page.</p>
       </div>
@@ -159,7 +159,7 @@ export default function AITestsPage({ onSignUp }) {
             {/* Citation Score */}
             <div className="glass-card p-6">
               <div className="flex items-center gap-2 mb-4">
-                <Target className="w-4 h-4 text-blue-400" />
+                <Target className="w-4 h-4 text-primary" />
                 <span className="text-xs text-gray-500 uppercase tracking-wider">Citation Probability</span>
               </div>
               <div className="flex items-end justify-between">
@@ -174,17 +174,17 @@ export default function AITestsPage({ onSignUp }) {
                   <p className="text-xs text-gray-600">Est. Position</p>
                 </div>
               </div>
-              <a href={activeResult.url} target="_blank" rel="noopener noreferrer" className="mt-4 text-xs text-blue-400 hover:underline flex items-center gap-1 truncate">
+              <a href={activeResult.url} target="_blank" rel="noopener noreferrer" className="mt-4 text-xs text-primary hover:underline flex items-center gap-1 truncate">
                 {activeResult.url} <ExternalLink className="w-3 h-3 shrink-0" />
               </a>
             </div>
 
             {/* GEO Score */}
-            <div className="glass-card p-6 border-cyan-500/10">
+            <div className="glass-card p-6 border-primary/10">
               <div className="flex items-center gap-2 mb-4">
-                <Sparkles className="w-4 h-4 text-cyan-400" />
+                <Sparkles className="w-4 h-4 text-primary" />
                 <span className="text-xs text-gray-500 uppercase tracking-wider">GEO Score</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 font-medium">NEW</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/20 text-primary font-medium">NEW</span>
               </div>
               <div className="flex items-end justify-between">
                 <div>
@@ -210,7 +210,7 @@ export default function AITestsPage({ onSignUp }) {
           {activeResult.breakdown && (
             <div className="glass-card p-5">
               <div className="flex items-center gap-2 mb-4">
-                <Target className="w-4 h-4 text-blue-400" />
+                <Target className="w-4 h-4 text-primary" />
                 <span className="text-sm font-medium text-white">Citation Parameters</span>
               </div>
               <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
@@ -261,7 +261,7 @@ export default function AITestsPage({ onSignUp }) {
                 className="w-full p-5 flex items-center justify-between hover:bg-white/[0.02] transition-colors"
               >
                 <div className="flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-cyan-400" />
+                  <Zap className="w-4 h-4 text-primary" />
                   <span className="text-sm font-medium text-white">GEO Insights & Improvements</span>
                   <span className="text-xs text-gray-600">({activeResult.geo_insights.improvement_suggestions?.length || 0} suggestions)</span>
                 </div>
@@ -273,7 +273,7 @@ export default function AITestsPage({ onSignUp }) {
                   {activeResult.geo_insights.improvement_suggestions?.slice(0, 5).map((s, i) => (
                     <div key={i} className="pt-4 rounded-xl bg-white/[0.02] p-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <Lightbulb className="w-4 h-4 text-cyan-400" />
+                        <Lightbulb className="w-4 h-4 text-primary" />
                         <span className="text-sm font-medium text-white">{s.issue}</span>
                         {s.impact && <span className={`text-[10px] px-1.5 py-0.5 rounded ${s.impact === 'High' ? 'bg-red-500/20 text-red-400' : 'bg-amber-500/20 text-amber-400'}`}>{s.impact}</span>}
                       </div>

@@ -12,10 +12,10 @@ export default function PressPage() {
     <div className="py-8">
       {/* Header */}
       <div className="mb-14">
-        <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "#4F46E5" }}>Press</p>
+        <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--primary)" }}>Press</p>
         <h1 className="font-display text-4xl lg:text-5xl font-bold mb-4" style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}>
           Media &{" "}
-          <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">press resources.</span>
+          <span className="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">press resources.</span>
         </h1>
         <p className="text-base max-w-[520px]" style={{ color: "var(--text-muted)" }}>
           For press inquiries, interview requests, or to access brand assets, reach out to our media team or download the press kit below.
@@ -42,16 +42,16 @@ export default function PressPage() {
         <div
           className="rounded-2xl p-6"
           style={{
-            background: "linear-gradient(135deg, rgba(79,70,229,0.10) 0%, rgba(124,58,237,0.06) 100%)",
-            border: "1px solid rgba(79,70,229,0.3)",
+            background: "linear-gradient(135deg, rgba(163,230,53,0.10) 0%, rgba(52,211,153,0.06) 100%)",
+            border: "1px solid rgba(163,230,53,0.3)",
           }}
         >
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#818CF8" }}>Press kit</p>
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "var(--primary)" }}>Press kit</p>
           <p className="text-sm mb-1" style={{ color: "var(--foreground)" }}>Logos, screenshots, and brand guidelines</p>
           <p className="text-xs mb-5" style={{ color: "var(--text-muted)" }}>Approved assets for editorial use. Please don't modify the logo.</p>
           <button className="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors"
             style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--foreground)" }}
-            onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(79,70,229,0.4)"}
+            onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(163,230,53,0.4)"}
             onMouseLeave={e => e.currentTarget.style.borderColor = "var(--border)"}
             onClick={() => alert("Press kit download coming soon.")}
           >
@@ -96,7 +96,7 @@ export default function PressPage() {
               style={{ background: "var(--surface)", border: "1px solid var(--border)" }}
             >
               <div>
-                <p className="text-xs font-semibold mb-1" style={{ color: "#818CF8" }}>{outlet}</p>
+                <p className="text-xs font-semibold mb-1" style={{ color: "var(--primary)" }}>{outlet}</p>
                 <p className="text-sm" style={{ color: "var(--text-muted)" }}>{headline}</p>
               </div>
               <span className="text-xs shrink-0 mt-0.5" style={{ color: "var(--text-muted)" }}>{date}</span>

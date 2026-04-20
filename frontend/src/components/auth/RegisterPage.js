@@ -36,7 +36,7 @@ export default function RegisterPage({ onSwitch, onSuccess }) {
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: "radial-gradient(circle at 25% 15%, rgba(124,58,237,0.12), transparent 45%), radial-gradient(circle at 75% 85%, rgba(79,70,229,0.08), transparent 50%)",
+            background: "radial-gradient(circle at 25% 15%, rgba(163,230,53,0.12), transparent 45%), radial-gradient(circle at 75% 85%, rgba(52,211,153,0.08), transparent 50%)",
           }}
         />
 
@@ -44,9 +44,9 @@ export default function RegisterPage({ onSwitch, onSuccess }) {
           <div
             className="rounded-[30px] border px-8 py-9 sm:px-10 sm:py-10"
             style={{
-              background: "linear-gradient(180deg, rgba(17,18,35,0.9) 0%, rgba(12,13,28,0.95) 100%)",
+              background: "linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.95) 100%)",
               borderColor: "rgba(255,255,255,0.1)",
-              boxShadow: "0 20px 60px rgba(0,0,0,0.45)",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.6)",
             }}
           >
             <div className="text-center mb-8">
@@ -113,7 +113,7 @@ export default function RegisterPage({ onSwitch, onSuccess }) {
                 required
               />
 
-              <button data-testid="register-submit-button" type="submit" disabled={loading} className="w-full h-12 rounded-full bg-white text-black font-semibold flex items-center justify-center gap-2 hover:scale-[1.01] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+              <button data-testid="register-submit-button" type="submit" disabled={loading} className="w-full h-12 rounded-full bg-primary text-black font-semibold flex items-center justify-center gap-2 hover:scale-[1.01] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Create Account <ArrowRight className="w-4 h-4" /></>}
               </button>
             </form>
@@ -124,7 +124,7 @@ export default function RegisterPage({ onSwitch, onSuccess }) {
 
             <p className="text-sm text-center mt-8" style={{ color: "#9EA3C6" }}>
               Already have an account?{" "}
-              <button data-testid="register-switch-to-login" onClick={onSwitch} className="font-medium transition-opacity hover:opacity-70" style={{ color: "#A5B4FC" }}>Sign in</button>
+              <button data-testid="register-switch-to-login" onClick={onSwitch} className="font-medium transition-opacity hover:opacity-70" style={{ color: "var(--primary)" }}>Sign in</button>
             </p>
           </div>
         </div>

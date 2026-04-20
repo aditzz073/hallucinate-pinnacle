@@ -22,7 +22,7 @@ export default function Footer({ onNavigate }) {
               <Logo size="sm" />
               <span className="font-display font-bold text-xl tracking-tight leading-none text-white">
                 <span>Pinnacle</span>
-                <span className="text-indigo-400 font-light">.ai</span>
+                <span className="text-primary font-light">.ai</span>
               </span>
             </div>
             <p className="text-sm text-gray-500 max-w-md leading-relaxed">

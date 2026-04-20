@@ -39,12 +39,12 @@ export default function AboutPage() {
     <div className="py-8">
       {/* Hero */}
       <div className="mb-16">
-        <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "#4F46E5" }}>
+        <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--primary)" }}>
           About us
         </p>
         <h1 className="font-display text-4xl lg:text-5xl font-bold mb-6" style={{ color: "var(--foreground)", letterSpacing: "-0.02em", lineHeight: 1.15 }}>
           We're building the OS for<br />
-          <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">AI discoverability.</span>
+          <span className="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">AI discoverability.</span>
         </h1>
         <p className="text-base max-w-[600px] leading-relaxed" style={{ color: "var(--text-muted)" }}>
           Pinnacle.ai was founded on a simple observation: the rules of content discovery changed overnight when LLMs became the default interface for information. We built the tooling to help brands win in this new landscape.
@@ -55,11 +55,11 @@ export default function AboutPage() {
       <div
         className="rounded-2xl p-8 mb-16"
         style={{
-          background: "linear-gradient(135deg, rgba(79,70,229,0.10) 0%, rgba(124,58,237,0.06) 100%)",
-          border: "1px solid rgba(79,70,229,0.3)",
+          background: "linear-gradient(135deg, rgba(163,230,53,0.10) 0%, rgba(52,211,153,0.06) 100%)",
+          border: "1px solid rgba(163,230,53,0.3)",
         }}
       >
-        <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "#818CF8" }}>Our mission</p>
+        <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "var(--primary)" }}>Our mission</p>
         <p className="text-2xl font-semibold leading-snug" style={{ color: "var(--foreground)" }}>
           Make every piece of quality content findable by AI , and make sure brands get the attribution they deserve.
         </p>
@@ -110,9 +110,9 @@ export default function AboutPage() {
             >
               <div
                 className="w-8 h-8 rounded-lg flex items-center justify-center mb-3"
-                style={{ background: "rgba(79,70,229,0.12)" }}
+                style={{ background: "rgba(163,230,53,0.12)" }}
               >
-                <Icon className="w-4 h-4" style={{ color: "#818CF8" }} />
+                <Icon className="w-4 h-4" style={{ color: "var(--primary)" }} />
               </div>
               <p className="text-sm font-semibold mb-1.5" style={{ color: "var(--foreground)" }}>{title}</p>
               <p className="text-xs leading-relaxed" style={{ color: "var(--text-muted)" }}>{desc}</p>

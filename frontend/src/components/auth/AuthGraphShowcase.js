@@ -9,7 +9,7 @@ const CARD_LAYOUT = [
   { top: "66%", left: "55%", rotate: -8, w: 222, h: 134, delay: "2.8s", metric: "Engine Readiness", period: "14d" },
 ];
 
-const SERIES_COLORS = ["#818CF8", "#A78BFA", "#22D3EE", "#34D399", "#F59E0B", "#F472B6"];
+const SERIES_COLORS = ["#a3e635", "#34D399", "#22D3EE", "#10B981", "#059669", "#A7F3D0"];
 
 function seededRandom(seed) {
   const x = Math.sin(seed) * 10000;
@@ -77,7 +77,7 @@ export default function AuthGraphShowcase() {
           }}
         >
           <div className="flex items-center justify-between mb-2.5">
-            <span className="text-[10px] font-semibold" style={{ color: "#DDE2FF" }}>{card.metric}</span>
+            <span className="text-[10px] font-semibold" style={{ color: "var(--foreground)" }}>{card.metric}</span>
             <span className="text-[10px]" style={{ color: "#8B90B6" }}>{card.value}%</span>
           </div>
           <svg width="100%" height="76" viewBox="0 0 170 60" preserveAspectRatio="none">
@@ -112,7 +112,7 @@ export default function AuthGraphShowcase() {
       ))}
 
       <div className="absolute bottom-10 right-10 text-right">
-        <p className="text-sm font-semibold" style={{ color: "#C4B5FD" }}>Pinnacle insights preview</p>
+        <p className="text-sm font-semibold" style={{ color: "var(--primary)" }}>Pinnacle insights preview</p>
         <p className="text-xs" style={{ color: "#8B90B6" }}>Real-time visibility indicators</p>
       </div>
     </div>

@@ -34,7 +34,7 @@ export default function CompetitorPage() {
     <div className="space-y-8" data-testid="competitor-page">
       {/* Page Header */}
       <div>
-        <h1 className="font-display text-3xl font-bold text-white mb-2">Competitor <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Intelligence</span></h1>
+        <h1 className="font-display text-3xl font-bold text-white mb-2">Competitor <span className="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">Intelligence</span></h1>
         <p className="text-sm" style={{ color: "var(--text-muted)" }}>Compare your page against competitors for a specific query.</p>
       </div>
 
@@ -58,7 +58,7 @@ export default function CompetitorPage() {
             value={primaryUrl} 
             onChange={(e) => setPrimaryUrl(e.target.value)} 
             placeholder="https://yoursite.com/page" 
-            className="glass-input w-full h-12 px-4 text-sm border-brand-blue/30" 
+            className="glass-input w-full h-12 px-4 text-sm border-primary/30" 
             required 
           />
         </div>
@@ -83,7 +83,7 @@ export default function CompetitorPage() {
             </div>
           ))}
           {compUrls.length < 5 && (
-            <button type="button" onClick={addCompUrl} className="mt-3 text-xs text-brand-blue hover:text-brand-blue/80 flex items-center gap-1 transition-colors">
+            <button type="button" onClick={addCompUrl} className="mt-3 text-xs text-primary hover:text-primary-hover flex items-center gap-1 transition-colors">
               <Plus className="w-3 h-3" /> Add competitor
             </button>
           )}
@@ -113,13 +113,13 @@ export default function CompetitorPage() {
                 return (
                   <div 
                     key={i} 
-                    className={`flex items-center gap-4 px-4 py-3 rounded-xl ${isPrimary ? "bg-brand-blue/10 border border-brand-blue/20" : "bg-white/[0.02] border border-white/5"}`} 
+                    className={`flex items-center gap-4 px-4 py-3 rounded-xl ${isPrimary ? "bg-primary/10 border border-primary/20" : "bg-white/[0.02] border border-white/5"}`} 
                     data-testid={`rank-${i}`}
                   >
                     <span className="text-lg font-semibold text-gray-500 w-8">#{i + 1}</span>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-white truncate">
-                        {url} {isPrimary && <span className="text-brand-blue text-xs ml-1">(You)</span>}
+                        {url} {isPrimary && <span className="text-primary text-xs ml-1">(You)</span>}
                       </p>
                       <p className="text-xs text-gray-500">{sc?.page_type} | AEO: {sc?.aeo_score} | Position: {sc?.likely_position}</p>
                     </div>

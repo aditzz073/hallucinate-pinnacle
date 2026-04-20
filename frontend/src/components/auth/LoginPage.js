@@ -32,7 +32,7 @@ export default function LoginPage({ onSwitch, onSuccess }) {
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: "radial-gradient(circle at 20% 10%, rgba(124,58,237,0.12), transparent 45%), radial-gradient(circle at 60% 70%, rgba(79,70,229,0.08), transparent 50%)",
+            background: "radial-gradient(circle at 20% 10%, rgba(163,230,53,0.12), transparent 45%), radial-gradient(circle at 60% 70%, rgba(52,211,153,0.08), transparent 50%)",
           }}
         />
 
@@ -40,9 +40,9 @@ export default function LoginPage({ onSwitch, onSuccess }) {
           <div
             className="rounded-[30px] border px-8 py-9 sm:px-10 sm:py-10"
             style={{
-              background: "linear-gradient(180deg, rgba(17,18,35,0.9) 0%, rgba(12,13,28,0.95) 100%)",
+              background: "linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.95) 100%)",
               borderColor: "rgba(255,255,255,0.1)",
-              boxShadow: "0 20px 60px rgba(0,0,0,0.45)",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.6)",
             }}
           >
             <div className="text-center mb-8">
@@ -96,7 +96,7 @@ export default function LoginPage({ onSwitch, onSuccess }) {
                 data-testid="login-submit-button"
                 type="submit"
                 disabled={loading}
-                className="w-full h-12 rounded-full bg-white text-black font-semibold flex items-center justify-center gap-2 hover:scale-[1.01] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full h-12 rounded-full bg-primary text-black font-semibold flex items-center justify-center gap-2 hover:scale-[1.01] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Sign In <ArrowRight className="w-4 h-4" /></>}
               </button>
@@ -112,7 +112,7 @@ export default function LoginPage({ onSwitch, onSuccess }) {
                 data-testid="login-switch-to-register"
                 onClick={onSwitch}
                 className="font-medium transition-opacity hover:opacity-70"
-                style={{ color: "#A5B4FC" }}
+                style={{ color: "var(--primary)" }}
               >
                 Create one
               </button>

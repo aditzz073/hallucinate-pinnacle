@@ -68,9 +68,9 @@ function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate, onShow
         className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
           isActive
             ? "bg-white/10 text-white font-semibold"
-            : "text-gray-400 hover:text-white hover:bg-white/5"
+            : "text-muted-foreground hover:text-white hover:bg-white/5"
         }`}
-        style={isActive ? { borderLeft: "2px solid #4F46E5", paddingLeft: "calc(0.875rem - 2px)" } : undefined}
+        style={isActive ? { borderLeft: "2px solid var(--primary)", paddingLeft: "calc(0.875rem - 2px)" } : undefined}
       >
         <Icon className="w-4 h-4" />
         <span>{label}</span>
@@ -92,12 +92,12 @@ function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate, onShow
                 className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all duration-200 ${
                   isItemActive
                     ? "bg-white/10 text-white font-semibold"
-                    : "text-gray-400 hover:text-white hover:bg-white/5"
+                    : "text-muted-foreground hover:text-white hover:bg-white/5"
                 }`}
                 style={
                   isItemActive
                     ? {
-                        borderLeft: "2px solid #4F46E5",
+                        borderLeft: "2px solid var(--primary)",
                         paddingLeft: "calc(1rem - 2px)",
                         opacity: isPremiumLocked ? 0.62 : 1,
                       }
@@ -106,7 +106,7 @@ function DropdownMenu({ label, icon: Icon, items, activePage, onNavigate, onShow
               >
                 <ItemIcon className="w-4 h-4" />
                 {item.label}
-                {isPremiumLocked && <Lock className="w-3.5 h-3.5 ml-auto text-indigo-300" />}
+                {isPremiumLocked && <Lock className="w-3.5 h-3.5 ml-auto text-primary" />}
               </button>
             );
           })}
@@ -213,10 +213,7 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
               </span>
             </div>
             
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/5">
-              <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-              <span className="text-[10px] font-mono text-muted-foreground tracking-wider uppercase">6 engines online</span>
-            </div>
+
           </div>
 
           {/* Center: Scroll-spy Navigation */}
@@ -294,7 +291,7 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
         >
           <Logo size="sm" />
           <span className="hidden sm:inline font-display font-bold text-sm tracking-tight text-white whitespace-nowrap">
-            Pinnacle<span className="text-indigo-400">.ai</span>
+            Pinnacle<span className="text-primary">.ai</span>
           </span>
         </div>
 
@@ -311,9 +308,9 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                   isActive
                     ? "bg-white/10 text-white font-semibold"
-                    : "text-gray-400 hover:text-white hover:bg-white/5"
+                    : "text-muted-foreground hover:text-white hover:bg-white/5"
                 }`}
-                style={isActive ? { borderLeft: "2px solid #4F46E5", paddingLeft: "calc(0.875rem - 2px)" } : undefined}
+                style={isActive ? { borderLeft: "2px solid var(--primary)", paddingLeft: "calc(0.875rem - 2px)" } : undefined}
               >
                 <Icon className="w-4 h-4" />
                 <span className="hidden md:inline">{item.label}</span>
@@ -351,9 +348,9 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
               className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                 resolvedActivePage === "profile"
                   ? "bg-white/10 text-white font-semibold"
-                  : "text-gray-400 hover:text-white hover:bg-white/5"
+                  : "text-muted-foreground hover:text-white hover:bg-white/5"
               }`}
-              style={resolvedActivePage === "profile" ? { borderLeft: "2px solid #4F46E5", paddingLeft: "calc(0.75rem - 2px)" } : undefined}
+              style={resolvedActivePage === "profile" ? { borderLeft: "2px solid var(--primary)", paddingLeft: "calc(0.75rem - 2px)" } : undefined}
             >
               <User className="w-4 h-4" />
               <span className="hidden lg:inline">Profile</span>
@@ -361,7 +358,7 @@ export default function Navbar({ activePage, onNavigate, isLanding = false, onGe
             <button
               data-testid="logout-button"
               onClick={onLogout}
-              className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-sm font-medium text-gray-400 hover:text-red-400 hover:border-red-400/30 hover:bg-red-400/5 transition-all duration-200"
+              className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-2 text-sm font-medium text-muted-foreground hover:text-red-400 hover:border-red-400/30 hover:bg-red-400/5 transition-all duration-200"
             >
               <LogOut className="w-4 h-4" />
               <span className="hidden sm:inline">Sign Out</span>

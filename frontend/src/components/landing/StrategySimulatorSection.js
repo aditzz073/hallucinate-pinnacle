@@ -15,7 +15,7 @@ const SIM_STEPS = [
 const ENGINE_DELTAS = [
   { name: "ChatGPT",    delta: 12, color: "#34d399", logo: ENGINE_LOGOS.chatgpt    },
   { name: "Perplexity", delta: 9,  color: "#22d3ee", logo: ENGINE_LOGOS.perplexity },
-  { name: "Google SGE", delta: 7,  color: "#818CF8", logo: ENGINE_LOGOS.google_sge },
+  { name: "Google SGE", delta: 7,  color: "#a3e635", logo: ENGINE_LOGOS.google_sge },
   { name: "Copilot",    delta: 5,  color: "#a78bfa", logo: ENGINE_LOGOS.copilot    },
 ];
 
@@ -32,7 +32,7 @@ export default function StrategySimulatorSection({ onNavigate }) {
 
           {/* ── Left: copy ─────────────────────────────────────────────── */}
           <motion.div variants={slideInLeft}>
-            <p className="text-[11px] font-medium uppercase tracking-[0.08em] mb-3" style={{ color: "#818CF8" }}>
+            <p className="text-[11px] font-medium uppercase tracking-[0.08em] mb-3" style={{ color: "#a3e635" }}>
               STRATEGY SIMULATOR
             </p>
             <div
@@ -58,7 +58,7 @@ export default function StrategySimulatorSection({ onNavigate }) {
               Simulate optimization strategies and predict how changes impact AI visibility.
             </p>
 
-            <p className="text-xs font-medium mb-6" style={{ color: "#A5B4FC" }}>
+            <p className="text-xs font-medium mb-6" style={{ color: "#a3e635" }}>
               Preview available on landing. Full simulator runs are part of paid plans.
             </p>
 
@@ -68,9 +68,9 @@ export default function StrategySimulatorSection({ onNavigate }) {
                   <div
                     className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0"
                     style={{
-                      background: "rgba(79,70,229,0.15)",
-                      color: "#818CF8",
-                      border: "1px solid rgba(79,70,229,0.25)",
+                      background: "rgba(163,230,53,0.15)",
+                      color: "#a3e635",
+                      border: "1px solid rgba(163,230,53,0.25)",
                     }}
                   >
                     {s.step}

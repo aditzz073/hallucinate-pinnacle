@@ -15,10 +15,10 @@ export default function BlogPage() {
     <div className="py-8">
       {/* Header */}
       <div className="mb-14">
-        <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "#4F46E5" }}>Blog</p>
+        <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--primary)" }}>Blog</p>
         <h1 className="font-display text-4xl lg:text-5xl font-bold mb-4" style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}>
           Insights on{" "}
-          <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">AI discoverability.</span>
+          <span className="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">AI discoverability.</span>
         </h1>
         <p className="text-base max-w-[520px]" style={{ color: "var(--text-muted)" }}>
           Practical guides, case studies, and research from the Pinnacle.ai team on optimizing for LLM retrieval.
@@ -29,15 +29,15 @@ export default function BlogPage() {
       <div
         className="rounded-2xl p-10 mb-12 text-center"
         style={{
-          background: "linear-gradient(135deg, rgba(79,70,229,0.10) 0%, rgba(124,58,237,0.06) 100%)",
-          border: "1px solid rgba(79,70,229,0.3)",
+          background: "linear-gradient(135deg, rgba(163,230,53,0.10) 0%, rgba(52,211,153,0.06) 100%)",
+          border: "1px solid rgba(163,230,53,0.3)",
         }}
       >
         <div
           className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4"
-          style={{ background: "rgba(79,70,229,0.15)" }}
+          style={{ background: "rgba(163,230,53,0.15)" }}
         >
-          <Rss className="w-5 h-5" style={{ color: "#818CF8" }} />
+          <Rss className="w-5 h-5" style={{ color: "var(--primary)" }} />
         </div>
         <h2 className="font-display text-xl font-bold mb-2" style={{ color: "var(--foreground)" }}>
           First posts dropping soon
@@ -58,7 +58,7 @@ export default function BlogPage() {
               border: "1px solid var(--border)",
               color: "var(--foreground)",
             }}
-            onFocus={e => e.target.style.borderColor = "rgba(79,70,229,0.5)"}
+            onFocus={e => e.target.style.borderColor = "rgba(163,230,53,0.5)"}
             onBlur={e => e.target.style.borderColor = "var(--border)"}
           />
           <button type="submit" className="btn-primary inline-flex items-center gap-1.5 rounded-lg px-4 py-2.5 text-sm font-semibold shrink-0">
@@ -82,8 +82,8 @@ export default function BlogPage() {
               <span
                 className="text-xs font-bold mt-0.5 shrink-0"
                 style={{
-                  background: "rgba(79,70,229,0.15)",
-                  color: "#818CF8",
+                  background: "rgba(163,230,53,0.15)",
+                  color: "var(--primary)",
                   borderRadius: "6px",
                   padding: "2px 7px",
                 }}

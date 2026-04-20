@@ -113,9 +113,9 @@ export default function TermsDataPolicyPage() {
   return (
     <div className="py-8 max-w-[760px]">
       <div className="mb-12">
-        <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "#4F46E5" }}>Legal</p>
+        <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: "var(--primary)" }}>Legal</p>
         <h1 className="font-display text-4xl font-bold mb-3" style={{ color: "var(--foreground)", letterSpacing: "-0.02em" }}>
-          Terms and <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Data Policy</span>
+          Terms and <span className="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">Data Policy</span>
         </h1>
         <p className="text-sm" style={{ color: "var(--text-muted)" }}>
           Effective date: January 1, 2025. Last updated: March 22, 2026.

@@ -18,7 +18,7 @@ export default function GuestLimitModal({ isOpen, onClose, feature = 'audits' })
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-      <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#0D0D1F] backdrop-blur-xl shadow-2xl">
+      <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#000000] backdrop-blur-xl shadow-2xl">
         {/* Close button */}
         <button
           onClick={onClose}
@@ -31,8 +31,8 @@ export default function GuestLimitModal({ isOpen, onClose, feature = 'audits' })
         {/* Content */}
         <div className="p-8">
           {/* Icon */}
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500/20 to-violet-500/20 border border-indigo-500/30 mb-6">
-            <TrendingUp className="w-8 h-8 text-indigo-400" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 border border-primary/30 mb-6">
+            <TrendingUp className="w-8 h-8 text-primary" />
           </div>
 
           {/* Heading — exact spec copy */}
@@ -50,8 +50,8 @@ export default function GuestLimitModal({ isOpen, onClose, feature = 'audits' })
               const Icon = item.icon;
               return (
                 <div key={i} className="flex items-center gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-                    <Icon className="w-4 h-4 text-indigo-400" />
+                  <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+                    <Icon className="w-4 h-4 text-primary" />
                   </div>
                   <span className="text-sm text-gray-300">{item.text}</span>
                 </div>
@@ -64,7 +64,7 @@ export default function GuestLimitModal({ isOpen, onClose, feature = 'audits' })
             <button
               onClick={() => { onClose(); navigate('/register'); }}
               className="w-full py-3 rounded-lg text-sm font-bold text-white transition-all duration-200 hover:brightness-110"
-              style={{ background: 'linear-gradient(135deg, #4F46E5, #7C3AED)' }}
+              style={{ background: 'var(--primary)', color: 'black' }}
             >
               Create Free Account
             </button>

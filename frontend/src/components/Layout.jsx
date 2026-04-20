@@ -134,8 +134,8 @@ export default function Layout() {
       className="min-h-screen text-white antialiased"
       style={{
         background: isLandingLike
-          ? "radial-gradient(1200px 700px at 72% 18%, rgba(79,70,229,0.28), transparent 60%), radial-gradient(900px 620px at 22% 10%, rgba(124,58,237,0.22), transparent 65%), #070716"
-          : "#08081A",
+          ? "radial-gradient(1200px 700px at 72% 18%, rgba(163,230,53,0.15), transparent 60%), radial-gradient(900px 620px at 22% 10%, rgba(52,211,153,0.12), transparent 65%), #000000"
+          : "#000000",
       }}
     >
       {!isLandingLike && <AppBackground />}
@@ -291,8 +291,8 @@ export function AppShellLayout() {
                 onClick={() => handleNavigate(id)}
                 className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg transition-colors"
                 style={{
-                  color: isActive ? "#818CF8" : "var(--muted)",
-                  background: isActive ? "rgba(79,70,229,0.1)" : "transparent",
+                  color: isActive ? "var(--primary)" : "var(--muted)",
+                  background: isActive ? "rgba(163,230,53,0.1)" : "transparent",
                   minWidth: "52px",
                 }}
               >

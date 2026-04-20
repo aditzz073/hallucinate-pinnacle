@@ -37,7 +37,7 @@ export default function ExecutiveSummaryPage() {
     <div className="space-y-8" data-testid="executive-summary-page">
       {/* Page Header */}
       <div>
-        <h1 className="font-display text-3xl font-bold text-white mb-2">Executive <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Summary</span></h1>
+        <h1 className="font-display text-3xl font-bold text-white mb-2">Executive <span className="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">Summary</span></h1>
         <p className="text-sm" style={{ color: "var(--text-muted)" }}>High-level AI discoverability health assessment.</p>
       </div>
 
@@ -119,12 +119,12 @@ export default function ExecutiveSummaryPage() {
 
       {/* Highest Impact */}
       {data.highest_impact_improvement && (
-        <div className="glass-card p-6 border-brand-blue/20" data-testid="impact-card">
+        <div className="glass-card p-6 border-primary/20" data-testid="impact-card">
           <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-            <Lightbulb className="w-5 h-5 text-brand-blue" /> Highest Impact Improvement
+            <Lightbulb className="w-5 h-5 text-primary" /> Highest Impact Improvement
           </h3>
           {data.highest_impact_improvement.issue && (
-            <p className="text-sm font-medium text-brand-blue mb-2">{data.highest_impact_improvement.issue}</p>
+            <p className="text-sm font-medium text-primary mb-2">{data.highest_impact_improvement.issue}</p>
           )}
           <p className="text-sm text-gray-400">{data.highest_impact_improvement.recommendation}</p>
           {data.highest_impact_improvement.affected_audits && (
@@ -139,7 +139,7 @@ export default function ExecutiveSummaryPage() {
       {data.competitive_standing && (
         <div className="glass-card p-6" data-testid="standing-card">
           <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-brand-blue" /> Competitive Standing
+            <BarChart3 className="w-5 h-5 text-primary" /> Competitive Standing
           </h3>
           <p className="text-sm text-gray-400">{data.competitive_standing.summary}</p>
         </div>

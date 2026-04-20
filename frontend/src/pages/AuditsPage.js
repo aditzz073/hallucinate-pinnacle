@@ -109,7 +109,7 @@ export default function AuditsPage({ onSignUp }) {
       {/* Page Header */}
       <div>
         <h1 className="font-display text-3xl font-bold text-white mb-2">
-          AEO <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Page Audits</span>
+          AEO <span className="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">Page Audits</span>
         </h1>
         <p className="text-sm" style={{ color: "var(--text-muted)" }}>Analyze any URL for AI Engine Optimization signals.</p>
       </div>
@@ -178,10 +178,10 @@ export default function AuditsPage({ onSignUp }) {
           <div className="flex items-start justify-between mb-6">
             <div>
               <h3 className="text-lg font-semibold text-white mb-1">Audit Results</h3>
-              <p className="text-xs mb-1" style={{ color: "#A78BFA" }}>
+              <p className="text-xs mb-1" style={{ color: "var(--primary)" }}>
                 Brand: {activeAuditBrand}
               </p>
-              <a href={activeAudit.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 hover:underline flex items-center gap-1">
+              <a href={activeAudit.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1">
                 {activeAudit.url} <ExternalLink className="w-3 h-3" />
               </a>
             </div>

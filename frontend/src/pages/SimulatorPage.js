@@ -36,7 +36,7 @@ export default function SimulatorPage() {
     <div className="space-y-8" data-testid="simulator-page">
       {/* Page Header */}
       <div>
-        <h1 className="font-display text-3xl font-bold text-white mb-2">Strategy <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Simulator</span></h1>
+        <h1 className="font-display text-3xl font-bold text-white mb-2">Strategy <span className="bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">Simulator</span></h1>
         <p className="text-sm" style={{ color: "var(--text-muted)" }}>Simulate content optimizations and see projected impact on citation probability.</p>
       </div>
 
@@ -70,7 +70,7 @@ export default function SimulatorPage() {
               data-testid={`strategy-${s.id}`}
               className={`text-left p-4 rounded-xl border transition-all duration-200 ${
                 strategy === s.id 
-                  ? "border-brand-blue/50 bg-brand-blue/10" 
+                  ? "border-primary/50 bg-primary/10" 
                   : "border-white/5 bg-white/[0.02] hover:border-white/10 hover:bg-white/[0.04]"
               }`}
             >
@@ -150,7 +150,7 @@ export default function SimulatorPage() {
               <ul className="space-y-1">
                 {result.adjustments_applied.map((a, i) => (
                   <li key={i} className="text-xs text-gray-400 flex items-center gap-2">
-                    <ArrowRight className="w-3 h-3 text-brand-blue" /> {a}
+                    <ArrowRight className="w-3 h-3 text-primary" /> {a}
                   </li>
                 ))}
               </ul>
