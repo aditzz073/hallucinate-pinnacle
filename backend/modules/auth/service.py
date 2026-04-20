@@ -66,6 +66,7 @@ def _normalize_access_fields(user_doc: dict, fallback_email: str = "") -> dict:
         "plan_name": plan_name,
         "isSubscribed": is_subscribed,
         "stripeCustomerId": user_doc.get("stripeCustomerId"),
+        "stripeSubscriptionId": user_doc.get("stripeSubscriptionId"),
         "isFoundingUser": is_founding_user,
         "is_privileged": is_founding_user,
         "subscription_status": user_doc.get("subscription_status", user_doc.get("subscriptionStatus", "none")),

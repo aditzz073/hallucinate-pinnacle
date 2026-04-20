@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { useAuth } from "../context/AuthContext";
 import { getOverview, getBillingStatus } from "../api";
 import { changePassword, createPortalSession, generateApiKey } from "../api";
-import { canAccessFeature, PLAN_DISPLAY_NAMES, getUsageBarColor } from "../utils/featureAccess";
+import { canAccessFeature, PLAN_DISPLAY_NAMES } from "../utils/featureAccess";
 import {
   User,
   Mail,
@@ -152,14 +152,6 @@ export default function ProfilePage() {
   const auditsLimit   = usage.aeo_audits_limit   ?? usage.audits_limit;
   const aiTestsUsed   = usage.ai_lab_tests_used  || usage.ai_tests_this_month  || 0;
   const aiTestsLimit  = usage.ai_lab_tests_limit ?? usage.ai_tests_limit;
-  const advancedUsed  = usage.advanced_audits_used  || 0;
-  const advancedLimit = usage.advanced_audits_limit ?? null;
-  const simUsed       = usage.strategy_simulator_used || 0;
-  const simLimit      = usage.strategy_simulator_limit ?? null;
-  const resetsAt      = usage.current_period_end || null;
-  const resetsLabel   = resetsAt
-    ? new Date(resetsAt).toLocaleDateString("en-IN", { month: "short", day: "numeric" })
-    : null;
   const subscriptionStatus = billingData?.status || user?.subscription_status || "none";
   const nextBillingDate = billingData?.next_billing_date;
   const planName = billingData?.plan_name || PLAN_DISPLAY_NAMES[user?.plan] || "Discover";

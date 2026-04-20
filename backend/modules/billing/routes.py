@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta, timezone
 import logging
+import sys
 from typing import Optional
 
 from bson import ObjectId
@@ -85,6 +86,10 @@ class CheckoutRequest(BaseModel):
     plan: str  # "discover" | "optimize" | "dominate"
 
 
+class UpgradePlanRequest(BaseModel):
+    plan: str  # target plan: "optimize" | "dominate"
+
+
 # ---------------------------------------------------------------------------
 # POST /api/billing/checkout  (alias: /api/billing/create-checkout-session)
 # ---------------------------------------------------------------------------
@@ -98,7 +103,7 @@ async def create_checkout_session(
     if not stripe_is_configured():
         raise HTTPException(status_code=503, detail="Stripe billing is not configured")
 
-    plan = body.plan if body else "optimize"
+    plan = body.plan if body else "discover"
     plan = _normalize_plan(plan)
 
     price_id = get_price_id_for_plan(plan)
@@ -171,6 +176,111 @@ async def create_portal_session(
 
 
 # ---------------------------------------------------------------------------
+# POST /api/billing/upgrade-plan
+# Upgrades an existing subscription using Stripe proration.
+# ---------------------------------------------------------------------------
+@router.post("/upgrade-plan")
+async def upgrade_plan(
+    body: UpgradePlanRequest,
+    current_user: dict = Depends(verify_token),
+):
+    """Upgrade an active subscription to a higher plan using Stripe proration.
+
+    The user pays only the prorated difference immediately; Stripe handles all
+    billing arithmetic. No manual price calculations.
+    """
+    if not stripe_is_configured():
+        raise HTTPException(status_code=503, detail="Stripe billing is not configured")
+
+    target_plan = _normalize_plan(body.plan)
+    new_price_id = get_price_id_for_plan(target_plan)
+    if not new_price_id:
+        raise HTTPException(
+            status_code=400,
+            detail=f"No Stripe price configured for plan '{target_plan}'",
+        )
+
+    user_id = current_user.get("user_id")
+    user_doc = await _get_user_or_404(user_id)
+
+    subscription_id = user_doc.get("stripeSubscriptionId")
+    if not subscription_id:
+        raise HTTPException(
+            status_code=400,
+            detail="No active Stripe subscription found. Please subscribe first.",
+        )
+
+    current_plan = _normalize_plan(user_doc.get("plan"))
+    current_level = {"discover": 1, "optimize": 2, "dominate": 3, "founder": 99}.get(current_plan, 0)
+    target_level = {"discover": 1, "optimize": 2, "dominate": 3}.get(target_plan, 0)
+
+    if target_level <= current_level:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot upgrade from '{current_plan}' to '{target_plan}'. Target plan must be higher.",
+        )
+
+    print(
+        f"[UPGRADE] user_id={user_id!r} {current_plan!r} → {target_plan!r} "
+        f"subscription_id={subscription_id!r} new_price_id={new_price_id!r}",
+        flush=True,
+    )
+
+    try:
+        # Retrieve the current subscription to find the existing item ID
+        sub = stripe.Subscription.retrieve(subscription_id)
+        items_data = sub.get("items", {}).get("data", [])
+        if not items_data:
+            raise HTTPException(status_code=400, detail="Subscription has no items to upgrade")
+
+        existing_item_id = items_data[0]["id"]
+
+        # Modify subscription with proration — Stripe calculates the diff
+        updated_sub = stripe.Subscription.modify(
+            subscription_id,
+            items=[{
+                "id": existing_item_id,
+                "price": new_price_id,
+            }],
+            proration_behavior="create_prorations",
+        )
+
+        logger.info(
+            "Subscription upgraded: user_id=%s %s → %s sub_id=%s",
+            user_id, current_plan, target_plan, subscription_id,
+        )
+        print(
+            f"[UPGRADE] Stripe subscription modified successfully — "
+            f"status={updated_sub.get('status')!r}",
+            flush=True,
+        )
+
+    except stripe.StripeError as exc:
+        logger.error("Stripe error during plan upgrade for user %s: %s", user_id, exc)
+        print(f"[UPGRADE] Stripe error: {exc}", flush=True)
+        raise HTTPException(status_code=502, detail=f"Stripe error: {str(exc)}")
+
+    # ─── DO NOT update the DB here ─────────────────────────────────────────
+    # The plan will be updated ONLY when Stripe fires invoice.payment_succeeded,
+    # which is the real confirmation that payment was collected.
+    # Updating here would grant premium access before charging the user.
+    # ────────────────────────────────────────────────────────────────────────
+    print(
+        f"[UPGRADE] Stripe subscription modified — plan update pending payment confirmation. "
+        f"user_id={user_id!r} target_plan={target_plan!r}",
+        flush=True,
+    )
+
+    return {
+        "status": "pending_payment",
+        "target_plan": target_plan,
+        "plan_name": PLAN_DISPLAY_NAMES.get(target_plan, target_plan.title()),
+        "subscription_id": subscription_id,
+        "message": "Upgrade initiated. Your plan will update automatically once payment is confirmed.",
+    }
+
+
+# ---------------------------------------------------------------------------
 # GET /api/billing/status
 # ---------------------------------------------------------------------------
 @router.get("/status")
@@ -240,10 +350,24 @@ async def billing_status(current_user: dict = Depends(verify_token)):
 # ---------------------------------------------------------------------------
 # Webhook helpers
 # ---------------------------------------------------------------------------
-def _plan_from_price_id(price_id: str) -> str:
-    """Resolve a Stripe price ID back to a plan name."""
+def _plan_from_price_id(price_id: str) -> str | None:
+    """Resolve a Stripe price ID back to a plan name.
+
+    Returns None if the price_id is not mapped — callers must handle this
+    explicitly instead of silently falling back to a wrong plan.
+    """
+    if not price_id:
+        return None
     mapping = _build_price_to_plan_map()
-    return mapping.get(price_id, "optimize")  # default to optimize for unknown
+    result = mapping.get(price_id)
+    if result is None:
+        logger.error(
+            "[PLAN MAPPING] Unknown Stripe price_id=%r — not in PLAN_PRICE_MAP. "
+            "Check STRIPE_*_PRICE_ID env vars match your Stripe Dashboard prices.",
+            price_id,
+        )
+        print(f"[WEBHOOK] ERROR: Unknown price_id={price_id!r} — cannot map to plan!", flush=True)
+    return result
 
 
 async def _mark_subscription_active(
@@ -374,10 +498,15 @@ async def stripe_webhook(request: Request):
 
     try:
         event = stripe.Webhook.construct_event(payload, signature, STRIPE_WEBHOOK_SECRET)
-    except stripe.error.SignatureVerificationError:
-        raise HTTPException(status_code=400, detail="Invalid signature")
-    except Exception:
-        raise HTTPException(status_code=400, detail="Webhook error")
+    except stripe.SignatureVerificationError as exc:
+        # Stripe SDK v5+ moved SignatureVerificationError out of stripe.error
+        logger.warning("Stripe webhook signature verification failed: %s", exc)
+        print(f"[WEBHOOK] Signature verification FAILED — check STRIPE_WEBHOOK_SECRET in .env", flush=True)
+        raise HTTPException(status_code=400, detail="Invalid webhook signature")
+    except Exception as exc:
+        logger.warning("Stripe webhook: failed to parse event payload: %s", exc)
+        print(f"[WEBHOOK] Payload parse error: {exc}", flush=True)
+        raise HTTPException(status_code=400, detail="Webhook payload error")
 
     event_id = event.get("id")
     event_type = event.get("type")
@@ -390,6 +519,7 @@ async def stripe_webhook(request: Request):
         event_type,
         livemode,
     )
+    print(f"[WEBHOOK] Received event: type={event_type} id={event_id} livemode={livemode}", flush=True)
 
     try:
         if event_type == "checkout.session.completed":
@@ -397,37 +527,105 @@ async def stripe_webhook(request: Request):
             user_id = metadata.get("user_id") or obj.get("client_reference_id")
             customer_id = obj.get("customer")
             subscription_id = obj.get("subscription")
-            plan = metadata.get("plan", "optimize")
 
-            # Try to resolve plan from the subscription's price for accuracy
+            # ── Resolve plan strictly from the Stripe price ID ───────────────────────────────
+            # Priority: subscription line items > session line_items API > metadata
+            # NEVER use "optimize" as a silent default — wrong plan = wrong access level
+            # ───────────────────────────────────────────────────────────────────────
+            plan = None
+
+            # 1. Retrieve price from the subscription object (most reliable)
             if subscription_id:
                 try:
                     sub = stripe.Subscription.retrieve(subscription_id)
                     if sub.get("items") and sub["items"].get("data"):
                         price_id = sub["items"]["data"][0].get("price", {}).get("id", "")
-                        resolved = _plan_from_price_id(price_id)
-                        if resolved:
-                            plan = resolved
-                except Exception:
-                    pass
+                        plan = _plan_from_price_id(price_id)
+                        print(
+                            f"[WEBHOOK] Plan resolved from subscription price_id={price_id!r} → {plan!r}",
+                            flush=True,
+                        )
+                except Exception as exc:
+                    logger.warning("checkout.session.completed: could not retrieve subscription: %s", exc)
 
-            if user_id:
-                updated = await _activate_subscription_by_user_id(
-                    user_id,
-                    plan=plan,
-                    customer_id=customer_id,
-                    subscription_id=subscription_id,
+            # 2. Fallback: fetch line_items directly from the session
+            if not plan:
+                try:
+                    line_items = stripe.checkout.Session.list_line_items(obj.get("id", ""), limit=1)
+                    if line_items and line_items.get("data"):
+                        price_id = line_items["data"][0].get("price", {}).get("id", "")
+                        plan = _plan_from_price_id(price_id)
+                        print(
+                            f"[WEBHOOK] Plan resolved from line_items price_id={price_id!r} → {plan!r}",
+                            flush=True,
+                        )
+                except Exception as exc:
+                    logger.warning("checkout.session.completed: could not fetch line_items: %s", exc)
+
+            # 3. Last resort: metadata.plan (set by us at checkout creation)
+            if not plan:
+                plan = metadata.get("plan")
+                if plan:
+                    print(f"[WEBHOOK] Plan from metadata fallback: {plan!r}", flush=True)
+
+            if not plan:
+                logger.error(
+                    "checkout.session.completed: could not resolve plan for session %s — "
+                    "price_id not in PLAN_PRICE_MAP and no metadata.plan set",
+                    obj.get("id"),
                 )
-                if not updated:
-                    await _activate_subscription_by_customer_id(customer_id, plan=plan, subscription_id=subscription_id)
-            else:
-                await _activate_subscription_by_customer_id(customer_id, plan=plan, subscription_id=subscription_id)
+                print(
+                    f"[WEBHOOK] ERROR: Could not resolve plan — check STRIPE_*_PRICE_ID env vars!",
+                    flush=True,
+                )
+                return {"status": "error", "reason": "unknown_plan"}
 
+            print(
+                f"[WEBHOOK] checkout.session.completed — "
+                f"user_id={user_id!r} customer_id={customer_id!r} "
+                f"subscription_id={subscription_id!r} plan={plan!r}",
+                flush=True,
+            )
             logger.info(
-                "Processed checkout.session.completed: user_id=%s customer_id=%s plan=%s",
+                "checkout.session.completed: user_id=%s customer_id=%s subscription_id=%s plan=%s",
+                user_id, customer_id, subscription_id, plan,
+            )
+
+            if not user_id:
+                logger.error(
+                    "checkout.session.completed: MISSING user_id in metadata AND client_reference_id. "
+                    "Session metadata: %s", metadata
+                )
+                print(
+                    f"[WEBHOOK] ERROR — user_id missing from session metadata={metadata!r}. "
+                    "Ensure checkout session is created with metadata={'user_id': str(user_id)}",
+                    flush=True,
+                )
+                return {"status": "ignored", "reason": "missing_user_id"}
+
+            updated = await _activate_subscription_by_user_id(
                 user_id,
-                customer_id,
-                plan,
+                plan=plan,
+                customer_id=customer_id,
+                subscription_id=subscription_id,
+            )
+            if not updated:
+                logger.warning(
+                    "Primary user_id lookup failed, falling back to customer_id lookup: %s",
+                    customer_id,
+                )
+                updated = await _activate_subscription_by_customer_id(
+                    customer_id, plan=plan, subscription_id=subscription_id
+                )
+
+            print(
+                f"[WEBHOOK] DB update result — modified={updated} "
+                f"user_id={user_id!r} plan={plan!r}",
+                flush=True,
+            )
+            logger.info(
+                "Processed checkout.session.completed: user_id=%s customer_id=%s plan=%s db_updated=%s",
+                user_id, customer_id, plan, updated,
             )
 
         elif event_type == "customer.subscription.updated":
@@ -435,11 +633,23 @@ async def stripe_webhook(request: Request):
             subscription_id = obj.get("id")
             status = obj.get("status", "active")
 
-            # Resolve the plan from the subscription's price
-            plan = "optimize"
+            # Resolve plan strictly from the subscription's current price
+            plan = None
             if obj.get("items") and obj["items"].get("data"):
                 price_id = obj["items"]["data"][0].get("price", {}).get("id", "")
                 plan = _plan_from_price_id(price_id)
+                print(
+                    f"[WEBHOOK] customer.subscription.updated — "
+                    f"price_id={price_id!r} → plan={plan!r} status={status!r}",
+                    flush=True,
+                )
+
+            if not plan:
+                logger.error(
+                    "customer.subscription.updated: unknown price_id — skipping plan update "
+                    "for customer_id=%s", customer_id
+                )
+                return {"status": "error", "reason": "unknown_price_id"}
 
             if status == "active":
                 await _activate_subscription_by_customer_id(customer_id, plan=plan, subscription_id=subscription_id)
@@ -448,44 +658,67 @@ async def stripe_webhook(request: Request):
 
             logger.info(
                 "Processed customer.subscription.updated: customer_id=%s status=%s plan=%s",
-                customer_id,
-                status,
-                plan,
+                customer_id, status, plan,
             )
 
         elif event_type == "invoice.payment_succeeded":
             customer_id = obj.get("customer")
             subscription_id = obj.get("subscription")
 
-            plan = "optimize"
+            # Resolve plan strictly from the subscription's current price — NO defaults
+            plan = None
             if subscription_id:
                 try:
                     sub = stripe.Subscription.retrieve(subscription_id)
                     if sub.get("items") and sub["items"].get("data"):
                         price_id = sub["items"]["data"][0].get("price", {}).get("id", "")
                         plan = _plan_from_price_id(price_id)
-                except Exception:
-                    pass
+                        print(
+                            f"[WEBHOOK] invoice.payment_succeeded — "
+                            f"price_id={price_id!r} → plan={plan!r} customer_id={customer_id!r}",
+                            flush=True,
+                        )
+                except Exception as exc:
+                    logger.warning("invoice.payment_succeeded: could not retrieve subscription: %s", exc)
 
-            await _activate_subscription_by_customer_id(customer_id, plan=plan, subscription_id=subscription_id)
+            if not plan:
+                logger.error(
+                    "invoice.payment_succeeded: could not resolve plan for customer_id=%s — "
+                    "subscription_id=%s price_id unknown",
+                    customer_id, subscription_id,
+                )
+                print(
+                    f"[WEBHOOK] ERROR invoice.payment_succeeded: unknown price_id — skipping plan update",
+                    flush=True,
+                )
+                return {"status": "error", "reason": "unknown_price_id"}
+
+            await _activate_subscription_by_customer_id(
+                customer_id, plan=plan, subscription_id=subscription_id
+            )
             logger.info(
-                "Processed invoice.payment_succeeded: customer_id=%s subscription_id=%s",
-                customer_id,
-                subscription_id,
+                "Processed invoice.payment_succeeded: customer_id=%s subscription_id=%s plan=%s",
+                customer_id, subscription_id, plan,
             )
 
         elif event_type == "invoice.payment_failed":
             customer_id = obj.get("customer")
             if customer_id:
                 await _mark_subscription_past_due(customer_id)
+            print(f"[WEBHOOK] invoice.payment_failed — customer_id={customer_id!r}", flush=True)
             logger.info("Processed invoice.payment_failed: customer_id=%s", customer_id)
 
         elif event_type == "customer.subscription.deleted":
             customer_id = obj.get("customer")
+            print(f"[WEBHOOK] customer.subscription.deleted — customer_id={customer_id!r}", flush=True)
             if customer_id:
                 user_doc = await users_collection.find_one({"stripeCustomerId": customer_id}, {"_id": 1})
                 if user_doc:
                     await _mark_subscription_canceled(customer_id)
+                    logger.info(
+                        "Subscription canceled for customer_id=%s plan set to discover/free",
+                        customer_id,
+                    )
                 else:
                     logger.warning("No user found for cancellation event customer_id=%s", customer_id)
 
@@ -494,8 +727,11 @@ async def stripe_webhook(request: Request):
         else:
             logger.info("Stripe webhook ignored unsupported event type=%s", event_type)
 
-    except Exception:
-        logger.exception("Stripe webhook processing failed for event %s", event_type)
-        raise HTTPException(status_code=500, detail="Webhook processing failed")
+    except Exception as exc:
+        # IMPORTANT: Return 200 so Stripe does NOT retry the webhook indefinitely.
+        # A 5xx response causes Stripe to retry up to 3 days, flooding the logs.
+        logger.exception("Stripe webhook processing failed for event %s: %s", event_type, exc)
+        print(f"[WEBHOOK] ERROR processing event type={event_type!r}: {exc}", file=sys.stderr, flush=True)
+        return {"status": "error", "event_type": event_type}
 
     return {"status": "success"}

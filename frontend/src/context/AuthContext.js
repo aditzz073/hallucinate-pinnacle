@@ -68,6 +68,11 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     if (!token) return undefined;
 
+    // Minimum gap between focus-triggered syncs (ms).
+    // Prevents rapid-fire /api/auth/me calls when alt-tabbing during dev.
+    const MIN_FOCUS_SYNC_INTERVAL = 10_000;
+    let lastFocusSync = 0;
+
     const syncUser = () => {
       refreshUser(token).catch((error) => {
         if (error?.response?.status === 401) {
@@ -75,19 +80,27 @@ export function AuthProvider({ children }) {
           setToken(null);
           setUser(null);
         }
-
-        // Background sync should not interrupt active UX for transient failures.
+        // Background sync — transient failures (429, 5xx) are silently ignored.
       });
     };
 
-    window.addEventListener("focus", syncUser);
+    const onFocus = () => {
+      const now = Date.now();
+      if (now - lastFocusSync >= MIN_FOCUS_SYNC_INTERVAL) {
+        lastFocusSync = now;
+        syncUser();
+      }
+    };
+
+    window.addEventListener("focus", onFocus);
     const intervalId = window.setInterval(syncUser, 30000);
 
     return () => {
-      window.removeEventListener("focus", syncUser);
+      window.removeEventListener("focus", onFocus);
       window.clearInterval(intervalId);
     };
   }, [refreshUser, token]);
+
 
   const login = async (email, password) => {
     const res = await axios.post(`${API_URL}/api/auth/login`, { email, password });

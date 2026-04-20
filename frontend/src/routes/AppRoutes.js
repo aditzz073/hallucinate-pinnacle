@@ -7,7 +7,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { toast } from "sonner";
-import { createCheckoutSession } from "../api";
+import { createCheckoutSession, upgradePlan } from "../api";
 import { useAuth } from "../context/AuthContext";
 import { canAccessFeature, getMinimumPlanForFeature, PLAN_DISPLAY_NAMES } from "../utils/featureAccess";
 import Layout, { AppShellLayout } from "../components/Layout";
@@ -39,6 +39,26 @@ const PressPage = lazy(() => import("../pages/PressPage"));
 const TermsDataPolicyPage = lazy(() => import("../pages/TermsDataPolicyPage"));
 const CookiePolicyPage = lazy(() => import("../pages/CookiePolicyPage"));
 
+/**
+ * After a subscription.modify call, poll /api/auth/me until the plan changes
+ * (confirmed by the invoice.payment_succeeded webhook) or timeout.
+ *
+ * @param {Function} refreshUser  - from AuthContext
+ * @param {string}   targetPlan   - the plan we expect
+ * @param {number}   maxMs        - max total wait (default 15s)
+ * @returns {boolean} true if plan confirmed, false if timed out
+ */
+async function pollForPlanUpdate(refreshUser, targetPlan, maxMs = 15000) {
+  const interval = 2000;
+  const deadline = Date.now() + maxMs;
+  while (Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, interval));
+    const updated = await refreshUser();
+    if (updated?.plan === targetPlan) return true;
+  }
+  return false;
+}
+
 function SuspensePage({ children }) {
   return (
     <Suspense fallback={<div className="flex items-center justify-center py-32"><div className="w-6 h-6 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" /></div>}>
@@ -46,6 +66,7 @@ function SuspensePage({ children }) {
     </Suspense>
   );
 }
+
 
 function TitleManager() {
   const { pathname } = useLocation();
@@ -75,20 +96,12 @@ function RegisterRoute() {
 
 function PricingRoute() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+  const [upgradeStatus, setUpgradeStatus] = useState(null); // null | 'processing'
 
   const handleSelectPlan = async (plan) => {
-    // If user picks discover (lowest tier), just redirect
-    if (plan === "discover") {
-      if (user?.isLoggedIn) {
-        navigate("/dashboard");
-      } else {
-        navigate("/register", { state: { from: { pathname: "/pricing" } } });
-      }
-      return;
-    }
-
+    // All three plans (discover, optimize, dominate) are paid — require auth + checkout.
     if (!user?.isLoggedIn) {
       navigate("/login", { state: { from: { pathname: "/pricing" } } });
       return;
@@ -96,19 +109,42 @@ function PricingRoute() {
 
     setIsCheckoutLoading(true);
     try {
-      const session = await createCheckoutSession(plan);
-      window.location.href = session.url || session.checkout_url;
+      const isExistingSubscriber = Boolean(user?.isSubscribed && user?.stripeSubscriptionId);
+      console.log(`[Pricing] plan=${plan} isSubscribed=${user?.isSubscribed} subId=${user?.stripeSubscriptionId} → ${isExistingSubscriber ? 'UPGRADE' : 'NEW CHECKOUT'}`);
+
+      if (isExistingSubscriber) {
+        // Existing subscriber → modify subscription with proration
+        await upgradePlan(plan);
+        setUpgradeStatus('processing');
+        toast.loading("Processing payment… This may take a moment.", { id: "upgrade-toast" });
+
+        const confirmed = await pollForPlanUpdate(refreshUser, plan);
+        toast.dismiss("upgrade-toast");
+
+        if (confirmed) {
+          toast.success(`🎉 Upgraded! Your plan is now active.`);
+        } else {
+          toast("Upgrade submitted. Your plan will activate shortly.", { icon: "⏳" });
+          await refreshUser();
+        }
+        navigate("/dashboard");
+      } else {
+        // New subscriber → full Stripe Checkout
+        const session = await createCheckoutSession(plan);
+        window.location.href = session.url || session.checkout_url;
+      }
     } catch (error) {
       toast.error(error?.response?.data?.detail || "Unable to start checkout. Please try again.");
     } finally {
       setIsCheckoutLoading(false);
+      setUpgradeStatus(null);
     }
   };
 
   return (
     <PricingPage
       user={user}
-      isCheckoutLoading={isCheckoutLoading}
+      isCheckoutLoading={isCheckoutLoading || upgradeStatus === 'processing'}
       onSelectPlan={handleSelectPlan}
     />
   );
@@ -116,20 +152,13 @@ function PricingRoute() {
 
 function LandingRoute() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+  const [upgradeStatus, setUpgradeStatus] = useState(null);
   const navigateToPage = (pageId) => navigate(getPathFromPageIdForAuth(pageId, Boolean(user)));
 
   const handleSelectPlan = async (plan) => {
-    if (plan === "discover") {
-      if (user?.isLoggedIn) {
-        navigate("/dashboard");
-      } else {
-        navigate("/register", { state: { from: { pathname: "/pricing" } } });
-      }
-      return;
-    }
-
+    // All three plans are paid — redirect to login if not authenticated.
     if (!user?.isLoggedIn) {
       navigate("/login", { state: { from: { pathname: "/pricing" } } });
       return;
@@ -137,12 +166,33 @@ function LandingRoute() {
 
     setIsCheckoutLoading(true);
     try {
-      const session = await createCheckoutSession(plan);
-      window.location.href = session.url || session.checkout_url;
+      const isExistingSubscriber = Boolean(user?.isSubscribed && user?.stripeSubscriptionId);
+      console.log(`[Landing] plan=${plan} isSubscribed=${user?.isSubscribed} subId=${user?.stripeSubscriptionId} → ${isExistingSubscriber ? 'UPGRADE' : 'NEW CHECKOUT'}`);
+
+      if (isExistingSubscriber) {
+        await upgradePlan(plan);
+        setUpgradeStatus('processing');
+        toast.loading("Processing payment… This may take a moment.", { id: "upgrade-toast" });
+
+        const confirmed = await pollForPlanUpdate(refreshUser, plan);
+        toast.dismiss("upgrade-toast");
+
+        if (confirmed) {
+          toast.success(`🎉 Upgraded! Your plan is now active.`);
+        } else {
+          toast("Upgrade submitted. Your plan will activate shortly.", { icon: "⏳" });
+          await refreshUser();
+        }
+        navigate("/dashboard");
+      } else {
+        const session = await createCheckoutSession(plan);
+        window.location.href = session.url || session.checkout_url;
+      }
     } catch (error) {
       toast.error(error?.response?.data?.detail || "Unable to start checkout. Please try again.");
     } finally {
       setIsCheckoutLoading(false);
+      setUpgradeStatus(null);
     }
   };
 
@@ -151,7 +201,7 @@ function LandingRoute() {
       onGetStarted={() => navigate(user ? "/dashboard" : "/register")}
       onNavigate={navigateToPage}
       onSelectPlan={handleSelectPlan}
-      isCheckoutLoading={isCheckoutLoading}
+      isCheckoutLoading={isCheckoutLoading || upgradeStatus === 'processing'}
       user={user}
     />
   );

@@ -117,13 +117,31 @@ function FeatureItem({ label, included }) {
 }
 
 export default function PricingPage({ user, isCheckoutLoading, onSelectPlan }) {
-  const currentPlan = user?.plan || "discover";
+  const currentPlan = user?.plan || "free";
   const isFounder = user?.isFoundingUser === true;
+  const isSubscribed = Boolean(user?.stripeSubscriptionId);
 
+  const PLAN_ORDER = { free: 0, discover: 1, optimize: 2, dominate: 3, founder: 99 };
+
+  // User is "on" a plan only if they are actually subscribed to it (or a founder)
   const isOnPlan = (plan) => {
     if (isFounder) return true;
-    return currentPlan === plan;
+    return isSubscribed && currentPlan === plan;
   };
+
+  // True when user is subscribed and the target plan is HIGHER than their current one
+  const isUpgrade = (plan) => {
+    if (!isSubscribed || isFounder) return false;
+    return (PLAN_ORDER[plan] || 0) > (PLAN_ORDER[currentPlan] || 0);
+  };
+
+  const planButtonLabel = (plan, defaultLabel) => {
+    if (isOnPlan(plan)) return "Current plan";
+    if (isCheckoutLoading) return "Processing...";
+    if (isUpgrade(plan)) return "Upgrade →";
+    return defaultLabel;
+  };
+
 
   return (
     <div
@@ -172,7 +190,7 @@ export default function PricingPage({ user, isCheckoutLoading, onSelectPlan }) {
                 disabled={isCheckoutLoading || isOnPlan("discover")}
                 className="mt-8 w-full h-11 rounded-xl border border-slate-600 text-sm font-medium text-white hover:bg-white/5 hover:scale-[1.01] transition disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {isOnPlan("discover") ? "Current plan" : "Start with Discover"}
+                {planButtonLabel("discover", "Start with Discover")}
               </button>
             </article>
 
@@ -206,11 +224,7 @@ export default function PricingPage({ user, isCheckoutLoading, onSelectPlan }) {
                 disabled={isCheckoutLoading || isOnPlan("optimize")}
                 className="mt-8 w-full h-11 rounded-xl bg-indigo-500 text-white text-sm font-semibold hover:brightness-110 hover:scale-[1.01] transition disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {isOnPlan("optimize")
-                  ? "Current plan"
-                  : isCheckoutLoading
-                  ? "Redirecting..."
-                  : "Start Optimizing"}
+                {planButtonLabel("optimize", "Start Optimizing")}
               </button>
             </article>
 
@@ -238,11 +252,7 @@ export default function PricingPage({ user, isCheckoutLoading, onSelectPlan }) {
                 disabled={isCheckoutLoading || isOnPlan("dominate")}
                 className="mt-8 w-full h-11 rounded-xl border border-violet-600 text-sm font-medium text-white hover:bg-violet-500/10 hover:scale-[1.01] transition disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {isOnPlan("dominate")
-                  ? "Current plan"
-                  : isCheckoutLoading
-                  ? "Redirecting..."
-                  : "Dominate AI Search"}
+                {planButtonLabel("dominate", "Dominate AI Search")}
               </button>
             </article>
           </div>

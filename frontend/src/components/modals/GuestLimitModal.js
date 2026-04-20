@@ -7,11 +7,7 @@ export default function GuestLimitModal({ isOpen, onClose, feature = 'audits' })
 
   if (!isOpen) return null;
 
-  const featureLabels = {
-    aeo_audits: 'audits',
-    ai_lab_tests: 'AI lab tests',
-  };
-  const featureLabel = featureLabels[feature] || feature;
+
 
   const benefits = [
     { icon: Zap,       text: '5 audits per month — no credit card required' },

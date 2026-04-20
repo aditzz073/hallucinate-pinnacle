@@ -6,9 +6,17 @@ from fastapi import Request, HTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
 
 # Config
-RATE_LIMIT_IP_REQUESTS = 100  # per window
-RATE_LIMIT_USER_REQUESTS = 60  # per window
+RATE_LIMIT_IP_REQUESTS = 200   # per window — generous for dev
+RATE_LIMIT_USER_REQUESTS = 120  # per window
 RATE_LIMIT_WINDOW = 60  # seconds
+
+# Routes exempt from the per-USER bucket (still checked by per-IP bucket).
+# These are lightweight, read-only, and polled frequently by the frontend.
+USER_BUCKET_EXEMPT_PATHS = {
+    "/api/auth/me",
+    "/api/billing/status",
+    "/api/health",
+}
 
 
 class _TokenBucket:
@@ -53,9 +61,10 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 detail="Rate limit exceeded. Please try again later.",
             )
 
-        # Check user-level rate limit if auth header present
+        # Check user-level rate limit if auth header present.
+        # Exempt lightweight polling endpoints — they are already IP-protected.
         auth = request.headers.get("authorization", "")
-        if auth.startswith("Bearer "):
+        if auth.startswith("Bearer ") and request.url.path not in USER_BUCKET_EXEMPT_PATHS:
             token_hash = hash(auth[7:30])  # partial hash for bucketing
             user_bucket = _user_buckets[str(token_hash)]
             if not user_bucket.consume():

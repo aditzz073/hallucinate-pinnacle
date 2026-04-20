@@ -178,6 +178,21 @@ export async function getBillingStatus() {
   return res.data;
 }
 
+/**
+ * Upgrade an existing subscription to a higher plan.
+ * Stripe applies proration — user pays only the difference, not full price.
+ * Only call this when the user already has a stripeSubscriptionId.
+ */
+export async function upgradePlan(plan) {
+  const res = await axios.post(
+    `${API_URL}/api/billing/upgrade-plan`,
+    { plan },
+    { headers: authHeaders() }
+  );
+  return res.data;
+}
+
+
 // ---------------------------------------------------------------------------
 // Reports endpoints
 // ---------------------------------------------------------------------------

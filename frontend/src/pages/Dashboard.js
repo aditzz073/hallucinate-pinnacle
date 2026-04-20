@@ -214,7 +214,6 @@ export default function Dashboard({ onNavigate }) {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
   const isFree = isFreeTier(user);
-  const hasRunAudit = (s.total_audits ?? 0) > 0;
 
   // Billing usage data
   const usage = billingStatus?.usage || null;
