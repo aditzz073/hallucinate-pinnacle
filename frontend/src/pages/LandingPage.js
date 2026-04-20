@@ -1,21 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import {
-  ArrowRight, ChevronDown,  Cpu, BarChart2, TrendingUp, CheckCircle, Search, LayoutTemplate, Network, Braces, Link, ShieldCheck, 
-  Terminal, LineChart as LineChartIcon, Code2, Type, BookOpen, Layers, Sparkles, Microscope, Settings2, Eye
+  ArrowRight, ChevronDown, CheckCircle, Search, ShieldCheck,
+  Terminal, Code2, Type, BookOpen, Sparkles, Microscope, Settings2, Eye
 } from "lucide-react";
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
 import StrategySimulatorSection from "../components/landing/StrategySimulatorSection";
 import SectionWrapper from "../hoc/SectionWrapper";
 import { fadeUp, slideInLeft, slideInRight } from "../utils/motion";
 
-const VISIBILITY_TREND_SERIES = [
-  { key: "citation",      label: "Citation Probability", color: "#a3e635" },
-  { key: "readiness",     label: "Generative Readiness", color: "#3B82F6" },
-  { key: "summarization", label: "Summarization",        color: "#10b981" },
-  { key: "brand",         label: "Brand Retention",      color: "#F59E0B" },
-  { key: "schema",        label: "Schema Support",       color: "#e879f9" },
-];
+
 
 const VISIBILITY_TREND_DATA = [
   { day: "Apr 12", citation: 64, readiness: 84, summarization: 42, brand: 48, schema: 32 },
