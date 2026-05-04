@@ -37,6 +37,10 @@ fi
 
 # ── 3. Start backend on port 8000 ─────────────────────────────
 echo ""
+echo "→ Stopping any existing process on port 8000..."
+lsof -ti:8000 | xargs kill -9 2>/dev/null || true
+sleep 1
+
 echo "→ Starting FastAPI backend on :8000 ..."
 cd "$BACKEND_DIR"
 uvicorn server:app --reload --port 8000 --host 0.0.0.0 &
@@ -57,15 +61,24 @@ done
 # ── 4. Start Stripe listener forwarding to :8000 ──────────────
 echo ""
 echo "→ Starting Stripe webhook listener → localhost:8000/api/billing/webhook ..."
-if [ -f "$STRIPE_BIN" ]; then
-    "$STRIPE_BIN" listen --forward-to localhost:8000/api/billing/webhook &
+# Kill existing stripe listener if any
+pkill -f "stripe listen" || true
+
+if [ -f "$STRIPE_BIN" ] || command -v stripe &> /dev/null; then
+    # Try using stripe command if it exists in PATH, otherwise use STRIPE_BIN
+    STRIPE_CMD="stripe"
+    if [ -f "$STRIPE_BIN" ]; then
+        STRIPE_CMD="$STRIPE_BIN"
+    fi
+    
+    "$STRIPE_CMD" listen --forward-to localhost:8000/api/billing/webhook &
     STRIPE_PID=$!
     echo "  PID: $STRIPE_PID"
     sleep 3
     echo "  ✓ Stripe listener started"
 else
-    echo "  ✗ Stripe CLI not found at $STRIPE_BIN"
-    echo "    Run: curl -sL https://github.com/stripe/stripe-cli/releases/download/v1.40.6/stripe_1.40.6_mac-os_arm64.tar.gz | tar xz -C ~/bin/"
+    echo "  ✗ Stripe CLI not found"
+    echo "    Run: brew install stripe/stripe-cli/stripe"
 fi
 
 # ── 5. Summary ────────────────────────────────────────────────
@@ -80,6 +93,6 @@ echo "Press Ctrl+C to stop all services."
 echo ""
 
 # ── 6. Wait for Ctrl+C, kill all on exit ─────────────────────
-trap "echo ''; echo 'Stopping services...'; kill $BACKEND_PID $STRIPE_PID 2>/dev/null; exit 0" INT TERM
+trap "echo ''; echo 'Stopping services...'; kill $BACKEND_PID $STRIPE_PID 2>/dev/null; exit 0" INT TERM EXIT
 
 wait $BACKEND_PID

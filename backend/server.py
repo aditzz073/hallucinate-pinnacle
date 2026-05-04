@@ -63,7 +63,8 @@ app = FastAPI(
 def _parse_cors_origins() -> list[str]:
     raw_origins = os.getenv("CORS_ORIGINS", "").strip()
     if not raw_origins:
-        return ["http://localhost:3000", "http://127.0.0.1:3000"]
+        # Default to allowing all origins in dev environment to prevent CORS issues
+        return ["*"]
     return [origin.strip().rstrip("/") for origin in raw_origins.split(",") if origin.strip()]
 
 
