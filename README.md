@@ -189,11 +189,14 @@ A hybrid fetching pipeline is used to handle bot-protected and JavaScript-render
 
 ### 1. Backend
 
+We recommend using a Python virtual environment. From the project root directory, create and activate a virtual environment:
+
 ```bash
-cd backend
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
-Create a `.env` file in the `backend/` directory:
+Create a `.env` file in the `backend/` directory (you can copy `.env.example` as a template):
 
 ```env
 MONGO_URL=mongodb://localhost:27017
@@ -203,14 +206,23 @@ JWT_EXPIRY_HOURS=24
 CORS_ORIGINS=http://localhost:3000
 ```
 
-Install dependencies and start the server:
+Install dependencies and start the server. You have two options:
 
+**Option A: Using the dev script (Recommended)**
+From the root directory, simply run:
 ```bash
+./start-dev.sh
+```
+This script will automatically load the virtual environment, load your `.env` variables, start the FastAPI server on port `8000`, and start the Stripe webhook listener.
+
+**Option B: Manual start**
+```bash
+cd backend
 pip install -r requirements.txt
-uvicorn server:app --reload
+uvicorn server:app --reload --port 8000
 ```
 
-The API will be available at `http://localhost:8001`. Interactive docs at `http://localhost:8001/docs`.
+The API will be available at `http://localhost:8000`. Interactive docs at `http://localhost:8000/docs`.
 
 ---
 
@@ -223,7 +235,7 @@ cd frontend
 Create a `.env` file in the `frontend/` directory:
 
 ```env
-REACT_APP_BACKEND_URL=http://localhost:8001
+REACT_APP_BACKEND_URL=http://localhost:8000
 ```
 
 Install dependencies and start the dev server:
